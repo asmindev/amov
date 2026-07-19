@@ -11,6 +11,11 @@ export async function getTrendingMovies() {
   return MovieListSchema.parse(res)
 }
 
+export async function getTopRatedMovies() {
+  const res = await apiClient.get<unknown>(endpoints.movies.topRated)
+  return MovieListSchema.parse(res)
+}
+
 export async function getMovieById(id: string) {
   const res = await apiClient.get<unknown>(endpoints.movies.detail(id), {
     append_to_response: "images",

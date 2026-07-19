@@ -4,11 +4,13 @@ import { MovieCard } from "@/components/movie-card"
 import type { Movie, Genre } from "@/types/movie.types"
 
 type TrendingSectionProps = {
+  title?: string
   movies: Movie[]
   genres?: Genre[]
+  showRank?: boolean
 }
 
-export function TrendingSection({ movies, genres }: TrendingSectionProps) {
+export function TrendingSection({ title = "Trending Now", movies, genres, showRank = false }: TrendingSectionProps) {
   const wrapperRef = useRef<HTMLDivElement>(null)
   const trackRef = useRef<HTMLDivElement>(null)
   const offsetRef = useRef(0)
@@ -30,9 +32,9 @@ export function TrendingSection({ movies, genres }: TrendingSectionProps) {
   }
 
   return (
-    <section className="space-y-4">
+    <section className="relative z-0 has-[.group:hover]:z-10 space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="font-heading text-2xl font-semibold">Trending Now</h2>
+        <h2 className="font-heading text-2xl font-semibold">{title}</h2>
         <div className="flex items-center gap-1">
           <button
             onClick={() => scroll("left")}
@@ -58,6 +60,7 @@ export function TrendingSection({ movies, genres }: TrendingSectionProps) {
               key={movie.id}
               movie={movie}
               rank={index + 1}
+              showRank={showRank}
               genres={genres}
             />
           ))}
