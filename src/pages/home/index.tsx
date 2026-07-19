@@ -1,5 +1,6 @@
 import { useTrendingMovies } from "./hooks/use-trending-movies"
 import { useTopRatedMovies } from "./hooks/use-top-rated-movies"
+import { useNetflixMovies } from "./hooks/use-netflix-movies"
 import { HeroBanner } from "./partials/hero-banner"
 import { TrendingSection } from "./partials/trending-section"
 import {
@@ -10,6 +11,7 @@ import {
 export default function HomePage() {
   const trending = useTrendingMovies()
   const topRated = useTopRatedMovies()
+  const netflix = useNetflixMovies()
 
   const movies = trending.data?.results ?? []
 
@@ -39,6 +41,16 @@ export default function HomePage() {
       ) : topRated.isError ? (
         <p className="text-sm text-destructive">
           Failed to load top rated movies.
+        </p>
+      ) : null}
+
+      {netflix.isPending ? (
+        <TrendingSectionSkeleton />
+      ) : netflix.data ? (
+        <TrendingSection title="Netflix Movies" movies={netflix.data.results} />
+      ) : netflix.isError ? (
+        <p className="text-sm text-destructive">
+          Failed to load Netflix movies.
         </p>
       ) : null}
 

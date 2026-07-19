@@ -16,6 +16,14 @@ export async function getTopRatedMovies() {
   return MovieListSchema.parse(res)
 }
 
+export async function getNetflixMovies() {
+  const res = await apiClient.get<unknown>(endpoints.movies.discover, {
+    with_companies: "213",
+    sort_by: "popularity.desc",
+  })
+  return MovieListSchema.parse(res)
+}
+
 export async function getMovieById(id: string) {
   const res = await apiClient.get<unknown>(endpoints.movies.detail(id), {
     append_to_response: "images",
