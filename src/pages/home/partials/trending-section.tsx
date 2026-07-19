@@ -1,6 +1,7 @@
 import { useRef } from "react"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import { MovieCard } from "@/components/movie-card"
+import { useMovieDetails } from "../hooks/use-movie-details"
 import type { Movie, Genre } from "@/types/movie.types"
 
 type TrendingSectionProps = {
@@ -15,7 +16,7 @@ export function TrendingSection({ title = "Trending Now", movies, genres, showRa
   const trackRef = useRef<HTMLDivElement>(null)
   const offsetRef = useRef(0)
 
-  if (movies.length === 0) return null
+  const movieDetails = useMovieDetails(movies.map((m) => m.id))
 
   const scroll = (direction: "left" | "right") => {
     if (!trackRef.current || !wrapperRef.current) return
@@ -31,6 +32,8 @@ export function TrendingSection({ title = "Trending Now", movies, genres, showRa
     trackRef.current.style.transform = `translate3d(-${offsetRef.current}px, 0, 0)`
   }
 
+  if (movies.length === 0) return null
+
   return (
     <section className="relative z-0 has-[.group:hover]:z-10 space-y-4">
       <div className="flex items-center justify-between">
@@ -38,13 +41,13 @@ export function TrendingSection({ title = "Trending Now", movies, genres, showRa
         <div className="flex items-center gap-1">
           <button
             onClick={() => scroll("left")}
-            className="rounded-full bg-muted p-2 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+            className="rounded bg-muted p-2 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
           >
             <ChevronLeft className="h-5 w-5" />
           </button>
           <button
             onClick={() => scroll("right")}
-            className="rounded-full bg-muted p-2 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+            className="rounded bg-muted p-2 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
           >
             <ChevronRight className="h-5 w-5" />
           </button>
@@ -62,6 +65,7 @@ export function TrendingSection({ title = "Trending Now", movies, genres, showRa
               rank={index + 1}
               showRank={showRank}
               genres={genres}
+              logoPath={movieDetails[index]?.logoPath}
             />
           ))}
         </div>

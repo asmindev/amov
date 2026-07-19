@@ -9,9 +9,10 @@ type MovieCardProps = {
   rank?: number
   showRank?: boolean
   genres?: Genre[]
+  logoPath?: string | null
 }
 
-export function MovieCard({ movie, rank, showRank = false, genres }: MovieCardProps) {
+export function MovieCard({ movie, rank, showRank = false, genres, logoPath }: MovieCardProps) {
   const genreName = (() => {
     if (!genres) return ""
     const id = movie.genreIds[0]
@@ -23,7 +24,7 @@ export function MovieCard({ movie, rank, showRank = false, genres }: MovieCardPr
     <div className="group relative z-0 transition-none hover:z-50">
       <div className="relative w-[260px] origin-bottom transition-transform duration-300 ease-in-out group-hover:scale-[1.3] group-hover:-translate-y-3 lg:w-[280px]">
         {showRank && rank && (
-          <div className="absolute -bottom-2 -left-8 z-10">
+          <div className="absolute -bottom-2 -left-8">
             <h1 className="text-7xl font-black text-transparent transition-all duration-200 group-hover:text-foreground lg:text-8xl [-webkit-text-stroke:2px_gray]">
               {rank}
             </h1>
@@ -42,6 +43,13 @@ export function MovieCard({ movie, rank, showRank = false, genres }: MovieCardPr
             <span className="absolute top-1 right-1 z-10 rounded-md bg-black/50 px-1.5 py-1 text-xs font-medium text-white backdrop-blur-md transition duration-300 group-hover:scale-85 origin-top-right">
               {formatYear(movie.releaseDate)}
             </span>
+            {logoPath && (
+              <img
+                src={getImageUrl(logoPath, "w500")}
+                alt={movie.title}
+                className="absolute bottom-2 left-2 z-10 max-h-12 w-auto max-w-10/12 object-contain drop-shadow-lg transition duration-300 group-hover:scale-85 origin-bottom-left"
+              />
+            )}
           </Link>
         </div>
         <div className="pointer-events-none invisible absolute left-0 right-0 top-full z-20 rounded-b-md bg-zinc-900 px-3 py-3 opacity-0 shadow-2xl shadow-black/70 transition-all duration-200 delay-75 group-hover:visible group-hover:pointer-events-auto group-hover:opacity-100">
@@ -66,6 +74,9 @@ export function MovieCard({ movie, rank, showRank = false, genres }: MovieCardPr
               <ChevronDown className="h-4 w-4" />
             </Link>
           </div>
+          <h3 className="mb-2 text-sm font-semibold text-white line-clamp-1">
+            {movie.title}
+          </h3>
           <div className="mb-2 flex flex-wrap items-center gap-2 text-[11px]">
             <span className="font-semibold text-green-400">
               {Math.round(movie.voteAverage * 10)}% Match

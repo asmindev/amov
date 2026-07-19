@@ -21,8 +21,7 @@ export default function HomePage() {
         <HeroBanner movies={movies} />
       ) : null}
 
-      <div className="w-full lg:w-11/12 mx-auto">
-
+      <div className="w-full lg:w-11/12 mx-auto space-y-12">
       {trending.isPending ? (
         <TrendingSectionSkeleton />
       ) : trending.data ? (
