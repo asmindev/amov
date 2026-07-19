@@ -29,7 +29,7 @@ export default function HomePage() {
       {trending.isPending ? (
         <TrendingSectionSkeleton />
       ) : trending.data ? (
-        <TrendingSection movies={trending.data.results} />
+        <TrendingSection movies={trending.data.results} genres={genres.data?.genres} />
       ) : trending.isError ? (
         <p className="text-sm text-destructive">
           Failed to load trending movies.
