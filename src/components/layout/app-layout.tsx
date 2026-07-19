@@ -1,5 +1,6 @@
 import { Outlet } from "@tanstack/react-router"
 import { Navbar } from "@/components/layout/navbar"
+import { Footer } from "@/components/layout/footer"
 
 export default function AppLayout() {
   return (
@@ -8,6 +9,7 @@ export default function AppLayout() {
       <main>
         <Outlet />
       </main>
+      <Footer />
     </div>
   )
 }
