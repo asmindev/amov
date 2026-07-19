@@ -16,6 +16,11 @@ export async function getTopRatedMovies() {
   return MovieListSchema.parse(res)
 }
 
+export async function getPopularMovies() {
+  const res = await apiClient.get<unknown>(endpoints.movies.popular)
+  return MovieListSchema.parse(res)
+}
+
 export async function getNetflixMovies() {
   const res = await apiClient.get<unknown>(endpoints.movies.discover, {
     with_companies: "213",

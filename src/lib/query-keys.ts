@@ -3,6 +3,7 @@ export const queryKeys = {
     all: ["movies"] as const,
     trending: () => [...queryKeys.movies.all, "trending"] as const,
     topRated: () => [...queryKeys.movies.all, "topRated"] as const,
+    popular: () => [...queryKeys.movies.all, "popular"] as const,
     netflix: () => [...queryKeys.movies.all, "netflix"] as const,
     detail: (id: string) => [...queryKeys.movies.all, "detail", id] as const,
     similar: (id: string) => [...queryKeys.movies.all, "similar", id] as const,
