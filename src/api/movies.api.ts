@@ -23,7 +23,8 @@ export async function getPopularMovies() {
 
 export async function getNetflixMovies() {
   const res = await apiClient.get<unknown>(endpoints.movies.discover, {
-    with_companies: "213",
+    with_watch_providers: "8",
+    watch_region: "ID",
     sort_by: "popularity.desc",
   })
   return MovieListSchema.parse(res)
