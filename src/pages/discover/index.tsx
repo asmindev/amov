@@ -45,7 +45,14 @@ export default function DiscoverPage() {
   }) => {
     navigate({
       search: (prev) => {
-        const updated: Record<string, any> = { ...prev, ...newFilters }
+        const updated: {
+          genres?: number[]
+          year?: string
+          providers?: number[]
+          country?: string
+          sortBy?: string
+          query?: string
+        } = { ...(prev as object), ...newFilters }
 
         if (updated.genres && updated.genres.length === 0)
           updated.genres = undefined
