@@ -53,7 +53,7 @@ export function TrendingSection({ title = "Trending Now", movies, genres, showRa
           </button>
         </div>
       </div>
-      <div ref={wrapperRef}>
+      <div ref={wrapperRef} className="overflow-hidden">
         <div
           ref={trackRef}
           className="flex gap-[50px] transition-transform duration-500 ease-out will-change-transform"
