@@ -170,7 +170,9 @@ export default function DiscoverPage() {
 
           <Select value={selectedYear} onValueChange={(val: string | null) => updateFilters({ year: val === "all" || !val ? "" : val })}>
             <SelectTrigger className="w-[150px] bg-white/5 border-white/10 hover:bg-white/10">
-              <SelectValue placeholder="Release Year" />
+              <SelectValue placeholder="Release Year">
+                {selectedYear === "all" || !selectedYear ? "All Years" : selectedYear}
+              </SelectValue>
             </SelectTrigger>
             <SelectContent className="max-h-[300px]">
               <SelectGroup>
@@ -186,7 +188,11 @@ export default function DiscoverPage() {
 
           <Select value={selectedCountry} onValueChange={(val: string | null) => updateFilters({ country: val === "all" || !val ? "" : val })}>
             <SelectTrigger className="w-[180px] bg-white/5 border-white/10 hover:bg-white/10">
-              <SelectValue placeholder="Country" />
+              <SelectValue placeholder="Country">
+                {selectedCountry === "all" || !selectedCountry 
+                  ? "All Countries" 
+                  : COUNTRIES.find((c) => c.code === selectedCountry)?.name}
+              </SelectValue>
             </SelectTrigger>
             <SelectContent className="max-h-[300px]">
               <SelectGroup>
@@ -202,7 +208,9 @@ export default function DiscoverPage() {
 
           <Select value={selectedSortBy} onValueChange={(val: string | null) => updateFilters({ sortBy: val || "popularity.desc" })}>
             <SelectTrigger className="w-[200px] bg-white/5 border-white/10 hover:bg-white/10">
-              <SelectValue placeholder="Sort By" />
+              <SelectValue placeholder="Sort By">
+                {SORT_OPTIONS.find((opt) => opt.value === selectedSortBy)?.label || "Most Popular"}
+              </SelectValue>
             </SelectTrigger>
             <SelectContent className="max-h-[300px]">
               <SelectGroup>
