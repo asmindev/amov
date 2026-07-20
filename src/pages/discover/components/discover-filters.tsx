@@ -18,7 +18,6 @@ import {
 } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Switch } from "@/components/ui/switch"
 import {
   SlidersHorizontal,
   X,
@@ -39,14 +38,12 @@ type DiscoverFiltersProps = {
   selectedProviders: number[]
   selectedCountry: string
   selectedSortBy: string
-  selectedIncludeAdult: boolean
   updateFilters: (newFilters: {
     genres?: number[]
     year?: string
     providers?: number[]
     country?: string
     sortBy?: string
-    includeAdult?: boolean
   }) => void
 }
 
@@ -55,8 +52,7 @@ const activeCount = (filters: DiscoverFiltersProps) =>
   (filters.selectedYear ? 1 : 0) +
   (filters.selectedProviders.length > 0 ? 1 : 0) +
   (filters.selectedCountry ? 1 : 0) +
-  (filters.selectedSortBy !== "popularity.desc" ? 1 : 0) +
-  (filters.selectedIncludeAdult ? 1 : 0)
+  (filters.selectedSortBy !== "popularity.desc" ? 1 : 0)
 
 // Reusable filter pill wrapper
 function FilterPill({
@@ -88,7 +84,6 @@ export function DiscoverFilters({
   selectedProviders,
   selectedCountry,
   selectedSortBy,
-  selectedIncludeAdult,
   updateFilters,
 }: DiscoverFiltersProps) {
   const totalActive = activeCount({
@@ -98,7 +93,6 @@ export function DiscoverFilters({
     selectedProviders,
     selectedCountry,
     selectedSortBy,
-    selectedIncludeAdult,
     updateFilters,
   })
   const hasFilters = totalActive > 0
@@ -307,20 +301,7 @@ export function DiscoverFilters({
         </FilterPill>
 
         {/* Sort — pushed to far right */}
-        <div className="ml-auto flex items-center gap-3">
-          {/* Adult content toggle */}
-          <label className="flex cursor-pointer items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-medium transition-colors hover:bg-white/10">
-            <span className={selectedIncludeAdult ? "text-orange-400" : "text-muted-foreground"}>
-              Adult
-            </span>
-            <Switch
-              checked={selectedIncludeAdult}
-              onCheckedChange={(checked) =>
-                updateFilters({ includeAdult: checked || undefined })
-              }
-              className="scale-75"
-            />
-          </label>
+        <div className="ml-auto">
           <Select
             value={selectedSortBy}
             onValueChange={(val: string | null) =>
@@ -459,20 +440,6 @@ export function DiscoverFilters({
                   </motion.button>
                 )}
 
-                {selectedIncludeAdult && (
-                  <motion.button
-                    key="adult-chip"
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.8 }}
-                    transition={{ type: "spring", stiffness: 400, damping: 25 }}
-                    onClick={() => updateFilters({ includeAdult: undefined })}
-                    className="flex items-center gap-1 rounded-full bg-orange-500/15 px-2.5 py-1 text-[11px] font-medium text-orange-400 ring-1 ring-orange-500/30 hover:bg-orange-500/25 transition-colors"
-                  >
-                    Adult Content
-                    <X className="h-3 w-3" />
-                  </motion.button>
-                )}
               </AnimatePresence>
 
               <Button
@@ -485,7 +452,6 @@ export function DiscoverFilters({
                     providers: [],
                     country: "",
                     sortBy: "popularity.desc",
-                    includeAdult: undefined,
                   })
                 }
                 className="h-7 gap-1 rounded-full px-2.5 text-[11px] text-muted-foreground hover:text-white"

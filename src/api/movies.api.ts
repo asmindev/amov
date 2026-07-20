@@ -62,13 +62,12 @@ export type DiscoverFilters = {
   country?: string
   sortBy?: string
   query?: string
-  includeAdult?: boolean
 }
 
 export async function getDiscoverMovies(page = 1, filters?: DiscoverFilters) {
   const params: Record<string, string> = {
     sort_by: filters?.sortBy || "popularity.desc",
-    include_adult: filters?.includeAdult ? "true" : "false",
+    include_adult: "false",
     page: String(page),
   }
 
