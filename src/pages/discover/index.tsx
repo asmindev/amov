@@ -50,7 +50,7 @@ export default function DiscoverPage() {
         ) : isError ? (
           <p className="text-center text-destructive">Failed to load movies.</p>
         ) : movies.length > 0 ? (
-          <div className="flex flex-wrap justify-center gap-x-6 gap-y-12 sm:justify-start lg:gap-x-10 lg:gap-y-16">
+          <div className="flex flex-wrap justify-center gap-x-2 gap-y-8 sm:justify-start lg:gap-x-4 lg:gap-y-12">
             {movies.map((movie) => (
               <MovieCard key={movie.id} movie={movie} />
             ))}
