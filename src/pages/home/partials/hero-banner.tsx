@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react"
+import { Link } from "@tanstack/react-router"
 import { ChevronLeft, ChevronRight, Play, Volume2, VolumeX } from "lucide-react"
 import { motion, AnimatePresence } from "motion/react"
 import { getImageUrl } from "@/helpers/image-url"
@@ -175,15 +176,25 @@ export function HeroBanner({ movies }: HeroBannerProps) {
           </span>
           <span>{movie.releaseDate?.split("-")[0]}</span>
         </div>
-        {video && (
-          <button
-            onClick={() => setShowVideo(true)}
-            className="mt-4 inline-flex items-center gap-2 rounded-lg bg-white px-6 py-2 text-sm font-semibold text-black transition-transform hover:scale-105"
+        <div className="mt-4 flex items-center gap-3">
+          <Link
+            to="/movie/$id"
+            params={{ id: movie.id.toString() }}
+            search={{ play: true }}
+            className="inline-flex items-center gap-2 rounded-lg bg-white px-6 py-2 text-sm font-semibold text-black transition-transform hover:scale-105"
           >
             <Play className="h-5 w-5 fill-black" />
             Nonton
-          </button>
-        )}
+          </Link>
+          {video && !showVideo && (
+            <button
+              onClick={() => setShowVideo(true)}
+              className="inline-flex items-center gap-2 rounded-lg bg-white/20 backdrop-blur-md px-6 py-2 text-sm font-semibold text-white transition-colors hover:bg-white/30 border border-white/20"
+            >
+              Trailer
+            </button>
+          )}
+        </div>
 
         <div
           className="flex items-center justify-center gap-1.5 pb-4"
