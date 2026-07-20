@@ -1,5 +1,6 @@
 import { apiClient } from "./client"
 import { endpoints } from "./endpoints"
+import { NETFLIX_PROVIDER_ID, WATCH_REGION, DEFAULT_SORT_BY } from "@/lib/config"
 import {
   MovieDetailSchema,
   MovieListSchema,
@@ -23,16 +24,16 @@ export async function getPopularMovies() {
 
 export async function getNetflixMovies() {
   const res = await apiClient.get<unknown>(endpoints.movies.discover, {
-    with_watch_providers: "8",
-    watch_region: "ID",
-    sort_by: "popularity.desc",
+    with_watch_providers: NETFLIX_PROVIDER_ID,
+    watch_region: WATCH_REGION,
+    sort_by: DEFAULT_SORT_BY,
   })
   return MovieListSchema.parse(res)
 }
 
 export async function getMovieById(id: string) {
   const res = await apiClient.get<unknown>(endpoints.movies.detail(id), {
-    append_to_response: "images",
+    append_to_response: "images,credits",
     include_image_language: "en,null",
   })
   return MovieDetailSchema.parse(res)
@@ -66,7 +67,7 @@ export type DiscoverFilters = {
 
 export async function getDiscoverMovies(page = 1, filters?: DiscoverFilters) {
   const params: Record<string, string> = {
-    sort_by: filters?.sortBy || "popularity.desc",
+    sort_by: filters?.sortBy || DEFAULT_SORT_BY,
     include_adult: "false",
     page: String(page),
   }
@@ -85,7 +86,7 @@ export async function getDiscoverMovies(page = 1, filters?: DiscoverFilters) {
 
   if (filters?.providers?.length) {
     params.with_watch_providers = filters.providers.join("|")
-    params.watch_region = "ID"
+    params.watch_region = WATCH_REGION
   }
 
   if (filters?.query) {
