@@ -15,6 +15,7 @@ export default function DiscoverPage() {
     providers: selectedProviders = [],
     country: selectedCountry = "",
     sortBy: selectedSortBy = "popularity.desc",
+    includeAdult: selectedIncludeAdult = false,
   } = useSearch({ from: "/discover" })
   const navigate = useNavigate({ from: "/discover" })
   const [localQuery, setLocalQuery] = useState(query)
@@ -35,6 +36,7 @@ export default function DiscoverPage() {
     providers: selectedProviders,
     country: selectedCountry,
     sortBy: selectedSortBy,
+    includeAdult: selectedIncludeAdult,
   })
 
   const updateFilters = (newFilters: {
@@ -43,6 +45,7 @@ export default function DiscoverPage() {
     providers?: number[]
     country?: string
     sortBy?: string
+    includeAdult?: boolean
   }) => {
     navigate({
       search: (prev) => {
@@ -53,6 +56,7 @@ export default function DiscoverPage() {
           country?: string
           sortBy?: string
           query?: string
+          includeAdult?: boolean
         } = { ...(prev as object), ...newFilters }
 
         if (updated.genres && updated.genres.length === 0)
@@ -63,6 +67,7 @@ export default function DiscoverPage() {
         if (updated.country === "") updated.country = undefined
         if (updated.sortBy === "popularity.desc" || updated.sortBy === "")
           updated.sortBy = undefined
+        if (!updated.includeAdult) updated.includeAdult = undefined
         if (updated.query === "") updated.query = undefined
 
         return updated
@@ -142,6 +147,7 @@ export default function DiscoverPage() {
         selectedProviders={selectedProviders}
         selectedCountry={selectedCountry}
         selectedSortBy={selectedSortBy}
+        selectedIncludeAdult={selectedIncludeAdult}
         updateFilters={updateFilters}
       />
 

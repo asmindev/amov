@@ -39,6 +39,7 @@ const discoverRoute = createRoute({
     providers?: number[]
     country?: string
     sortBy?: string
+    includeAdult?: boolean
   } => {
     const parseNumberArray = (val: unknown): number[] | undefined => {
       if (!val) return undefined
@@ -55,6 +56,7 @@ const discoverRoute = createRoute({
       year: search.year as string | undefined,
       country: search.country as string | undefined,
       sortBy: search.sortBy as string | undefined,
+      includeAdult: search.includeAdult === true || search.includeAdult === "true" ? true : undefined,
     }
   },
   component: () => (
