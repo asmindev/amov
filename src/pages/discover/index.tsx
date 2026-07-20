@@ -36,7 +36,7 @@ export default function DiscoverPage() {
     return () => clearTimeout(timer)
   }, [localQuery, navigate, query])
 
-  const movies = data?.pages.flatMap((page) => page.results) ?? []
+  const movies = data?.pages?.flatMap((page) => page.results) ?? []
 
   return (
     <div className="mx-auto min-h-svh max-w-[1400px] px-6 pb-20 pt-28">

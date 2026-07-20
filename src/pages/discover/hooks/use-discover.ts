@@ -5,7 +5,7 @@ import { queryKeys } from "@/lib/query-keys"
 
 export function useDiscover(query?: string) {
   return useInfiniteQuery({
-    queryKey: query ? queryKeys.search.query(query) : queryKeys.movies.discover(),
+    queryKey: query ? queryKeys.search.infinite(query) : queryKeys.movies.discoverInfinite(),
     queryFn: ({ pageParam = 1 }) =>
       query ? searchMovies(query, pageParam) : getDiscoverMovies(pageParam),
     getNextPageParam: (lastPage) => {
