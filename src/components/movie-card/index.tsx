@@ -24,13 +24,13 @@ export function MovieCard({ movie, rank, showRank = false, genres, logoPath }: M
     <div className="group relative z-0 transition-none hover:z-50">
       <div className="relative w-[260px] lg:w-[280px] origin-bottom transition-transform duration-300 delay-0 ease-in-out group-hover:scale-[1.3] group-hover:-translate-y-3 group-hover:delay-300">
         {showRank && rank && (
-          <div className="absolute -bottom-2 -left-8 z-10 pointer-events-none">
+          <div className="absolute -bottom-2 -left-8 -z-10 pointer-events-none">
             <h1 className="text-7xl font-black text-transparent transition-all duration-200 group-hover:text-foreground lg:text-8xl [-webkit-text-stroke:2px_gray]">
               {rank}
             </h1>
           </div>
         )}
-        <div className="relative aspect-video overflow-hidden rounded-sm group-hover:rounded-b-none">
+        <div className="relative z-10 aspect-video overflow-hidden rounded-sm group-hover:rounded-b-none">
           <Link
             to="/movie/$id"
             params={{ id: String(movie.id) }}
