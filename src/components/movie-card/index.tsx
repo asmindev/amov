@@ -22,7 +22,7 @@ export function MovieCard({ movie, rank, showRank = false, genres, logoPath }: M
 
   return (
     <div className="group relative z-0 transition-none hover:z-50">
-      <div className={`relative origin-bottom transition-transform duration-300 delay-0 ease-in-out group-hover:scale-[1.3] group-hover:-translate-y-3 group-hover:delay-300 ${showRank ? "w-[160px] lg:w-[200px]" : "w-[260px] lg:w-[280px]"}`}>
+      <div className="relative w-[260px] lg:w-[280px] origin-bottom transition-transform duration-300 delay-0 ease-in-out group-hover:scale-[1.3] group-hover:-translate-y-3 group-hover:delay-300">
         {showRank && rank && (
           <div className="absolute -bottom-2 -left-8 z-10 pointer-events-none">
             <h1 className="text-7xl font-black text-transparent transition-all duration-200 group-hover:text-foreground lg:text-8xl [-webkit-text-stroke:2px_gray]">
@@ -30,13 +30,13 @@ export function MovieCard({ movie, rank, showRank = false, genres, logoPath }: M
             </h1>
           </div>
         )}
-        <div className={`relative overflow-hidden rounded-sm group-hover:rounded-b-none ${showRank ? "aspect-[2/3]" : "aspect-video"}`}>
+        <div className="relative aspect-video overflow-hidden rounded-sm group-hover:rounded-b-none">
           <Link
             to="/movie/$id"
             params={{ id: String(movie.id) }}
           >
             <img
-              src={getImageUrl(showRank ? (movie.posterPath ?? movie.backdropPath) : (movie.backdropPath ?? movie.posterPath), "w780")}
+              src={getImageUrl(movie.backdropPath ?? movie.posterPath, "w780")}
               alt={movie.title}
               className="h-full w-full object-cover"
             />
