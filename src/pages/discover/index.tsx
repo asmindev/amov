@@ -22,6 +22,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
+import { Skeleton } from "@/components/ui/skeleton"
 import { Filter, ChevronDown } from "lucide-react"
 
 const PROVIDERS = [
@@ -289,8 +290,16 @@ export default function DiscoverPage() {
         </h2>
 
         {isPending ? (
-          <div className="flex justify-center py-20">
-            <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-r-transparent" />
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 lg:gap-4">
+            {Array.from({ length: 20 }).map((_, i) => (
+              <div key={i} className="flex flex-col gap-2">
+                <Skeleton className="aspect-video w-full rounded-xl" />
+                <div className="space-y-1">
+                  <Skeleton className="h-4 w-3/4" />
+                  <Skeleton className="h-3 w-1/2" />
+                </div>
+              </div>
+            ))}
           </div>
         ) : isError ? (
           <p className="text-center text-destructive">Failed to load movies.</p>
@@ -313,8 +322,16 @@ export default function DiscoverPage() {
               })}
             </div>
             {isFetchingNextPage && (
-              <div className="flex justify-center py-10">
-                <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-r-transparent" />
+              <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 lg:gap-4 mt-2 lg:mt-4">
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <div key={`next-page-skeleton-${i}`} className="flex flex-col gap-2">
+                    <Skeleton className="aspect-video w-full rounded-xl" />
+                    <div className="space-y-1">
+                      <Skeleton className="h-4 w-3/4" />
+                      <Skeleton className="h-3 w-1/2" />
+                    </div>
+                  </div>
+                ))}
               </div>
             )}
           </>
