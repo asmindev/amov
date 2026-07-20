@@ -46,13 +46,13 @@ export function DiscoverResults({
               if (index === movies.length - 1) {
                 return (
                   <div ref={lastElementRef} key={`${movie.id}-${index}`}>
-                    <MovieCard movie={movie} showTitle className="w-full" />
+                    <MovieCard movie={movie} className="w-full" />
                   </div>
                 )
               }
               return (
                 <div key={`${movie.id}-${index}`}>
-                  <MovieCard movie={movie} showTitle className="w-full" />
+                  <MovieCard movie={movie} className="w-full" />
                 </div>
               )
             })}
