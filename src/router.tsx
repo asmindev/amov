@@ -30,9 +30,27 @@ const homeRoute = createRoute({
 const discoverRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/discover",
-  validateSearch: (search: Record<string, unknown>): { query?: string } => {
+  validateSearch: (
+    search: Record<string, unknown>
+  ): {
+    query?: string
+    genres?: number[]
+    year?: string
+    providers?: number[]
+  } => {
+    const parseNumberArray = (val: unknown): number[] | undefined => {
+      if (!val) return undefined
+      if (Array.isArray(val)) return val.map(Number).filter((n) => !isNaN(n))
+      if (typeof val === "string")
+        return val.split(",").map(Number).filter((n) => !isNaN(n))
+      return undefined
+    }
+
     return {
       query: search.query as string | undefined,
+      genres: parseNumberArray(search.genres),
+      providers: parseNumberArray(search.providers),
+      year: search.year as string | undefined,
     }
   },
   component: () => (

@@ -36,13 +36,9 @@ const PROVIDERS = [
 const YEARS = Array.from({ length: 20 }, (_, i) => String(new Date().getFullYear() - i))
 
 export default function DiscoverPage() {
-  const { query = "" } = useSearch({ from: "/discover" })
+  const { query = "", genres: selectedGenres = [], year: selectedYear = "", providers: selectedProviders = [] } = useSearch({ from: "/discover" })
   const navigate = useNavigate({ from: "/discover" })
   const [localQuery, setLocalQuery] = useState(query)
-  
-  const [selectedGenres, setSelectedGenres] = useState<number[]>([])
-  const [selectedYear, setSelectedYear] = useState<string>("")
-  const [selectedProviders, setSelectedProviders] = useState<number[]>([])
 
   const { data: genresData } = useGenres()
   const genres = genresData?.genres ?? []
@@ -52,6 +48,15 @@ export default function DiscoverPage() {
     year: selectedYear,
     providers: selectedProviders,
   })
+
+  const updateFilters = (newFilters: { genres?: number[], year?: string, providers?: number[] }) => {
+    navigate({
+      search: (prev) => ({
+        ...prev,
+        ...newFilters,
+      }),
+    })
+  }
 
   const observerRef = useRef<IntersectionObserver | null>(null)
   const lastElementRef = useCallback(
@@ -112,30 +117,31 @@ export default function DiscoverPage() {
                 </Button>
               }
             />
-            <DropdownMenuContent className="w-56 max-h-[300px] overflow-y-auto">
+            <DropdownMenuContent className="w-56">
               <DropdownMenuGroup>
                 <DropdownMenuLabel>Select Genres</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                {genres.map((genre) => (
-                  <DropdownMenuCheckboxItem
-                    key={genre.id}
-                    checked={selectedGenres.includes(genre.id)}
-                    onCheckedChange={(checked) => {
-                      setSelectedGenres((prev) =>
-                        checked
-                          ? [...prev, genre.id]
-                          : prev.filter((id) => id !== genre.id)
-                      )
-                    }}
-                  >
-                    {genre.name}
-                  </DropdownMenuCheckboxItem>
-                ))}
+                <div className="max-h-[300px] overflow-y-auto scrollbar-hide">
+                  {genres.map((genre) => (
+                    <DropdownMenuCheckboxItem
+                      key={genre.id}
+                      checked={selectedGenres.includes(genre.id)}
+                      onCheckedChange={(checked) => {
+                        const newGenres = checked
+                          ? [...selectedGenres, genre.id]
+                          : selectedGenres.filter((id) => id !== genre.id)
+                        updateFilters({ genres: newGenres })
+                      }}
+                    >
+                      {genre.name}
+                    </DropdownMenuCheckboxItem>
+                  ))}
+                </div>
               </DropdownMenuGroup>
             </DropdownMenuContent>
           </DropdownMenu>
 
-          <Select value={selectedYear} onValueChange={(val: string | null) => setSelectedYear(val === "all" || !val ? "" : val)}>
+          <Select value={selectedYear} onValueChange={(val: string | null) => updateFilters({ year: val === "all" || !val ? "" : val })}>
             <SelectTrigger className="w-[180px] bg-white/5 border-white/10 hover:bg-white/10">
               <SelectValue placeholder="Release Year" />
             </SelectTrigger>
@@ -169,21 +175,22 @@ export default function DiscoverPage() {
               <DropdownMenuGroup>
                 <DropdownMenuLabel>Streaming Providers</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                {PROVIDERS.map((provider) => (
-                  <DropdownMenuCheckboxItem
-                    key={provider.id}
-                    checked={selectedProviders.includes(provider.id)}
-                    onCheckedChange={(checked) => {
-                      setSelectedProviders((prev) =>
-                        checked
-                          ? [...prev, provider.id]
-                          : prev.filter((id) => id !== provider.id)
-                      )
-                    }}
-                  >
-                    {provider.name}
-                  </DropdownMenuCheckboxItem>
-                ))}
+                <div className="max-h-[300px] overflow-y-auto scrollbar-hide">
+                  {PROVIDERS.map((provider) => (
+                    <DropdownMenuCheckboxItem
+                      key={provider.id}
+                      checked={selectedProviders.includes(provider.id)}
+                      onCheckedChange={(checked) => {
+                        const newProviders = checked
+                          ? [...selectedProviders, provider.id]
+                          : selectedProviders.filter((id) => id !== provider.id)
+                        updateFilters({ providers: newProviders })
+                      }}
+                    >
+                      {provider.name}
+                    </DropdownMenuCheckboxItem>
+                  ))}
+                </div>
               </DropdownMenuGroup>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -192,9 +199,7 @@ export default function DiscoverPage() {
             <Button
               variant="ghost"
               onClick={() => {
-                setSelectedGenres([])
-                setSelectedYear("")
-                setSelectedProviders([])
+                updateFilters({ genres: [], year: "", providers: [] })
               }}
               className="text-muted-foreground hover:text-white"
             >
