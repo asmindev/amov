@@ -179,7 +179,7 @@ export default function MovieDetailPage() {
       <div className="mx-auto max-w-6xl px-6 pb-20 md:px-12 lg:px-20">
         <div className="grid gap-10 lg:grid-cols-[1fr_300px]">
           {/* Left column */}
-          <div>
+          <div className="min-w-0">
             {/* Tagline */}
             {movie.tagline && (
               <motion.p
