@@ -56,7 +56,7 @@ export function TrendingSection({ title = "Trending Now", movies, genres, showRa
       <div ref={wrapperRef}>
         <div
           ref={trackRef}
-          className="flex gap-[50px] will-change-transform"
+          className="flex gap-[50px] transition-transform duration-500 ease-out will-change-transform"
         >
           {movies.map((movie, index) => (
             <MovieCard
