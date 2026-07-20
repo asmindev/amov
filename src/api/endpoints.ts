@@ -4,7 +4,7 @@ export const endpoints = {
     topRated: "/movie/top_rated",
     popular: "/movie/popular",
     detail: (id: string) => `/movie/${id}`,
-    similar: (id: string) => `/movie/${id}/similar`,
+    similar: (id: string) => `/movie/${id}/recommendations`,
     videos: (id: string) => `/movie/${id}/videos`,
     discover: "/discover/movie",
   },
