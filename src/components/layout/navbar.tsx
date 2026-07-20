@@ -1,6 +1,11 @@
 import { useEffect, useState } from "react"
 import { Link, useLocation, useNavigate } from "@tanstack/react-router"
-import { Search, Globe } from "lucide-react"
+import { useQuery } from "@tanstack/react-query"
+import { searchMovies } from "@/api/movies.api"
+import { useDebounce } from "@/hooks/use-debounce"
+import { getImageUrl } from "@/helpers/image-url"
+import { formatYear } from "@/helpers/format-date"
+import { Search, Globe, Star, Loader2 } from "lucide-react"
 import {
   Dialog,
   DialogContent,
@@ -22,6 +27,13 @@ export function Navbar() {
   const [scrolled, setScrolled] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
   const [isSearchOpen, setIsSearchOpen] = useState(false)
+
+  const debouncedQuery = useDebounce(searchQuery, 400)
+  const { data: searchResults, isFetching } = useQuery({
+    queryKey: ["searchMovies", debouncedQuery],
+    queryFn: () => searchMovies(debouncedQuery),
+    enabled: debouncedQuery.length > 0,
+  })
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 50)
@@ -112,20 +124,88 @@ export function Navbar() {
             >
               <Search className="h-5 w-5" />
             </DialogTrigger>
-            <DialogContent className="sm:max-w-xl border-white/10 bg-black/95 backdrop-blur-xl p-0 overflow-hidden shadow-2xl">
+            <DialogContent className="sm:max-w-2xl border-white/10 bg-background/95 backdrop-blur-2xl p-0 overflow-hidden shadow-2xl rounded-2xl">
               <DialogHeader className="sr-only">
                 <DialogTitle>Search Movies</DialogTitle>
               </DialogHeader>
-              <form onSubmit={handleSearch} className="flex items-center px-4">
+              <form onSubmit={handleSearch} className="flex items-center px-4 border-b border-white/10">
                 <Search className="h-5 w-5 text-muted-foreground" />
                 <Input
                   autoFocus
                   placeholder="Search movies, shows, and more..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="border-0 bg-transparent text-lg focus-visible:ring-0 focus-visible:ring-offset-0 px-4 h-16 shadow-none"
+                  className="border-0 bg-transparent text-lg focus-visible:ring-0 focus-visible:ring-offset-0 px-4 h-16 shadow-none placeholder:text-muted-foreground/50 font-medium"
                 />
+                {isFetching && <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />}
               </form>
+              
+              <div className="max-h-[60vh] overflow-y-auto overscroll-contain">
+                {debouncedQuery.length > 0 ? (
+                  <div className="p-2 flex flex-col">
+                    {searchResults?.results && searchResults.results.length > 0 ? (
+                      <>
+                        {searchResults.results.slice(0, 6).map((movie) => (
+                          <Link
+                            key={movie.id}
+                            to="/movie/$id"
+                            params={{ id: String(movie.id) }}
+                            onClick={() => {
+                              setIsSearchOpen(false)
+                              setSearchQuery("")
+                            }}
+                            className="flex items-center gap-4 p-3 hover:bg-white/5 rounded-xl transition-colors group"
+                          >
+                            <div className="w-12 h-16 rounded-md overflow-hidden bg-white/5 border border-white/5 shrink-0">
+                              {movie.posterPath ? (
+                                <img
+                                  src={getImageUrl(movie.posterPath, "w92")}
+                                  alt={movie.title}
+                                  className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                                />
+                              ) : (
+                                <div className="w-full h-full flex items-center justify-center text-muted-foreground">
+                                  <Search className="h-4 w-4" />
+                                </div>
+                              )}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <h4 className="font-semibold text-base truncate text-white/90 group-hover:text-primary transition-colors">
+                                {movie.title}
+                              </h4>
+                              <div className="flex items-center gap-3 text-sm text-muted-foreground mt-1">
+                                <span className="flex items-center gap-1 text-primary">
+                                  <Star className="h-3.5 w-3.5 fill-primary" />
+                                  {movie.voteAverage.toFixed(1)}
+                                </span>
+                                <span>{formatYear(movie.releaseDate)}</span>
+                              </div>
+                            </div>
+                          </Link>
+                        ))}
+                        {searchResults.results.length > 6 && (
+                          <button
+                            onClick={handleSearch}
+                            className="w-full mt-2 p-3 text-sm font-medium text-center text-primary hover:bg-primary/10 rounded-xl transition-colors"
+                          >
+                            View all results for "{debouncedQuery}"
+                          </button>
+                        )}
+                      </>
+                    ) : !isFetching ? (
+                      <div className="py-14 text-center text-muted-foreground">
+                        No results found for "{debouncedQuery}"
+                      </div>
+                    ) : null}
+                  </div>
+                ) : (
+                  <div className="py-14 text-center text-muted-foreground/50 flex flex-col items-center gap-2">
+                    <Search className="h-8 w-8 mb-2 opacity-20" />
+                    <p className="font-medium text-muted-foreground">Type to search</p>
+                    <p className="text-sm">Find movies and details instantly</p>
+                  </div>
+                )}
+              </div>
             </DialogContent>
           </Dialog>
         </div>

@@ -97,3 +97,12 @@ export async function getDiscoverMovies(page = 1, filters?: DiscoverFilters) {
   return MovieListSchema.parse(res)
 }
 
+export async function searchMovies(query: string, page = 1) {
+  const res = await apiClient.get<unknown>(endpoints.search.movies, {
+    query,
+    include_adult: "false",
+    page: String(page),
+  })
+  return MovieListSchema.parse(res)
+}
+
