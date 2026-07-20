@@ -1,5 +1,5 @@
 import { useNavigate, useSearch } from "@tanstack/react-router"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef, useCallback } from "react"
 import { Search as SearchIcon } from "lucide-react"
 import { MovieCard } from "@/components/movie-card"
 import { useDiscover } from "./hooks/use-discover"
@@ -9,7 +9,22 @@ export default function DiscoverPage() {
   const navigate = useNavigate({ from: "/discover" })
   const [localQuery, setLocalQuery] = useState(query)
   
-  const { data, isPending, isError } = useDiscover(query)
+  const { data, isPending, isError, fetchNextPage, hasNextPage, isFetchingNextPage } = useDiscover(query)
+
+  const observerRef = useRef<IntersectionObserver | null>(null)
+  const lastElementRef = useCallback(
+    (node: HTMLDivElement | null) => {
+      if (isFetchingNextPage || isPending) return
+      if (observerRef.current) observerRef.current.disconnect()
+      observerRef.current = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting && hasNextPage) {
+          fetchNextPage()
+        }
+      })
+      if (node) observerRef.current.observe(node)
+    },
+    [isFetchingNextPage, isPending, hasNextPage, fetchNextPage]
+  )
 
   // Debounce the search input
   useEffect(() => {
@@ -21,7 +36,7 @@ export default function DiscoverPage() {
     return () => clearTimeout(timer)
   }, [localQuery, navigate, query])
 
-  const movies = data?.results ?? []
+  const movies = data?.pages.flatMap((page) => page.results) ?? []
 
   return (
     <div className="mx-auto min-h-svh max-w-[1400px] px-6 pb-20 pt-28">
@@ -50,11 +65,29 @@ export default function DiscoverPage() {
         ) : isError ? (
           <p className="text-center text-destructive">Failed to load movies.</p>
         ) : movies.length > 0 ? (
-          <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 lg:gap-4">
-            {movies.map((movie) => (
-              <MovieCard key={movie.id} movie={movie} className="w-full" />
-            ))}
-          </div>
+          <>
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 lg:gap-4">
+              {movies.map((movie, index) => {
+                if (index === movies.length - 1) {
+                  return (
+                    <div ref={lastElementRef} key={`${movie.id}-${index}`}>
+                      <MovieCard movie={movie} className="w-full" />
+                    </div>
+                  )
+                }
+                return (
+                  <div key={`${movie.id}-${index}`}>
+                    <MovieCard movie={movie} className="w-full" />
+                  </div>
+                )
+              })}
+            </div>
+            {isFetchingNextPage && (
+              <div className="flex justify-center py-10">
+                <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-r-transparent" />
+              </div>
+            )}
+          </>
         ) : (
           <p className="py-20 text-center text-muted-foreground">No movies found.</p>
         )}
