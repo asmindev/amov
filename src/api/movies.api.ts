@@ -54,3 +54,12 @@ export async function getMoviesByGenre(genreId: string) {
   })
   return MovieListSchema.parse(res)
 }
+
+export async function getDiscoverMovies(page = 1) {
+  const res = await apiClient.get<unknown>(endpoints.movies.discover, {
+    sort_by: "popularity.desc",
+    page: String(page),
+  })
+  return MovieListSchema.parse(res)
+}
+

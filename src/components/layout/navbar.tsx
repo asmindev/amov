@@ -4,7 +4,7 @@ import { Search } from "lucide-react"
 
 const navLinks = [
   { to: "/", label: "Home" },
-  { to: "/search", label: "Search" },
+  { to: "/discover", label: "Discover" },
   { to: "/watchlist", label: "Watchlist" },
 ]
 
@@ -60,7 +60,7 @@ export function Navbar() {
           </div>
         </div>
         <Link
-          to="/search"
+          to="/discover"
           className={`transition-colors ${
             scrolled || !isHome
               ? "text-muted-foreground hover:text-foreground"

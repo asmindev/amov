@@ -11,7 +11,7 @@ const rootRoute = createRootRoute({
 })
 
 const LazyHome = React.lazy(() => import("@/pages/home/index.tsx"))
-const LazySearch = React.lazy(() => import("@/pages/search/index.tsx"))
+const LazyDiscover = React.lazy(() => import("@/pages/discover/index.tsx"))
 const LazyMovieDetail = React.lazy(
   () => import("@/pages/movie-detail/index.tsx")
 )
@@ -27,12 +27,17 @@ const homeRoute = createRoute({
   ),
 })
 
-const searchRoute = createRoute({
+const discoverRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: "/search",
+  path: "/discover",
+  validateSearch: (search: Record<string, unknown>): { query?: string } => {
+    return {
+      query: search.query as string | undefined,
+    }
+  },
   component: () => (
     <React.Suspense>
-      <LazySearch />
+      <LazyDiscover />
     </React.Suspense>
   ),
 })
@@ -59,7 +64,7 @@ const watchlistRoute = createRoute({
 
 const routeTree = rootRoute.addChildren([
   homeRoute,
-  searchRoute,
+  discoverRoute,
   movieDetailRoute,
   watchlistRoute,
 ])
