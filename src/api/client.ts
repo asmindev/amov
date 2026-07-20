@@ -30,6 +30,9 @@ class ApiClient {
       })
     }
 
+    const lang = typeof window !== 'undefined' ? localStorage.getItem("app-language") || "en-US" : "en-US"
+    url.searchParams.set("language", lang)
+
     return url.toString()
   }
 

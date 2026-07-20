@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import { Link, useLocation } from "@tanstack/react-router"
-import { Search } from "lucide-react"
+import { Search, Globe } from "lucide-react"
 
 const navLinks = [
   { to: "/", label: "Home" },
@@ -20,6 +20,13 @@ export function Navbar() {
   }, [])
 
   const isHome = pathname === "/"
+
+  const currentLang = typeof window !== "undefined" ? localStorage.getItem("app-language") || "en-US" : "en-US"
+  const toggleLanguage = () => {
+    const nextLang = currentLang === "en-US" ? "id-ID" : "en-US"
+    localStorage.setItem("app-language", nextLang)
+    window.location.reload()
+  }
 
   return (
     <nav
@@ -59,16 +66,29 @@ export function Navbar() {
             })}
           </div>
         </div>
-        <Link
-          to="/discover"
-          className={`transition-colors ${
-            scrolled || !isHome
-              ? "text-muted-foreground hover:text-foreground"
-              : "text-white/70 hover:text-white"
-          }`}
-        >
-          <Search className="h-5 w-5" />
-        </Link>
+        <div className="flex items-center gap-5">
+          <button
+            onClick={toggleLanguage}
+            className={`flex items-center gap-1.5 text-sm font-medium transition-colors ${
+              scrolled || !isHome
+                ? "text-muted-foreground hover:text-foreground"
+                : "text-white/70 hover:text-white"
+            }`}
+          >
+            <Globe className="h-4 w-4" />
+            <span className="uppercase">{currentLang === "en-US" ? "EN" : "ID"}</span>
+          </button>
+          <Link
+            to="/discover"
+            className={`transition-colors ${
+              scrolled || !isHome
+                ? "text-muted-foreground hover:text-foreground"
+                : "text-white/70 hover:text-white"
+            }`}
+          >
+            <Search className="h-5 w-5" />
+          </Link>
+        </div>
       </div>
     </nav>
   )
