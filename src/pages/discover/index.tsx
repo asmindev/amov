@@ -3,13 +3,36 @@ import { useState, useEffect, useRef, useCallback } from "react"
 import { Search as SearchIcon } from "lucide-react"
 import { MovieCard } from "@/components/movie-card"
 import { useDiscover } from "./hooks/use-discover"
+import { useGenres } from "@/hooks/use-genres"
+
+const PROVIDERS = [
+  { id: 8, name: "Netflix" },
+  { id: 119, name: "Prime Video" },
+  { id: 337, name: "Disney+" },
+  { id: 384, name: "HBO Max" },
+  { id: 15, name: "Hulu" },
+  { id: 2, name: "Apple TV" },
+]
+
+const YEARS = Array.from({ length: 20 }, (_, i) => String(new Date().getFullYear() - i))
 
 export default function DiscoverPage() {
   const { query = "" } = useSearch({ from: "/discover" })
   const navigate = useNavigate({ from: "/discover" })
   const [localQuery, setLocalQuery] = useState(query)
   
-  const { data, isPending, isError, fetchNextPage, hasNextPage, isFetchingNextPage } = useDiscover(query)
+  const [selectedGenres, setSelectedGenres] = useState<number[]>([])
+  const [selectedYear, setSelectedYear] = useState<string>("")
+  const [selectedProviders, setSelectedProviders] = useState<number[]>([])
+
+  const { data: genresData } = useGenres()
+  const genres = genresData?.genres ?? []
+
+  const { data, isPending, isError, fetchNextPage, hasNextPage, isFetchingNextPage } = useDiscover(query, {
+    genres: selectedGenres,
+    year: selectedYear,
+    providers: selectedProviders,
+  })
 
   const observerRef = useRef<IntersectionObserver | null>(null)
   const lastElementRef = useCallback(
@@ -52,6 +75,88 @@ export default function DiscoverPage() {
           />
         </div>
       </div>
+
+      {!query && (
+        <div className="mb-10 space-y-6">
+          <div className="space-y-3">
+            <h3 className="text-sm font-medium text-muted-foreground">Genres</h3>
+            <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+              {genres.map((genre) => {
+                const isSelected = selectedGenres.includes(genre.id)
+                return (
+                  <button
+                    key={genre.id}
+                    onClick={() =>
+                      setSelectedGenres((prev) =>
+                        isSelected
+                          ? prev.filter((id) => id !== genre.id)
+                          : [...prev, genre.id]
+                      )
+                    }
+                    className={`whitespace-nowrap rounded-full px-4 py-1.5 text-sm transition-colors ${
+                      isSelected
+                        ? "bg-white text-black"
+                        : "bg-white/10 text-white hover:bg-white/20"
+                    }`}
+                  >
+                    {genre.name}
+                  </button>
+                )
+              })}
+            </div>
+          </div>
+
+          <div className="space-y-3">
+            <h3 className="text-sm font-medium text-muted-foreground">Release Year</h3>
+            <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+              {YEARS.map((year) => {
+                const isSelected = selectedYear === year
+                return (
+                  <button
+                    key={year}
+                    onClick={() => setSelectedYear(isSelected ? "" : year)}
+                    className={`whitespace-nowrap rounded-full px-4 py-1.5 text-sm transition-colors ${
+                      isSelected
+                        ? "bg-white text-black"
+                        : "bg-white/10 text-white hover:bg-white/20"
+                    }`}
+                  >
+                    {year}
+                  </button>
+                )
+              })}
+            </div>
+          </div>
+
+          <div className="space-y-3">
+            <h3 className="text-sm font-medium text-muted-foreground">Streaming Providers</h3>
+            <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+              {PROVIDERS.map((provider) => {
+                const isSelected = selectedProviders.includes(provider.id)
+                return (
+                  <button
+                    key={provider.id}
+                    onClick={() =>
+                      setSelectedProviders((prev) =>
+                        isSelected
+                          ? prev.filter((id) => id !== provider.id)
+                          : [...prev, provider.id]
+                      )
+                    }
+                    className={`whitespace-nowrap rounded-full px-4 py-1.5 text-sm transition-colors ${
+                      isSelected
+                        ? "bg-white text-black"
+                        : "bg-white/10 text-white hover:bg-white/20"
+                    }`}
+                  >
+                    {provider.name}
+                  </button>
+                )
+              })}
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="space-y-6">
         <h2 className="font-heading text-2xl font-semibold">

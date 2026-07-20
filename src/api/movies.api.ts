@@ -55,11 +55,32 @@ export async function getMoviesByGenre(genreId: string) {
   return MovieListSchema.parse(res)
 }
 
-export async function getDiscoverMovies(page = 1) {
-  const res = await apiClient.get<unknown>(endpoints.movies.discover, {
+export type DiscoverFilters = {
+  genres?: number[]
+  year?: string
+  providers?: number[]
+}
+
+export async function getDiscoverMovies(page = 1, filters?: DiscoverFilters) {
+  const params: Record<string, string> = {
     sort_by: "popularity.desc",
     page: String(page),
-  })
+  }
+
+  if (filters?.genres?.length) {
+    params.with_genres = filters.genres.join("|")
+  }
+
+  if (filters?.year) {
+    params.primary_release_year = filters.year
+  }
+
+  if (filters?.providers?.length) {
+    params.with_watch_providers = filters.providers.join("|")
+    params.watch_region = "ID"
+  }
+
+  const res = await apiClient.get<unknown>(endpoints.movies.discover, params)
   return MovieListSchema.parse(res)
 }
 

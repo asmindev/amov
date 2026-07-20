@@ -150,4 +150,10 @@ iframe.yt-player {
 
 .animation-pause {
   animation-play-state: paused !important;
+}.scrollbar-hide::-webkit-scrollbar {
+    display: none;
+}
+.scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
 }
