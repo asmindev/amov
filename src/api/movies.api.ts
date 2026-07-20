@@ -60,11 +60,12 @@ export type DiscoverFilters = {
   year?: string
   providers?: number[]
   country?: string
+  sortBy?: string
 }
 
 export async function getDiscoverMovies(page = 1, filters?: DiscoverFilters) {
   const params: Record<string, string> = {
-    sort_by: "popularity.desc",
+    sort_by: filters?.sortBy || "popularity.desc",
     page: String(page),
   }
 

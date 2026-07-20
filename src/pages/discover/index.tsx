@@ -43,10 +43,25 @@ const COUNTRIES = [
   { code: "IN", name: "India" },
 ]
 
+const SORT_OPTIONS = [
+  { value: "popularity.desc", label: "Most Popular" },
+  { value: "vote_average.desc", label: "Top Rated" },
+  { value: "primary_release_date.desc", label: "Newest Releases" },
+  { value: "primary_release_date.asc", label: "Oldest Releases" },
+  { value: "revenue.desc", label: "Highest Grossing" },
+]
+
 const YEARS = Array.from({ length: 20 }, (_, i) => String(new Date().getFullYear() - i))
 
 export default function DiscoverPage() {
-  const { query = "", genres: selectedGenres = [], year: selectedYear = "", providers: selectedProviders = [], country: selectedCountry = "" } = useSearch({ from: "/discover" })
+  const { 
+    query = "", 
+    genres: selectedGenres = [], 
+    year: selectedYear = "", 
+    providers: selectedProviders = [], 
+    country: selectedCountry = "",
+    sortBy: selectedSortBy = "popularity.desc"
+  } = useSearch({ from: "/discover" })
   const navigate = useNavigate({ from: "/discover" })
   const [localQuery, setLocalQuery] = useState(query)
 
@@ -58,9 +73,10 @@ export default function DiscoverPage() {
     year: selectedYear,
     providers: selectedProviders,
     country: selectedCountry,
+    sortBy: selectedSortBy,
   })
 
-  const updateFilters = (newFilters: { genres?: number[], year?: string, providers?: number[], country?: string }) => {
+  const updateFilters = (newFilters: { genres?: number[], year?: string, providers?: number[], country?: string, sortBy?: string }) => {
     navigate({
       search: (prev) => ({
         ...prev,
@@ -184,6 +200,21 @@ export default function DiscoverPage() {
             </SelectContent>
           </Select>
 
+          <Select value={selectedSortBy} onValueChange={(val: string | null) => updateFilters({ sortBy: val || "popularity.desc" })}>
+            <SelectTrigger className="w-[200px] bg-white/5 border-white/10 hover:bg-white/10">
+              <SelectValue placeholder="Sort By" />
+            </SelectTrigger>
+            <SelectContent className="max-h-[300px]">
+              <SelectGroup>
+                {SORT_OPTIONS.map((opt) => (
+                  <SelectItem key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+
           <DropdownMenu>
             <DropdownMenuTrigger
               render={
@@ -222,11 +253,11 @@ export default function DiscoverPage() {
             </DropdownMenuContent>
           </DropdownMenu>
 
-          {(selectedGenres.length > 0 || selectedYear || selectedProviders.length > 0 || selectedCountry) && (
+          {(selectedGenres.length > 0 || selectedYear || selectedProviders.length > 0 || selectedCountry || selectedSortBy !== "popularity.desc") && (
             <Button
               variant="ghost"
               onClick={() => {
-                updateFilters({ genres: [], year: "", providers: [], country: "" })
+                updateFilters({ genres: [], year: "", providers: [], country: "", sortBy: "popularity.desc" })
               }}
               className="text-muted-foreground hover:text-white"
             >
