@@ -115,6 +115,7 @@ export function HeroBanner({ movies }: HeroBannerProps) {
           }`}
         />
       ))}
+      <div className="pointer-events-none absolute inset-0 bg-black/10" />
 
       {video && (
         <iframe
@@ -150,16 +151,24 @@ export function HeroBanner({ movies }: HeroBannerProps) {
           <img
             src={`https://image.tmdb.org/t/p/w500${detail.logoPath}`}
             alt={movie.title}
-            className="h-16 md:h-24 w-auto max-w-1/2 object-contain drop-shadow-lg"
+            className={`w-auto max-w-1/2 origin-bottom-left object-contain drop-shadow-lg transition-all duration-700 ${
+              showVideo ? "h-12 md:h-16" : "h-16 md:h-24"
+            }`}
           />
         ) : (
-          <h1 className="font-heading text-4xl font-bold text-white drop-shadow-lg md:text-6xl lg:text-7xl">
+          <h1 className={`font-heading font-bold text-white drop-shadow-lg origin-bottom-left transition-all duration-700 ${
+            showVideo ? "text-3xl md:text-4xl lg:text-5xl" : "text-4xl md:text-6xl lg:text-7xl"
+          }`}>
             {movie.title}
           </h1>
         )}
-        <p className="mt-4 max-w-2xl text-sm text-white/80 line-clamp-3 drop-shadow md:text-base">
-          {movie.overview}
-        </p>
+        <div className={`overflow-hidden transition-all duration-700 ${
+          showVideo ? "max-h-0 opacity-0 mt-0" : "max-h-32 opacity-100 mt-4"
+        }`}>
+          <p className="max-w-2xl text-sm text-white/80 line-clamp-3 drop-shadow md:text-base">
+            {movie.overview}
+          </p>
+        </div>
         <div className="mt-4 flex items-center gap-4 text-sm text-white/80">
           <span className="rounded bg-primary/80 px-3 py-1 text-xs font-semibold text-primary-foreground">
             {formatRating(movie.voteAverage)}
