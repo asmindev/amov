@@ -19,7 +19,7 @@ export function Navbar() {
     return () => window.removeEventListener("scroll", onScroll)
   }, [])
 
-  const isHome = pathname === "/"
+  const isTransparentMode = pathname === "/" || pathname.startsWith("/movie/")
 
   const currentLang = typeof window !== "undefined" ? localStorage.getItem("app-language") || "en-US" : "en-US"
   const toggleLanguage = () => {
@@ -31,7 +31,7 @@ export function Navbar() {
   return (
     <nav
       className={`fixed top-0 z-50 w-full transition-colors duration-300 ${
-        scrolled || !isHome
+        scrolled || !isTransparentMode
           ? "bg-background/95 backdrop-blur-md"
           : "bg-gradient-to-b from-black/60 to-transparent"
       }`}
@@ -55,7 +55,7 @@ export function Navbar() {
                   className={`rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
                     isActive
                       ? "text-foreground"
-                      : scrolled || !isHome
+                      : scrolled || !isTransparentMode
                         ? "text-muted-foreground hover:text-foreground"
                         : "text-white/70 hover:text-white"
                   }`}
@@ -70,7 +70,7 @@ export function Navbar() {
           <button
             onClick={toggleLanguage}
             className={`flex items-center gap-1.5 text-sm font-medium transition-colors ${
-              scrolled || !isHome
+              scrolled || !isTransparentMode
                 ? "text-muted-foreground hover:text-foreground"
                 : "text-white/70 hover:text-white"
             }`}
@@ -81,7 +81,7 @@ export function Navbar() {
           <Link
             to="/discover"
             className={`transition-colors ${
-              scrolled || !isHome
+              scrolled || !isTransparentMode
                 ? "text-muted-foreground hover:text-foreground"
                 : "text-white/70 hover:text-white"
             }`}

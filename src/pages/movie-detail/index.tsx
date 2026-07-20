@@ -1,4 +1,4 @@
-import { useParams, Link } from "@tanstack/react-router"
+import { useParams } from "@tanstack/react-router"
 import { motion } from "motion/react"
 import { useState, useEffect, useRef, useCallback } from "react"
 import {
@@ -20,7 +20,6 @@ import {
   Globe,
   TrendingUp,
   DollarSign,
-  ChevronLeft,
   Volume2,
   VolumeX,
 } from "lucide-react"
@@ -149,20 +148,17 @@ export default function MovieDetailPage() {
 
       {/* Foreground Content */}
       <div className="relative z-10 min-h-svh flex flex-col justify-end">
-        {/* Top Bar */}
-        <div className="absolute top-0 left-0 w-full p-6 md:p-10 flex justify-between items-center z-50">
-          <Link
-            to="/discover"
-            className="flex items-center gap-2 rounded-full bg-black/20 border border-white/10 px-5 py-2.5 text-sm font-semibold text-white backdrop-blur-md transition-all hover:bg-white/20 hover:scale-105"
-          >
-            <ChevronLeft className="h-4 w-4" />
-            Back to Browse
-          </Link>
-
+        {/* Hero Info */}
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, ease: "easeOut" }}
+          className="w-full px-6 md:px-16 pt-[35vh] pb-8 max-w-[1400px] mx-auto relative"
+        >
           {showVideo && (
             <button
               onClick={toggleMute}
-              className="rounded-full bg-black/20 border border-white/10 p-3 text-white backdrop-blur-md transition-all hover:bg-white/20 hover:scale-105"
+              className="absolute right-6 bottom-8 md:right-16 md:bottom-8 z-50 rounded-full bg-black/20 border border-white/10 p-3 text-white backdrop-blur-md transition-all hover:bg-white/20 hover:scale-105"
             >
               {muted ? (
                 <VolumeX className="h-5 w-5" />
@@ -171,15 +167,6 @@ export default function MovieDetailPage() {
               )}
             </button>
           )}
-        </div>
-
-        {/* Hero Info */}
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, ease: "easeOut" }}
-          className="w-full px-6 md:px-16 pt-[35vh] pb-8 max-w-6xl"
-        >
           {movie.logoPath ? (
             <img
               src={getImageUrl(movie.logoPath, "w500")}
