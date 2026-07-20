@@ -11,6 +11,12 @@ import { formatDate, formatYear } from "@/helpers/format-date"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Badge } from "@/components/ui/badge"
 import { MovieCard } from "@/components/movie-card"
+import {
+  Dialog,
+  DialogContent,
+  DialogTrigger,
+  DialogTitle,
+} from "@/components/ui/dialog"
 import { HOVER_VIDEO_DELAY } from "@/lib/config"
 import {
   Play,
@@ -205,13 +211,30 @@ export default function MovieDetailPage() {
           </p>
 
           <div className="flex flex-wrap items-center gap-4">
+            <Dialog>
+              <DialogTrigger className="flex items-center gap-2 rounded-lg bg-white px-8 py-3.5 text-base font-bold text-black transition-transform hover:scale-105 active:scale-95 shadow-lg shadow-white/10">
+                <Play className="h-5 w-5 fill-black" />
+                Watch Movie
+              </DialogTrigger>
+              <DialogContent className="max-w-7xl w-[95vw] h-[85vh] p-0 bg-black border-white/10 overflow-hidden flex flex-col sm:rounded-xl">
+                <DialogTitle className="sr-only">Watch {movie.title}</DialogTitle>
+                <div className="w-full h-full relative bg-black">
+                  <iframe
+                    src={`https://player.videasy.net/movie/${movie.id}`}
+                    className="absolute top-0 left-0 w-full h-full border-0"
+                    allowFullScreen
+                    allow="encrypted-media"
+                  />
+                </div>
+              </DialogContent>
+            </Dialog>
+
             {trailer && !showVideo && (
               <button
                 onClick={() => setShowVideo(true)}
-                className="flex items-center gap-2 rounded-lg bg-white px-8 py-3.5 text-base font-bold text-black transition-transform hover:scale-105 active:scale-95"
+                className="flex items-center gap-2 rounded-lg bg-white/10 backdrop-blur-md border border-white/20 px-8 py-3.5 text-base font-bold text-white transition-colors hover:bg-white/20 active:scale-95"
               >
-                <Play className="h-5 w-5 fill-black" />
-                Play Trailer
+                Trailer
               </button>
             )}
             {movie.imdbId && (
