@@ -184,7 +184,7 @@ export function HeroBanner({ movies }: HeroBannerProps) {
             className="inline-flex items-center gap-2 rounded-lg bg-white px-6 py-2 text-sm font-semibold text-black transition-transform hover:scale-105"
           >
             <Play className="h-5 w-5 fill-black" />
-            Nonton
+            Watch Now
           </Link>
           {video && !showVideo && (
             <button

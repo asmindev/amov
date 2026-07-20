@@ -1,6 +1,14 @@
 import { useEffect, useState } from "react"
-import { Link, useLocation } from "@tanstack/react-router"
+import { Link, useLocation, useNavigate } from "@tanstack/react-router"
 import { Search, Globe } from "lucide-react"
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input"
 
 const navLinks = [
   { to: "/", label: "Home" },
@@ -10,7 +18,10 @@ const navLinks = [
 
 export function Navbar() {
   const { pathname } = useLocation()
+  const navigate = useNavigate()
   const [scrolled, setScrolled] = useState(false)
+  const [searchQuery, setSearchQuery] = useState("")
+  const [isSearchOpen, setIsSearchOpen] = useState(false)
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 50)
@@ -28,11 +39,23 @@ export function Navbar() {
     window.location.reload()
   }
 
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (searchQuery.trim()) {
+      setIsSearchOpen(false)
+      navigate({
+        to: "/discover",
+        search: { query: searchQuery.trim() },
+      })
+      setSearchQuery("")
+    }
+  }
+
   return (
     <nav
       className={`fixed top-0 z-50 w-full transition-colors duration-300 ${
         scrolled || !isTransparentMode
-          ? "bg-background/95 backdrop-blur-md"
+          ? "bg-background/95 backdrop-blur-md border-b border-white/5"
           : "bg-gradient-to-b from-black/60 to-transparent"
       }`}
     >
@@ -78,16 +101,33 @@ export function Navbar() {
             <Globe className="h-4 w-4" />
             <span className="uppercase">{currentLang === "en-US" ? "EN" : "ID"}</span>
           </button>
-          <Link
-            to="/discover"
-            className={`transition-colors ${
-              scrolled || !isTransparentMode
-                ? "text-muted-foreground hover:text-foreground"
-                : "text-white/70 hover:text-white"
-            }`}
-          >
-            <Search className="h-5 w-5" />
-          </Link>
+          
+          <Dialog open={isSearchOpen} onOpenChange={setIsSearchOpen}>
+            <DialogTrigger
+              className={`transition-colors ${
+                scrolled || !isTransparentMode
+                  ? "text-muted-foreground hover:text-foreground"
+                  : "text-white/70 hover:text-white"
+              }`}
+            >
+              <Search className="h-5 w-5" />
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-xl border-white/10 bg-black/95 backdrop-blur-xl p-0 overflow-hidden shadow-2xl">
+              <DialogHeader className="sr-only">
+                <DialogTitle>Search Movies</DialogTitle>
+              </DialogHeader>
+              <form onSubmit={handleSearch} className="flex items-center px-4">
+                <Search className="h-5 w-5 text-muted-foreground" />
+                <Input
+                  autoFocus
+                  placeholder="Search movies, shows, and more..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="border-0 bg-transparent text-lg focus-visible:ring-0 focus-visible:ring-offset-0 px-4 h-16 shadow-none"
+                />
+              </form>
+            </DialogContent>
+          </Dialog>
         </div>
       </div>
     </nav>
