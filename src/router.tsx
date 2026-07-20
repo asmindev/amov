@@ -67,6 +67,11 @@ const discoverRoute = createRoute({
 const movieDetailRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/movie/$id",
+  validateSearch: (search: Record<string, unknown>): { play?: boolean } => {
+    return {
+      play: search.play === "true" || search.play === true,
+    }
+  },
   component: () => (
     <React.Suspense>
       <LazyMovieDetail />

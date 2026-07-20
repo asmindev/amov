@@ -1,4 +1,4 @@
-import { useParams } from "@tanstack/react-router"
+import { useParams, useSearch, Link } from "@tanstack/react-router"
 import { motion } from "motion/react"
 import { useState, useEffect, useRef, useCallback } from "react"
 import {
@@ -8,16 +8,10 @@ import {
 } from "./hooks/use-movie-detail"
 import { getImageUrl, getBackdropUrl } from "@/helpers/image-url"
 import { formatDate, formatYear } from "@/helpers/format-date"
+import { HOVER_VIDEO_DELAY } from "@/lib/config"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Badge } from "@/components/ui/badge"
 import { MovieCard } from "@/components/movie-card"
-import {
-  Dialog,
-  DialogContent,
-  DialogTrigger,
-  DialogTitle,
-} from "@/components/ui/dialog"
-import { HOVER_VIDEO_DELAY } from "@/lib/config"
 import {
   Play,
   Star,
@@ -28,6 +22,7 @@ import {
   DollarSign,
   Volume2,
   VolumeX,
+  ChevronLeft,
 } from "lucide-react"
 
 function formatRuntime(minutes: number | null): string {
@@ -49,6 +44,7 @@ function formatMoney(amount: number): string {
 
 export default function MovieDetailPage() {
   const { id } = useParams({ from: "/movie/$id" })
+  const { play } = useSearch({ from: "/movie/$id" })
   const { data: movie, isPending, isError } = useMovieDetail(id)
   const { data: similar } = useSimilarMovies(id)
   const { data: videos } = useMovieVideos(id)
@@ -119,6 +115,27 @@ export default function MovieDetailPage() {
 
   const similarMovies = similar?.results.slice(0, 12) ?? []
   const cast = movie.cast?.slice(0, 18) ?? []
+
+  if (play) {
+    return (
+      <div className="fixed inset-0 z-[100] bg-black">
+        <iframe
+          src={`https://player.videasy.net/movie/${movie.id}`}
+          className="w-full h-full border-0"
+          allowFullScreen
+          allow="encrypted-media"
+        />
+        <Link
+          to="/movie/$id"
+          params={{ id: movie.id.toString() }}
+          className="absolute top-6 left-6 z-50 flex items-center gap-2 rounded-full bg-black/50 border border-white/20 px-4 py-2 text-sm font-semibold text-white backdrop-blur-md transition-all hover:bg-white/20 hover:scale-105"
+        >
+          <ChevronLeft className="h-4 w-4" />
+          Back to Details
+        </Link>
+      </div>
+    )
+  }
 
   return (
     <div className="relative min-h-svh bg-background overflow-hidden selection:bg-primary selection:text-primary-foreground">
@@ -211,23 +228,15 @@ export default function MovieDetailPage() {
           </p>
 
           <div className="flex flex-wrap items-center gap-4">
-            <Dialog>
-              <DialogTrigger className="flex items-center gap-2 rounded-lg bg-white px-8 py-3.5 text-base font-bold text-black transition-transform hover:scale-105 active:scale-95 shadow-lg shadow-white/10">
-                <Play className="h-5 w-5 fill-black" />
-                Watch Movie
-              </DialogTrigger>
-              <DialogContent className="max-w-7xl w-[95vw] h-[85vh] p-0 bg-black border-white/10 overflow-hidden flex flex-col sm:rounded-xl">
-                <DialogTitle className="sr-only">Watch {movie.title}</DialogTitle>
-                <div className="w-full h-full relative bg-black">
-                  <iframe
-                    src={`https://player.videasy.net/movie/${movie.id}`}
-                    className="absolute top-0 left-0 w-full h-full border-0"
-                    allowFullScreen
-                    allow="encrypted-media"
-                  />
-                </div>
-              </DialogContent>
-            </Dialog>
+            <Link
+              to="/movie/$id"
+              params={{ id: movie.id.toString() }}
+              search={{ play: true }}
+              className="flex items-center gap-2 rounded-lg bg-white px-8 py-3.5 text-base font-bold text-black transition-transform hover:scale-105 active:scale-95 shadow-lg shadow-white/10"
+            >
+              <Play className="h-5 w-5 fill-black" />
+              Watch Movie
+            </Link>
 
             {trailer && !showVideo && (
               <button
