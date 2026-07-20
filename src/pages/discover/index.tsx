@@ -78,10 +78,18 @@ export default function DiscoverPage() {
 
   const updateFilters = (newFilters: { genres?: number[], year?: string, providers?: number[], country?: string, sortBy?: string }) => {
     navigate({
-      search: (prev) => ({
-        ...prev,
-        ...newFilters,
-      }),
+      search: (prev) => {
+        const updated: Record<string, any> = { ...prev, ...newFilters }
+
+        if (updated.genres && updated.genres.length === 0) updated.genres = undefined
+        if (updated.providers && updated.providers.length === 0) updated.providers = undefined
+        if (updated.year === "") updated.year = undefined
+        if (updated.country === "") updated.country = undefined
+        if (updated.sortBy === "popularity.desc" || updated.sortBy === "") updated.sortBy = undefined
+        if (updated.query === "") updated.query = undefined
+
+        return updated
+      },
     })
   }
 
