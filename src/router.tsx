@@ -37,6 +37,7 @@ const discoverRoute = createRoute({
     genres?: number[]
     year?: string
     providers?: number[]
+    country?: string
   } => {
     const parseNumberArray = (val: unknown): number[] | undefined => {
       if (!val) return undefined
@@ -51,6 +52,7 @@ const discoverRoute = createRoute({
       genres: parseNumberArray(search.genres),
       providers: parseNumberArray(search.providers),
       year: search.year as string | undefined,
+      country: search.country as string | undefined,
     }
   },
   component: () => (

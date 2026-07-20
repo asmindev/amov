@@ -33,10 +33,20 @@ const PROVIDERS = [
   { id: 2, name: "Apple TV" },
 ]
 
+const COUNTRIES = [
+  { code: "US", name: "United States" },
+  { code: "KR", name: "South Korea" },
+  { code: "JP", name: "Japan" },
+  { code: "ID", name: "Indonesia" },
+  { code: "GB", name: "United Kingdom" },
+  { code: "FR", name: "France" },
+  { code: "IN", name: "India" },
+]
+
 const YEARS = Array.from({ length: 20 }, (_, i) => String(new Date().getFullYear() - i))
 
 export default function DiscoverPage() {
-  const { query = "", genres: selectedGenres = [], year: selectedYear = "", providers: selectedProviders = [] } = useSearch({ from: "/discover" })
+  const { query = "", genres: selectedGenres = [], year: selectedYear = "", providers: selectedProviders = [], country: selectedCountry = "" } = useSearch({ from: "/discover" })
   const navigate = useNavigate({ from: "/discover" })
   const [localQuery, setLocalQuery] = useState(query)
 
@@ -47,9 +57,10 @@ export default function DiscoverPage() {
     genres: selectedGenres,
     year: selectedYear,
     providers: selectedProviders,
+    country: selectedCountry,
   })
 
-  const updateFilters = (newFilters: { genres?: number[], year?: string, providers?: number[] }) => {
+  const updateFilters = (newFilters: { genres?: number[], year?: string, providers?: number[], country?: string }) => {
     navigate({
       search: (prev) => ({
         ...prev,
@@ -142,7 +153,7 @@ export default function DiscoverPage() {
           </DropdownMenu>
 
           <Select value={selectedYear} onValueChange={(val: string | null) => updateFilters({ year: val === "all" || !val ? "" : val })}>
-            <SelectTrigger className="w-[180px] bg-white/5 border-white/10 hover:bg-white/10">
+            <SelectTrigger className="w-[150px] bg-white/5 border-white/10 hover:bg-white/10">
               <SelectValue placeholder="Release Year" />
             </SelectTrigger>
             <SelectContent className="max-h-[300px]">
@@ -151,6 +162,22 @@ export default function DiscoverPage() {
                 {YEARS.map((year) => (
                   <SelectItem key={year} value={year}>
                     {year}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+
+          <Select value={selectedCountry} onValueChange={(val: string | null) => updateFilters({ country: val === "all" || !val ? "" : val })}>
+            <SelectTrigger className="w-[180px] bg-white/5 border-white/10 hover:bg-white/10">
+              <SelectValue placeholder="Country" />
+            </SelectTrigger>
+            <SelectContent className="max-h-[300px]">
+              <SelectGroup>
+                <SelectItem value="all">All Countries</SelectItem>
+                {COUNTRIES.map((c) => (
+                  <SelectItem key={c.code} value={c.code}>
+                    {c.name}
                   </SelectItem>
                 ))}
               </SelectGroup>
@@ -195,11 +222,11 @@ export default function DiscoverPage() {
             </DropdownMenuContent>
           </DropdownMenu>
 
-          {(selectedGenres.length > 0 || selectedYear || selectedProviders.length > 0) && (
+          {(selectedGenres.length > 0 || selectedYear || selectedProviders.length > 0 || selectedCountry) && (
             <Button
               variant="ghost"
               onClick={() => {
-                updateFilters({ genres: [], year: "", providers: [] })
+                updateFilters({ genres: [], year: "", providers: [], country: "" })
               }}
               className="text-muted-foreground hover:text-white"
             >

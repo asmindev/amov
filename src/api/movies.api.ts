@@ -59,6 +59,7 @@ export type DiscoverFilters = {
   genres?: number[]
   year?: string
   providers?: number[]
+  country?: string
 }
 
 export async function getDiscoverMovies(page = 1, filters?: DiscoverFilters) {
@@ -73,6 +74,10 @@ export async function getDiscoverMovies(page = 1, filters?: DiscoverFilters) {
 
   if (filters?.year) {
     params.primary_release_year = filters.year
+  }
+
+  if (filters?.country) {
+    params.with_origin_country = filters.country
   }
 
   if (filters?.providers?.length) {
