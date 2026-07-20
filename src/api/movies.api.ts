@@ -61,6 +61,7 @@ export type DiscoverFilters = {
   providers?: number[]
   country?: string
   sortBy?: string
+  query?: string
 }
 
 export async function getDiscoverMovies(page = 1, filters?: DiscoverFilters) {
@@ -84,6 +85,10 @@ export async function getDiscoverMovies(page = 1, filters?: DiscoverFilters) {
   if (filters?.providers?.length) {
     params.with_watch_providers = filters.providers.join("|")
     params.watch_region = "ID"
+  }
+
+  if (filters?.query) {
+    params.with_text_query = filters.query
   }
 
   const res = await apiClient.get<unknown>(endpoints.movies.discover, params)
