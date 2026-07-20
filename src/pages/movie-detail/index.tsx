@@ -315,13 +315,13 @@ export default function MovieDetailPage() {
                 transition={{ delay: 0.3 }}
               >
                 <h2 className="font-heading text-2xl font-semibold mb-6">Cast & Crew</h2>
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
+                <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-4 md:gap-6">
                   {cast.map((member) => (
                     <div
                       key={member.id}
                       className="group flex flex-col items-center text-center"
                     >
-                      <div className="mb-4 aspect-square w-full max-w-[140px] overflow-hidden rounded-full bg-white/5 border border-white/10 transition-transform duration-300 group-hover:scale-105 group-hover:border-white/30">
+                      <div className="mb-3 aspect-square w-full max-w-[96px] overflow-hidden rounded-full bg-white/5 border border-white/10 transition-transform duration-300 group-hover:scale-105 group-hover:border-white/30">
                         <img
                           src={getImageUrl(member.profilePath, "w185")}
                           alt={member.name}
