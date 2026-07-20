@@ -4,6 +4,25 @@ import { Search as SearchIcon } from "lucide-react"
 import { MovieCard } from "@/components/movie-card"
 import { useDiscover } from "./hooks/use-discover"
 import { useGenres } from "@/hooks/use-genres"
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import { Button } from "@/components/ui/button"
+import { Filter, ChevronDown } from "lucide-react"
 
 const PROVIDERS = [
   { id: 8, name: "Netflix" },
@@ -77,84 +96,111 @@ export default function DiscoverPage() {
       </div>
 
       {!query && (
-        <div className="mb-10 space-y-6">
-          <div className="space-y-3">
-            <h3 className="text-sm font-medium text-muted-foreground">Genres</h3>
-            <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
-              {genres.map((genre) => {
-                const isSelected = selectedGenres.includes(genre.id)
-                return (
-                  <button
+        <div className="mb-10 flex flex-wrap items-center gap-4">
+          <DropdownMenu>
+            <DropdownMenuTrigger
+              render={
+                <Button variant="outline" className="gap-2 bg-white/5 border-white/10 hover:bg-white/10">
+                  <Filter className="h-4 w-4" />
+                  Genres
+                  {selectedGenres.length > 0 && (
+                    <span className="ml-1 rounded-full bg-primary px-2 py-0.5 text-xs font-bold text-primary-foreground">
+                      {selectedGenres.length}
+                    </span>
+                  )}
+                  <ChevronDown className="h-4 w-4 opacity-50" />
+                </Button>
+              }
+            />
+            <DropdownMenuContent className="w-56 max-h-[300px] overflow-y-auto">
+              <DropdownMenuGroup>
+                <DropdownMenuLabel>Select Genres</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                {genres.map((genre) => (
+                  <DropdownMenuCheckboxItem
                     key={genre.id}
-                    onClick={() =>
+                    checked={selectedGenres.includes(genre.id)}
+                    onCheckedChange={(checked) => {
                       setSelectedGenres((prev) =>
-                        isSelected
-                          ? prev.filter((id) => id !== genre.id)
-                          : [...prev, genre.id]
+                        checked
+                          ? [...prev, genre.id]
+                          : prev.filter((id) => id !== genre.id)
                       )
-                    }
-                    className={`whitespace-nowrap rounded-full px-4 py-1.5 text-sm transition-colors ${
-                      isSelected
-                        ? "bg-white text-black"
-                        : "bg-white/10 text-white hover:bg-white/20"
-                    }`}
+                    }}
                   >
                     {genre.name}
-                  </button>
-                )
-              })}
-            </div>
-          </div>
+                  </DropdownMenuCheckboxItem>
+                ))}
+              </DropdownMenuGroup>
+            </DropdownMenuContent>
+          </DropdownMenu>
 
-          <div className="space-y-3">
-            <h3 className="text-sm font-medium text-muted-foreground">Release Year</h3>
-            <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
-              {YEARS.map((year) => {
-                const isSelected = selectedYear === year
-                return (
-                  <button
-                    key={year}
-                    onClick={() => setSelectedYear(isSelected ? "" : year)}
-                    className={`whitespace-nowrap rounded-full px-4 py-1.5 text-sm transition-colors ${
-                      isSelected
-                        ? "bg-white text-black"
-                        : "bg-white/10 text-white hover:bg-white/20"
-                    }`}
-                  >
+          <Select value={selectedYear} onValueChange={(val: string | null) => setSelectedYear(val === "all" || !val ? "" : val)}>
+            <SelectTrigger className="w-[180px] bg-white/5 border-white/10 hover:bg-white/10">
+              <SelectValue placeholder="Release Year" />
+            </SelectTrigger>
+            <SelectContent className="max-h-[300px]">
+              <SelectGroup>
+                <SelectItem value="all">All Years</SelectItem>
+                {YEARS.map((year) => (
+                  <SelectItem key={year} value={year}>
                     {year}
-                  </button>
-                )
-              })}
-            </div>
-          </div>
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
 
-          <div className="space-y-3">
-            <h3 className="text-sm font-medium text-muted-foreground">Streaming Providers</h3>
-            <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
-              {PROVIDERS.map((provider) => {
-                const isSelected = selectedProviders.includes(provider.id)
-                return (
-                  <button
+          <DropdownMenu>
+            <DropdownMenuTrigger
+              render={
+                <Button variant="outline" className="gap-2 bg-white/5 border-white/10 hover:bg-white/10">
+                  Providers
+                  {selectedProviders.length > 0 && (
+                    <span className="ml-1 rounded-full bg-primary px-2 py-0.5 text-xs font-bold text-primary-foreground">
+                      {selectedProviders.length}
+                    </span>
+                  )}
+                  <ChevronDown className="h-4 w-4 opacity-50" />
+                </Button>
+              }
+            />
+            <DropdownMenuContent className="w-56">
+              <DropdownMenuGroup>
+                <DropdownMenuLabel>Streaming Providers</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                {PROVIDERS.map((provider) => (
+                  <DropdownMenuCheckboxItem
                     key={provider.id}
-                    onClick={() =>
+                    checked={selectedProviders.includes(provider.id)}
+                    onCheckedChange={(checked) => {
                       setSelectedProviders((prev) =>
-                        isSelected
-                          ? prev.filter((id) => id !== provider.id)
-                          : [...prev, provider.id]
+                        checked
+                          ? [...prev, provider.id]
+                          : prev.filter((id) => id !== provider.id)
                       )
-                    }
-                    className={`whitespace-nowrap rounded-full px-4 py-1.5 text-sm transition-colors ${
-                      isSelected
-                        ? "bg-white text-black"
-                        : "bg-white/10 text-white hover:bg-white/20"
-                    }`}
+                    }}
                   >
                     {provider.name}
-                  </button>
-                )
-              })}
-            </div>
-          </div>
+                  </DropdownMenuCheckboxItem>
+                ))}
+              </DropdownMenuGroup>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          {(selectedGenres.length > 0 || selectedYear || selectedProviders.length > 0) && (
+            <Button
+              variant="ghost"
+              onClick={() => {
+                setSelectedGenres([])
+                setSelectedYear("")
+                setSelectedProviders([])
+              }}
+              className="text-muted-foreground hover:text-white"
+            >
+              Clear Filters
+            </Button>
+          )}
         </div>
       )}
 
