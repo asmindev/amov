@@ -22,21 +22,21 @@ export function MovieCard({ movie, rank, showRank = false, genres, logoPath }: M
 
   return (
     <div className="group relative z-0 transition-none hover:z-50">
-      <div className="relative w-[260px] origin-bottom transition-transform duration-300 ease-in-out group-hover:scale-[1.3] group-hover:-translate-y-3 lg:w-[280px]">
+      <div className={`relative origin-bottom transition-transform duration-300 delay-0 ease-in-out group-hover:scale-[1.3] group-hover:-translate-y-3 group-hover:delay-300 ${showRank ? "w-[160px] lg:w-[200px]" : "w-[260px] lg:w-[280px]"}`}>
         {showRank && rank && (
-          <div className="absolute -bottom-2 -left-8">
+          <div className="absolute -bottom-2 -left-8 z-10 pointer-events-none">
             <h1 className="text-7xl font-black text-transparent transition-all duration-200 group-hover:text-foreground lg:text-8xl [-webkit-text-stroke:2px_gray]">
               {rank}
             </h1>
           </div>
         )}
-        <div className="relative aspect-video overflow-hidden rounded-sm group-hover:rounded-b-none">
+        <div className={`relative overflow-hidden rounded-sm group-hover:rounded-b-none ${showRank ? "aspect-[2/3]" : "aspect-video"}`}>
           <Link
             to="/movie/$id"
             params={{ id: String(movie.id) }}
           >
             <img
-              src={getImageUrl(movie.posterPath ?? movie.backdropPath, "w780")}
+              src={getImageUrl(showRank ? (movie.posterPath ?? movie.backdropPath) : (movie.backdropPath ?? movie.posterPath), "w780")}
               alt={movie.title}
               className="h-full w-full object-cover"
             />
@@ -52,7 +52,7 @@ export function MovieCard({ movie, rank, showRank = false, genres, logoPath }: M
             )}
           </Link>
         </div>
-        <div className="pointer-events-none invisible absolute left-0 right-0 top-full z-20 rounded-b-md bg-zinc-900 px-3 py-3 opacity-0 shadow-2xl shadow-black/70 transition-all duration-200 delay-75 group-hover:visible group-hover:pointer-events-auto group-hover:opacity-100">
+        <div className="pointer-events-none invisible absolute left-0 right-0 top-full z-20 rounded-b-md bg-zinc-900 px-3 py-3 opacity-0 shadow-2xl shadow-black/70 transition-all duration-300 delay-0 group-hover:visible group-hover:pointer-events-auto group-hover:opacity-100 group-hover:delay-300">
           <div className="mb-3 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Link
