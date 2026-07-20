@@ -10,9 +10,10 @@ type MovieCardProps = {
   showRank?: boolean
   genres?: Genre[]
   logoPath?: string | null
+  className?: string
 }
 
-export function MovieCard({ movie, rank, showRank = false, genres, logoPath }: MovieCardProps) {
+export function MovieCard({ movie, rank, showRank = false, genres, logoPath, className }: MovieCardProps) {
   const genreName = (() => {
     if (!genres) return ""
     const id = movie.genreIds[0]
@@ -21,8 +22,8 @@ export function MovieCard({ movie, rank, showRank = false, genres, logoPath }: M
   })()
 
   return (
-    <div className="group relative z-0 transition-none hover:z-50">
-      <div className="relative w-[260px] lg:w-[280px] origin-bottom transition-transform duration-300 delay-0 ease-in-out group-hover:scale-[1.3] group-hover:-translate-y-3 group-hover:delay-300">
+    <div className="group relative z-0 w-full transition-none hover:z-50">
+      <div className={`relative origin-bottom transition-transform duration-300 delay-0 ease-in-out group-hover:scale-[1.3] group-hover:-translate-y-3 group-hover:delay-300 ${className || "w-[260px] lg:w-[280px]"}`}>
         {showRank && rank && (
           <div className="absolute -bottom-2 -left-8 -z-10 pointer-events-none">
             <h1 className="text-7xl font-black text-transparent transition-all duration-200 group-hover:text-foreground lg:text-8xl [-webkit-text-stroke:2px_gray]">
