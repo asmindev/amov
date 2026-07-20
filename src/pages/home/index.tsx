@@ -18,14 +18,14 @@ export default function HomePage() {
   const movies = trending.data?.results ?? []
 
   return (
-    <div className="flex min-h-svh flex-col gap-12">
+    <div className="flex min-h-svh flex-col pb-16">
       {trending.isPending ? (
         <HeroBannerSkeleton />
       ) : movies.length > 0 ? (
         <HeroBanner movies={movies} />
       ) : null}
 
-      <div className="w-full lg:w-11/12 mx-auto space-y-12">
+      <div className="w-full lg:w-11/12 mx-auto space-y-8 mt-6">
       {trending.isPending ? (
         <TrendingSectionSkeleton />
       ) : trending.data ? (
