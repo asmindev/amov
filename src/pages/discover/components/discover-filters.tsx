@@ -20,13 +20,13 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import {
   SlidersHorizontal,
-  ChevronDown,
   X,
   Calendar,
   Globe,
   Tv,
   ArrowUpDown,
   Clapperboard,
+  ChevronDown,
 } from "lucide-react"
 import { PROVIDERS, COUNTRIES, SORT_OPTIONS, YEARS } from "../constants"
 import type { Genre } from "@/types/movie.types"
@@ -199,7 +199,6 @@ export function DiscoverFilters({
                   ? "Year"
                   : selectedYear}
               </SelectValue>
-              <ChevronDown className="h-3 w-3 opacity-40 shrink-0" />
             </SelectTrigger>
             <SelectContent className="max-h-[300px]" align="start">
               <SelectGroup>
@@ -233,7 +232,6 @@ export function DiscoverFilters({
                   ? "Country"
                   : COUNTRIES.find((c) => c.code === selectedCountry)?.name}
               </SelectValue>
-              <ChevronDown className="h-3 w-3 opacity-40 shrink-0" />
             </SelectTrigger>
             <SelectContent className="max-h-[300px]" align="start">
               <SelectGroup>
@@ -316,7 +314,6 @@ export function DiscoverFilters({
                 {SORT_OPTIONS.find((opt) => opt.value === selectedSortBy)
                   ?.label ?? "Most Popular"}
               </SelectValue>
-              <ChevronDown className="h-3 w-3 opacity-40 shrink-0" />
             </SelectTrigger>
             <SelectContent align="end">
               <SelectGroup>
