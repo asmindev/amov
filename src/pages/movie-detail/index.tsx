@@ -1,5 +1,5 @@
 import { useParams, Link } from "@tanstack/react-router"
-import { motion, AnimatePresence } from "motion/react"
+import { motion } from "motion/react"
 import { useState, useEffect, useRef, useCallback } from "react"
 import {
   useMovieDetail,
@@ -11,7 +11,6 @@ import { formatDate, formatYear } from "@/helpers/format-date"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Badge } from "@/components/ui/badge"
 import { MovieCard } from "@/components/movie-card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { HOVER_VIDEO_DELAY } from "@/lib/config"
 import {
   Play,
@@ -52,7 +51,7 @@ export default function MovieDetailPage() {
   const [showVideo, setShowVideo] = useState(false)
   const [muted, setMuted] = useState(true)
   const iframeRef = useRef<HTMLIFrameElement>(null)
-  
+
   const trailer = videos?.results.find(
     (v) => v.site === "YouTube" && v.type === "Trailer"
   )
@@ -114,7 +113,7 @@ export default function MovieDetailPage() {
   }
 
   const similarMovies = similar?.results.slice(0, 12) ?? []
-  const cast = movie.cast?.slice(0, 24) ?? []
+  const cast = movie.cast?.slice(0, 18) ?? []
 
   return (
     <div className="relative min-h-svh bg-background overflow-hidden selection:bg-primary selection:text-primary-foreground">
@@ -141,9 +140,9 @@ export default function MovieDetailPage() {
             />
           </div>
         )}
-        
+
         {/* Gradients to blend background into content */}
-        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/80 to-transparent" />
         <div className="absolute inset-0 bg-gradient-to-r from-background/90 via-background/40 to-transparent" />
         <div className="absolute inset-0 bg-black/20 backdrop-blur-[2px]" />
       </div>
@@ -165,7 +164,11 @@ export default function MovieDetailPage() {
               onClick={toggleMute}
               className="rounded-full bg-black/20 border border-white/10 p-3 text-white backdrop-blur-md transition-all hover:bg-white/20 hover:scale-105"
             >
-              {muted ? <VolumeX className="h-5 w-5" /> : <Volume2 className="h-5 w-5" />}
+              {muted ? (
+                <VolumeX className="h-5 w-5" />
+              ) : (
+                <Volume2 className="h-5 w-5" />
+              )}
             </button>
           )}
         </div>
@@ -175,7 +178,7 @@ export default function MovieDetailPage() {
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, ease: "easeOut" }}
-          className="w-full px-6 md:px-16 pt-[40vh] pb-8 max-w-6xl"
+          className="w-full px-6 md:px-16 pt-[35vh] pb-8 max-w-6xl"
         >
           {movie.logoPath ? (
             <img
@@ -202,12 +205,15 @@ export default function MovieDetailPage() {
               <Clock className="h-4 w-4 text-white/50" />
               {formatRuntime(movie.runtime)}
             </span>
-            <Badge variant="outline" className="border-white/20 bg-white/10 text-white">
+            <Badge
+              variant="outline"
+              className="border-white/20 bg-white/10 text-white"
+            >
               HD
             </Badge>
           </div>
 
-          <p className="max-w-2xl text-lg text-white/90 leading-relaxed drop-shadow-md mb-8 line-clamp-3 md:line-clamp-none">
+          <p className="max-w-2xl text-lg text-white/90 leading-relaxed drop-shadow-md mb-8">
             {movie.overview}
           </p>
 
@@ -234,115 +240,126 @@ export default function MovieDetailPage() {
           </div>
         </motion.div>
 
-        {/* Tabbed Content Area */}
+        {/* Content Details Below Fold */}
         <div className="w-full bg-gradient-to-b from-transparent to-background pt-8 pb-32">
-          <div className="px-6 md:px-16 max-w-[1400px] mx-auto">
-            <Tabs defaultValue="overview" className="w-full">
-              <TabsList className="bg-transparent border-b border-white/10 w-full justify-start rounded-none h-auto p-0 gap-8 mb-8 overflow-x-auto">
-                <TabsTrigger 
-                  value="overview" 
-                  className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-0 py-4 text-base font-semibold text-white/50 data-[state=active]:text-white hover:text-white transition-colors"
-                >
-                  Overview
-                </TabsTrigger>
-                <TabsTrigger 
-                  value="cast" 
-                  className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-0 py-4 text-base font-semibold text-white/50 data-[state=active]:text-white hover:text-white transition-colors"
-                >
-                  Cast & Crew
-                </TabsTrigger>
-                <TabsTrigger 
-                  value="similar" 
-                  className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-0 py-4 text-base font-semibold text-white/50 data-[state=active]:text-white hover:text-white transition-colors"
-                >
-                  More Like This
-                </TabsTrigger>
-              </TabsList>
+          <div className="px-6 md:px-16 max-w-[1400px] mx-auto space-y-20">
+            
+            {/* Overview & Info Section */}
+            <motion.section
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="grid grid-cols-1 md:grid-cols-3 gap-12"
+            >
+              <div className="md:col-span-2 space-y-8">
+                {movie.tagline && (
+                  <div>
+                    <h3 className="text-white/50 text-sm font-semibold uppercase tracking-wider mb-2">
+                      Tagline
+                    </h3>
+                    <p className="text-xl italic text-white/90">
+                      "{movie.tagline}"
+                    </p>
+                  </div>
+                )}
 
-              <AnimatePresence mode="wait">
-                <TabsContent value="overview" className="mt-0 outline-none">
-                  <motion.div 
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0 }}
-                    className="grid grid-cols-1 md:grid-cols-3 gap-12"
-                  >
-                    <div className="md:col-span-2 space-y-8">
-                      {movie.tagline && (
-                        <div>
-                          <h3 className="text-white/50 text-sm font-semibold uppercase tracking-wider mb-2">Tagline</h3>
-                          <p className="text-xl italic text-white/90">"{movie.tagline}"</p>
-                        </div>
-                      )}
-                      
-                      <div>
-                        <h3 className="text-white/50 text-sm font-semibold uppercase tracking-wider mb-4">Genres</h3>
-                        <div className="flex flex-wrap gap-2">
-                          {movie.genres.map((g) => (
-                            <Badge key={g.id} variant="secondary" className="bg-white/5 hover:bg-white/10 text-white/90 px-4 py-1.5 text-sm rounded-full">
-                              {g.name}
-                            </Badge>
-                          ))}
-                        </div>
+                <div>
+                  <h3 className="text-white/50 text-sm font-semibold uppercase tracking-wider mb-4">
+                    Genres
+                  </h3>
+                  <div className="flex flex-wrap gap-2">
+                    {movie.genres.map((g) => (
+                      <Badge
+                        key={g.id}
+                        variant="secondary"
+                        className="bg-white/5 hover:bg-white/10 text-white/90 px-4 py-1.5 text-sm rounded-full"
+                      >
+                        {g.name}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-6">
+                <div className="bg-white/5 rounded-2xl p-6 border border-white/5 backdrop-blur-sm space-y-4">
+                  <InfoRow label="Status" value={movie.status} />
+                  <InfoRow
+                    label="Release Date"
+                    value={formatDate(movie.releaseDate ?? "")}
+                  />
+                  <InfoRow
+                    label="Original Language"
+                    value={movie.originalLanguage.toUpperCase()}
+                    icon={<Globe className="h-4 w-4" />}
+                  />
+                  <InfoRow
+                    label="Budget"
+                    value={formatMoney(movie.budget)}
+                    icon={<DollarSign className="h-4 w-4" />}
+                  />
+                  <InfoRow
+                    label="Revenue"
+                    value={formatMoney(movie.revenue)}
+                    icon={<TrendingUp className="h-4 w-4" />}
+                  />
+                </div>
+              </div>
+            </motion.section>
+
+            {/* Cast Section */}
+            {cast.length > 0 && (
+              <motion.section
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 }}
+              >
+                <h2 className="font-heading text-2xl font-semibold mb-6">Cast & Crew</h2>
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
+                  {cast.map((member) => (
+                    <div
+                      key={member.id}
+                      className="group flex flex-col items-center text-center"
+                    >
+                      <div className="mb-4 aspect-square w-full max-w-[140px] overflow-hidden rounded-full bg-white/5 border border-white/10 transition-transform duration-300 group-hover:scale-105 group-hover:border-white/30">
+                        <img
+                          src={getImageUrl(member.profilePath, "w185")}
+                          alt={member.name}
+                          className="h-full w-full object-cover"
+                          onError={(e) => {
+                            e.currentTarget.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(
+                              member.name
+                            )}&background=111&color=fff&size=200`
+                          }}
+                        />
                       </div>
+                      <p className="text-sm font-bold text-white leading-tight mb-1">
+                        {member.name}
+                      </p>
+                      <p className="text-xs text-white/50">
+                        {member.character}
+                      </p>
                     </div>
-                    
-                    <div className="space-y-6">
-                      <div className="bg-white/5 rounded-2xl p-6 border border-white/5 backdrop-blur-sm space-y-4">
-                        <InfoRow label="Status" value={movie.status} />
-                        <InfoRow label="Release Date" value={formatDate(movie.releaseDate ?? "")} />
-                        <InfoRow label="Original Language" value={movie.originalLanguage.toUpperCase()} icon={<Globe className="h-4 w-4" />} />
-                        <InfoRow label="Budget" value={formatMoney(movie.budget)} icon={<DollarSign className="h-4 w-4" />} />
-                        <InfoRow label="Revenue" value={formatMoney(movie.revenue)} icon={<TrendingUp className="h-4 w-4" />} />
-                      </div>
-                    </div>
-                  </motion.div>
-                </TabsContent>
+                  ))}
+                </div>
+              </motion.section>
+            )}
 
-                <TabsContent value="cast" className="mt-0 outline-none">
-                  <motion.div 
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0 }}
-                    className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6"
-                  >
-                    {cast.length > 0 ? cast.map((member) => (
-                      <div key={member.id} className="group flex flex-col items-center text-center">
-                        <div className="mb-4 aspect-square w-full overflow-hidden rounded-full bg-white/5 border border-white/10 transition-transform duration-300 group-hover:scale-105 group-hover:border-white/30">
-                          <img
-                            src={getImageUrl(member.profilePath, "w185")}
-                            alt={member.name}
-                            className="h-full w-full object-cover"
-                            onError={(e) => {
-                              e.currentTarget.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(member.name)}&background=111&color=fff&size=200`
-                            }}
-                          />
-                        </div>
-                        <p className="text-sm font-bold text-white leading-tight mb-1">{member.name}</p>
-                        <p className="text-xs text-white/50">{member.character}</p>
-                      </div>
-                    )) : (
-                      <p className="text-white/50 col-span-full">No cast information available.</p>
-                    )}
-                  </motion.div>
-                </TabsContent>
-
-                <TabsContent value="similar" className="mt-0 outline-none">
-                  <motion.div 
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0 }}
-                    className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6"
-                  >
-                    {similarMovies.length > 0 ? similarMovies.map((m) => (
-                      <MovieCard key={m.id} movie={m} className="w-full" />
-                    )) : (
-                      <p className="text-white/50 col-span-full">No recommendations available.</p>
-                    )}
-                  </motion.div>
-                </TabsContent>
-              </AnimatePresence>
-            </Tabs>
+            {/* Similar Movies Section */}
+            {similarMovies.length > 0 && (
+              <motion.section
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4 }}
+              >
+                <h2 className="font-heading text-2xl font-semibold mb-6">More Like This</h2>
+                <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
+                  {similarMovies.map((m) => (
+                    <MovieCard key={m.id} movie={m} className="w-full" />
+                  ))}
+                </div>
+              </motion.section>
+            )}
           </div>
         </div>
       </div>
