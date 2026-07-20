@@ -22,7 +22,7 @@ export function MovieCard({ movie, rank, showRank = false, genres, logoPath, cla
   })()
 
   return (
-    <div className="group relative z-0 w-full transition-none hover:z-50">
+    <div className="group relative z-0 w-full [transition:z-index_0s_ease_300ms] hover:z-50 hover:[transition:z-index_0s_ease_0ms]">
       <div className={`relative origin-bottom transition-transform duration-300 delay-0 ease-in-out group-hover:scale-[1.3] group-hover:-translate-y-3 group-hover:delay-300 ${className || "w-[260px] lg:w-[280px]"}`}>
         {showRank && rank && (
           <div className="absolute -bottom-2 -left-8 -z-10 pointer-events-none">
