@@ -8,12 +8,13 @@ type MovieCardProps = {
   movie: Movie
   rank?: number
   showRank?: boolean
+  showTitle?: boolean
   genres?: Genre[]
   logoPath?: string | null
   className?: string
 }
 
-export function MovieCard({ movie, rank, showRank = false, genres, logoPath, className }: MovieCardProps) {
+export function MovieCard({ movie, rank, showRank = false, showTitle = false, genres, logoPath, className }: MovieCardProps) {
   const genreName = (() => {
     if (!genres) return ""
     const id = movie.genreIds[0]
@@ -39,8 +40,24 @@ export function MovieCard({ movie, rank, showRank = false, genres, logoPath, cla
             <img
               src={getImageUrl(movie.backdropPath ?? movie.posterPath, "w780")}
               alt={movie.title}
-              className="h-full w-full object-cover"
+              className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
             />
+            {/* Always-visible title overlay for discover/grid mode */}
+            {showTitle && (
+              <div className="absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-black/90 via-black/20 to-transparent p-2.5 transition-opacity duration-300 group-hover:opacity-0">
+                <p className="text-[11px] font-bold leading-tight text-white drop-shadow-md line-clamp-2">
+                  {movie.title}
+                </p>
+                <div className="mt-1 flex items-center gap-1.5">
+                  <span className="text-[10px] font-semibold text-green-400">
+                    {movie.voteAverage.toFixed(1)} ★
+                  </span>
+                  <span className="text-[9px] text-white/50">
+                    {formatYear(movie.releaseDate)}
+                  </span>
+                </div>
+              </div>
+            )}
             <span className="absolute top-1 right-1 z-10 rounded-md bg-black/50 px-1.5 py-1 text-xs font-medium text-white backdrop-blur-md transition duration-300 group-hover:scale-85 origin-top-right">
               {formatYear(movie.releaseDate)}
             </span>
