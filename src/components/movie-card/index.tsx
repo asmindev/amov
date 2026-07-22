@@ -64,7 +64,7 @@ export function MovieCard({
           layout: { type: "spring", stiffness: 400, damping: 30 },
           default: { duration: 0.25, ease: [0.4, 0, 0.2, 1] },
         }}
-        className={`group relative z-0 aspect-[2/3] w-48 shrink-0 cursor-pointer overflow-hidden rounded-xl border border-white/10 bg-[#1A1A1A] hover:z-30 ${className || ""}`}
+        className={`group relative z-0 aspect-[2/3] w-48 shrink-0 cursor-pointer overflow-hidden rounded-xl border border-border bg-card text-card-foreground hover:z-30 ${className || ""}`}
         style={{
           height: 288,
           boxShadow: isHovered
@@ -119,7 +119,7 @@ export function MovieCard({
                   alt={movie.title}
                   className="h-full w-full object-cover opacity-80"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#1A1A1A] to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-card to-transparent" />
                 {logoPath && (
                   <img
                     src={getImageUrl(logoPath, "w500")}
@@ -232,7 +232,7 @@ export function MovieCard({
             animate={{ opacity: 1, scale: 1.1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 10 }}
             transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
-            className="absolute -top-4 left-1/2 w-[110%] -translate-x-1/2 overflow-hidden rounded-xl border border-white/10 bg-[#1A1A1A]"
+            className="absolute -top-4 left-1/2 w-[110%] -translate-x-1/2 overflow-hidden rounded-xl border border-border bg-card text-card-foreground"
             style={{ boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.75)" }}
           >
             {/* Backdrop */}
@@ -245,7 +245,7 @@ export function MovieCard({
                 alt={movie.title}
                 className="h-full w-full object-cover opacity-80"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#1A1A1A] to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-card to-transparent" />
             </div>
 
             {/* Details */}

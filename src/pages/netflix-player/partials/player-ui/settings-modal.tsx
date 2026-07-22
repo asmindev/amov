@@ -116,17 +116,17 @@ export function SettingsModal({
       }}
     >
       <div
-        className="flex max-h-[80vh] w-[90%] max-w-4xl flex-col rounded-xl border border-white/10 bg-[#1A1A1A]/90 p-6 shadow-2xl backdrop-blur-xl"
+        className="flex max-h-[80vh] w-[90%] max-w-4xl flex-col rounded-xl border border-border bg-popover/90 p-6 text-popover-foreground shadow-2xl backdrop-blur-xl"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="mb-6 flex items-center justify-between border-b border-[#333333] pb-4">
-          <h2 className="text-headline-md font-headline-md font-bold text-on-surface">
+        <div className="mb-6 flex items-center justify-between border-b border-border pb-4">
+          <h2 className="text-headline-md font-headline-md font-bold text-foreground">
             Audio, Subtitles & Quality
           </h2>
           <Button
             variant="ghost"
             size="icon"
-            className="rounded-full text-on-surface-variant hover:bg-white/10 hover:text-on-surface"
+            className="rounded-full text-muted-foreground hover:bg-white/10 hover:text-foreground"
             onClick={() => setOpenMenu(null)}
           >
             <span className="material-symbols-outlined">close</span>
@@ -135,7 +135,7 @@ export function SettingsModal({
 
         <div className="flex min-h-0 flex-1 flex-col gap-8 overflow-hidden md:flex-row">
           {/* Audio & Settings Column */}
-          <div className="flex flex-1 flex-col overflow-hidden border-r border-[#333333] pr-4">
+          <div className="flex flex-1 flex-col overflow-hidden border-r border-border pr-4">
             <h3 className="text-label-md mb-4 font-label-md font-extrabold tracking-wider text-secondary uppercase">
               Audio & Speed
             </h3>
@@ -146,10 +146,10 @@ export function SettingsModal({
                   variant="ghost"
                   className="group w-full justify-between font-body-md hover:bg-white/5"
                 >
-                  <span className="text-on-surface group-hover:text-white">
+                  <span className="text-foreground group-hover:text-white">
                     English [Original]
                   </span>
-                  <span className="material-symbols-outlined text-primary-container">
+                  <span className="material-symbols-outlined text-primary">
                     check
                   </span>
                 </Button>
@@ -161,7 +161,7 @@ export function SettingsModal({
                     <Button
                       key={rate}
                       variant={playbackRate === rate ? "default" : "outline"}
-                      className={`text-sm ${playbackRate === rate ? "border border-primary-container bg-primary-container/10 text-primary-container hover:bg-primary-container/20" : "border-outline text-on-surface-variant hover:text-white"}`}
+                      className={`text-sm ${playbackRate === rate ? "border border-primary bg-primary/10 text-primary hover:bg-primary/20" : "border-border text-muted-foreground hover:text-white"}`}
                       onClick={() => setPlaybackRate(rate)}
                     >
                       {rate}x
@@ -173,7 +173,7 @@ export function SettingsModal({
           </div>
 
           {/* Subtitles Column */}
-          <div className="flex flex-1 flex-col overflow-hidden border-r border-[#333333] pr-4">
+          <div className="flex flex-1 flex-col overflow-hidden border-r border-border pr-4">
             <div className="mb-4 flex items-center justify-between">
               <h3 className="text-label-md font-label-md font-extrabold tracking-wider text-secondary uppercase">
                 Subtitles
@@ -187,7 +187,7 @@ export function SettingsModal({
                   setSelectedProvider(value ?? "opensubtitles")
                 }
               >
-                <SelectTrigger className="h-8 flex-1 border-outline bg-white/5 text-xs">
+                <SelectTrigger className="h-8 flex-1 border-border bg-white/5 text-xs">
                   <SelectValue placeholder="Pilih Sumber" />
                 </SelectTrigger>
                 <SelectContent className="z-[70]">
@@ -202,12 +202,12 @@ export function SettingsModal({
               <Button
                 variant="outline"
                 size="sm"
-                className="h-8 border-primary-container px-3 text-xs text-primary-container hover:bg-primary-container/20"
+                className="h-8 border-primary px-3 text-xs text-primary hover:bg-primary/20"
                 onClick={handleManualOpenSubtitlesFetch}
                 disabled={isFetchingOs}
               >
                 {isFetchingOs ? (
-                  <div className="mr-1 h-3 w-3 animate-spin rounded-full border-2 border-primary-container border-t-transparent" />
+                  <div className="mr-1 h-3 w-3 animate-spin rounded-full border-2 border-primary border-t-transparent" />
                 ) : (
                   <span className="material-symbols-outlined mr-1 text-[14px]">
                     download
@@ -224,12 +224,12 @@ export function SettingsModal({
                 onClick={() => setSelectedSub(null)}
               >
                 <span
-                  className={`group-hover:text-white ${!selectedSub ? "text-on-surface" : "text-on-surface-variant"}`}
+                  className={`group-hover:text-white ${!selectedSub ? "text-foreground" : "text-muted-foreground"}`}
                 >
                   Off
                 </span>
                 {!selectedSub && (
-                  <span className="material-symbols-outlined text-primary-container">
+                  <span className="material-symbols-outlined text-primary">
                     check
                   </span>
                 )}
@@ -242,12 +242,12 @@ export function SettingsModal({
                   onClick={() => setSelectedSub(sub.url)}
                 >
                   <span
-                    className={`group-hover:text-white ${selectedSub === sub.url ? "text-on-surface" : "text-on-surface-variant"}`}
+                    className={`group-hover:text-white ${selectedSub === sub.url ? "text-foreground" : "text-muted-foreground"}`}
                   >
                     {sub.lang}
                   </span>
                   {selectedSub === sub.url && (
-                    <span className="material-symbols-outlined text-primary-container">
+                    <span className="material-symbols-outlined text-primary">
                       check
                     </span>
                   )}
@@ -358,7 +358,7 @@ export function SettingsModal({
                     <Button
                       key={font.label}
                       variant={subFont === font.value ? "default" : "outline"}
-                      className={`text-sm ${subFont === font.value ? "border border-primary-container bg-primary-container/10 text-primary-container hover:bg-primary-container/20" : "border-outline text-gray-300"}`}
+                      className={`text-sm ${subFont === font.value ? "border border-primary bg-primary/10 text-primary hover:bg-primary/20" : "border-border text-gray-300"}`}
                       onClick={() => setSubFont(font.value)}
                     >
                       {font.label}
@@ -373,7 +373,7 @@ export function SettingsModal({
                     <Button
                       key={lh}
                       variant={subLh === lh ? "default" : "outline"}
-                      className={`text-sm ${subLh === lh ? "border border-primary-container bg-primary-container/10 text-primary-container hover:bg-primary-container/20" : "border-outline text-gray-300"}`}
+                      className={`text-sm ${subLh === lh ? "border border-primary bg-primary/10 text-primary hover:bg-primary/20" : "border-border text-gray-300"}`}
                       onClick={() => setSubLh(lh)}
                     >
                       {lh}x
@@ -391,14 +391,14 @@ export function SettingsModal({
                     variant={
                       subBg === "rgba(0,0,0,0.75)" ? "default" : "outline"
                     }
-                    className={`text-sm ${subBg === "rgba(0,0,0,0.75)" ? "border border-primary-container bg-primary-container/10 text-primary-container hover:bg-primary-container/20" : "border-outline text-gray-300"}`}
+                    className={`text-sm ${subBg === "rgba(0,0,0,0.75)" ? "border border-primary bg-primary/10 text-primary hover:bg-primary/20" : "border-border text-gray-300"}`}
                     onClick={() => setSubBg("rgba(0,0,0,0.75)")}
                   >
                     Classic
                   </Button>
                   <Button
                     variant={subBg === "transparent" ? "default" : "outline"}
-                    className={`text-sm ${subBg === "transparent" ? "border border-primary-container bg-primary-container/10 text-primary-container hover:bg-primary-container/20" : "border-outline text-gray-300"}`}
+                    className={`text-sm ${subBg === "transparent" ? "border border-primary bg-primary/10 text-primary hover:bg-primary/20" : "border-border text-gray-300"}`}
                     onClick={() => setSubBg("transparent")}
                   >
                     None (Drop Shadow)
@@ -410,7 +410,7 @@ export function SettingsModal({
         </div>
 
         {/* Playback Quality Row */}
-        <div className="mt-8 border-t border-[#333333] pt-6">
+        <div className="mt-8 border-t border-border pt-6">
           <h3 className="text-label-md mb-4 font-label-md tracking-wider text-secondary uppercase">
             Playback Quality
           </h3>
@@ -421,8 +421,8 @@ export function SettingsModal({
                 variant={i === selectedQuality ? "default" : "outline"}
                 className={`text-label-md rounded-full font-label-md whitespace-nowrap ${
                   i === selectedQuality
-                    ? "border border-primary-container bg-primary-container/10 text-primary-container hover:bg-primary-container/20"
-                    : "border-outline text-on-surface-variant hover:border-white hover:text-white"
+                    ? "border border-primary bg-primary/10 text-primary hover:bg-primary/20"
+                    : "border-border text-muted-foreground hover:border-white hover:text-white"
                 }`}
                 onClick={() => setSelectedQuality(i)}
               >

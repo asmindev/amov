@@ -49,7 +49,7 @@ export function TopAppBar({
           <Button
             variant="ghost"
             size="icon"
-            className="flex h-12 w-12 scale-95 flex-col items-center justify-center rounded-full text-on-surface-variant transition-colors hover:bg-white/10 hover:text-white active:scale-90"
+            className="flex h-12 w-12 scale-95 flex-col items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-white/10 hover:text-white active:scale-90"
             onClick={(e) => {
               e.stopPropagation()
               setOpenMenu(openMenu === "provider" ? null : "provider")
@@ -62,12 +62,12 @@ export function TopAppBar({
             >
               dns
             </span>
-            <span className="text-label-sm pointer-events-none absolute -bottom-8 rounded bg-[#222222] px-2 py-1 font-label-sm whitespace-nowrap text-[#e2e2e2] opacity-0 transition-opacity group-hover/server:opacity-100">
+            <span className="text-label-sm pointer-events-none absolute -bottom-8 rounded bg-popover px-2 py-1 font-label-sm whitespace-nowrap text-popover-foreground opacity-0 transition-opacity group-hover/server:opacity-100">
               Server: {provider}
             </span>
           </Button>
           {openMenu === "provider" && (
-            <div className="absolute top-full right-0 z-50 mt-4 min-w-[200px] overflow-hidden rounded-xl border border-white/10 bg-[#1A1A1A]/90 shadow-2xl backdrop-blur-xl">
+            <div className="absolute top-full right-0 z-50 mt-4 min-w-[200px] overflow-hidden rounded-xl border border-border bg-popover/90 text-popover-foreground shadow-2xl backdrop-blur-xl">
               {allProviders.map((p, i) => (
                 <Button
                   key={p}
@@ -75,7 +75,7 @@ export function TopAppBar({
                   className={`h-auto w-full justify-between rounded-none px-5 py-3 font-body-md text-sm ${
                     i === providerIndex
                       ? "bg-white/5 font-bold text-white hover:bg-white/10"
-                      : "text-on-surface-variant hover:bg-white/5 hover:text-white"
+                      : "text-muted-foreground hover:bg-white/5 hover:text-white"
                   }`}
                   onClick={(e) => {
                     e.stopPropagation()
@@ -85,7 +85,7 @@ export function TopAppBar({
                 >
                   {p}
                   {i === providerIndex && (
-                    <span className="material-symbols-outlined text-lg text-primary-container">
+                    <span className="material-symbols-outlined text-lg text-primary">
                       check
                     </span>
                   )}

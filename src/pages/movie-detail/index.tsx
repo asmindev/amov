@@ -312,7 +312,7 @@ export default function MovieDetailPage() {
             >
               <div className="mb-1.5 flex items-center justify-between text-xs text-white/60">
                 <span className="flex items-center gap-1.5">
-                  <History className="h-3 w-3 text-red-400" />
+                  <History className="h-3 w-3 text-primary" />
                   Continue watching
                 </span>
                 <span className="font-mono">
@@ -323,7 +323,7 @@ export default function MovieDetailPage() {
               </div>
               <div className="h-1 w-full rounded-full bg-white/10">
                 <div
-                  className="h-1 rounded-full bg-red-500 transition-all duration-300"
+                  className="h-1 rounded-full bg-primary transition-all duration-300"
                   style={{
                     width:
                       savedProgress.duration > 0
@@ -347,9 +347,9 @@ export default function MovieDetailPage() {
               to="/movie/$id"
               params={{ id: movie.id.toString() }}
               search={{ play: true }}
-              className="flex items-center gap-2 rounded-lg bg-red-600 px-8 py-3.5 text-base font-bold text-white shadow-lg shadow-red-500/20 transition-all hover:scale-105 hover:bg-red-500 active:scale-95"
+              className="flex items-center gap-2 rounded-md bg-primary px-8 py-3.5 text-base font-bold text-primary-foreground shadow-lg shadow-primary/20 transition-all hover:scale-105 hover:bg-primary/90 active:scale-95"
             >
-              <Play className="h-5 w-5 fill-white" />
+              <Play className="h-5 w-5 fill-primary-foreground" />
               {savedProgress && savedProgress.timestamp > 30
                 ? "Continue Watching"
                 : "Watch Movie"}

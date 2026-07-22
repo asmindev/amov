@@ -78,7 +78,7 @@ export function Navbar() {
         <div className="flex items-center gap-8">
           <Link
             to="/"
-            className="font-heading text-2xl font-black tracking-tighter text-[#e50914] transition-opacity hover:opacity-90 md:text-3xl"
+            className="font-heading text-2xl font-black tracking-tighter text-primary transition-opacity hover:opacity-90 md:text-3xl"
           >
             AMOV
           </Link>
