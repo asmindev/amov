@@ -199,14 +199,14 @@ export function HeroBanner({ movies }: HeroBannerProps) {
             </span>
             Play
           </Link>
-          {video && !showVideo && (
-            <button
-              onClick={() => setShowVideo(true)}
-              className="inline-flex items-center gap-2 rounded-lg border border-white/15 bg-white/10 px-6 py-2.5 text-sm font-bold text-white backdrop-blur-md transition-all hover:scale-105 hover:bg-white/20 active:scale-95"
-            >
-              Trailer
-            </button>
-          )}
+          <Link
+            to="/movie/$id"
+            params={{ id: movie.id.toString() }}
+            className="inline-flex items-center gap-2 rounded-md border border-white/15 bg-white/10 px-6 py-2.5 text-sm font-bold text-white backdrop-blur-md transition-all hover:scale-105 hover:bg-white/20 active:scale-95"
+          >
+            <span className="material-symbols-outlined !text-[20px]">info</span>
+            Detail
+          </Link>
         </div>
 
         <div
