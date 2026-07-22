@@ -44,7 +44,10 @@ export function Navbar() {
 
   const isTransparentMode = pathname === "/" || pathname.startsWith("/movie/")
 
-  const currentLang = typeof window !== "undefined" ? localStorage.getItem("app-language") || "en-US" : "en-US"
+  const currentLang =
+    typeof window !== "undefined"
+      ? localStorage.getItem("app-language") || "en-US"
+      : "en-US"
   const toggleLanguage = () => {
     const nextLang = currentLang === "en-US" ? "id-ID" : "en-US"
     localStorage.setItem("app-language", nextLang)
@@ -67,13 +70,16 @@ export function Navbar() {
     <nav
       className={`fixed top-0 z-50 w-full transition-colors duration-300 ${
         scrolled || !isTransparentMode
-          ? "bg-background/95 backdrop-blur-md border-b border-white/5"
+          ? "border-b border-white/5 bg-background/95 backdrop-blur-md"
           : "bg-gradient-to-b from-black/60 to-transparent"
       }`}
     >
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6 md:px-16">
         <div className="flex items-center gap-8">
-          <Link to="/" className="font-heading text-2xl font-bold text-primary">
+          <Link
+            to="/"
+            className="font-heading text-2xl font-black tracking-tighter text-[#e50914] transition-opacity hover:opacity-90 md:text-3xl"
+          >
             AMOV
           </Link>
           <div className="hidden items-center gap-1 sm:flex">
@@ -111,9 +117,11 @@ export function Navbar() {
             }`}
           >
             <Globe className="h-4 w-4" />
-            <span className="uppercase">{currentLang === "en-US" ? "EN" : "ID"}</span>
+            <span className="uppercase">
+              {currentLang === "en-US" ? "EN" : "ID"}
+            </span>
           </button>
-          
+
           <Dialog open={isSearchOpen} onOpenChange={setIsSearchOpen}>
             <DialogTrigger
               className={`transition-colors ${
@@ -124,26 +132,32 @@ export function Navbar() {
             >
               <Search className="h-5 w-5" />
             </DialogTrigger>
-            <DialogContent className="sm:max-w-2xl border-white/10 bg-background/95 backdrop-blur-2xl p-0 overflow-hidden shadow-2xl rounded-2xl">
+            <DialogContent className="overflow-hidden rounded-2xl border-white/10 bg-background/95 p-0 shadow-2xl backdrop-blur-2xl sm:max-w-2xl">
               <DialogHeader className="sr-only">
                 <DialogTitle>Search Movies</DialogTitle>
               </DialogHeader>
-              <form onSubmit={handleSearch} className="flex items-center px-4 border-b border-white/10">
+              <form
+                onSubmit={handleSearch}
+                className="flex items-center border-b border-white/10 px-4"
+              >
                 <Search className="h-5 w-5 text-muted-foreground" />
                 <Input
                   autoFocus
                   placeholder="Search movies, shows, and more..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="border-0 bg-transparent text-lg focus-visible:ring-0 focus-visible:ring-offset-0 px-4 h-16 shadow-none placeholder:text-muted-foreground/50 font-medium"
+                  className="h-16 border-0 bg-transparent px-4 text-lg font-medium shadow-none placeholder:text-muted-foreground/50 focus-visible:ring-0 focus-visible:ring-offset-0"
                 />
-                {isFetching && <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />}
+                {isFetching && (
+                  <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+                )}
               </form>
-              
+
               <div className="max-h-[60vh] overflow-y-auto overscroll-contain">
                 {debouncedQuery.length > 0 ? (
-                  <div className="p-2 flex flex-col">
-                    {searchResults?.results && searchResults.results.length > 0 ? (
+                  <div className="flex flex-col p-2">
+                    {searchResults?.results &&
+                    searchResults.results.length > 0 ? (
                       <>
                         {searchResults.results.slice(0, 6).map((movie) => (
                           <Link
@@ -154,26 +168,26 @@ export function Navbar() {
                               setIsSearchOpen(false)
                               setSearchQuery("")
                             }}
-                            className="flex items-center gap-4 p-3 hover:bg-white/5 rounded-xl transition-colors group"
+                            className="group flex items-center gap-4 rounded-xl p-3 transition-colors hover:bg-white/5"
                           >
-                            <div className="w-12 h-16 rounded-md overflow-hidden bg-white/5 border border-white/5 shrink-0">
+                            <div className="h-16 w-12 shrink-0 overflow-hidden rounded-md border border-white/5 bg-white/5">
                               {movie.posterPath ? (
                                 <img
                                   src={getImageUrl(movie.posterPath, "w92")}
                                   alt={movie.title}
-                                  className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                                  className="h-full w-full object-cover transition-transform group-hover:scale-105"
                                 />
                               ) : (
-                                <div className="w-full h-full flex items-center justify-center text-muted-foreground">
+                                <div className="flex h-full w-full items-center justify-center text-muted-foreground">
                                   <Search className="h-4 w-4" />
                                 </div>
                               )}
                             </div>
-                            <div className="flex-1 min-w-0">
-                              <h4 className="font-semibold text-base truncate text-white/90 group-hover:text-primary transition-colors">
+                            <div className="min-w-0 flex-1">
+                              <h4 className="truncate text-base font-semibold text-white/90 transition-colors group-hover:text-primary">
                                 {movie.title}
                               </h4>
-                              <div className="flex items-center gap-3 text-sm text-muted-foreground mt-1">
+                              <div className="mt-1 flex items-center gap-3 text-sm text-muted-foreground">
                                 <span className="flex items-center gap-1 text-primary">
                                   <Star className="h-3.5 w-3.5 fill-primary" />
                                   {movie.voteAverage.toFixed(1)}
@@ -186,7 +200,7 @@ export function Navbar() {
                         {searchResults.results.length > 6 && (
                           <button
                             onClick={handleSearch}
-                            className="w-full mt-2 p-3 text-sm font-medium text-center text-primary hover:bg-primary/10 rounded-xl transition-colors"
+                            className="mt-2 w-full rounded-xl p-3 text-center text-sm font-medium text-primary transition-colors hover:bg-primary/10"
                           >
                             View all results for "{debouncedQuery}"
                           </button>
@@ -199,9 +213,11 @@ export function Navbar() {
                     ) : null}
                   </div>
                 ) : (
-                  <div className="py-14 text-center text-muted-foreground/50 flex flex-col items-center gap-2">
-                    <Search className="h-8 w-8 mb-2 opacity-20" />
-                    <p className="font-medium text-muted-foreground">Type to search</p>
+                  <div className="flex flex-col items-center gap-2 py-14 text-center text-muted-foreground/50">
+                    <Search className="mb-2 h-8 w-8 opacity-20" />
+                    <p className="font-medium text-muted-foreground">
+                      Type to search
+                    </p>
                     <p className="text-sm">Find movies and details instantly</p>
                   </div>
                 )}
