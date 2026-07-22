@@ -132,7 +132,7 @@ export function BottomControls({
           >
             <span
               className={`material-symbols-outlined ${playing ? "" : "fill"}`}
-              style={{ fontSize: "36px" }}
+              style={{ fontSize: "46px" }}
             >
               {playing ? "pause" : "play_arrow"}
             </span>
@@ -149,7 +149,7 @@ export function BottomControls({
           >
             <span
               className="material-symbols-outlined"
-              style={{ fontSize: "28px" }}
+              style={{ fontSize: "36px" }}
             >
               replay_10
             </span>
@@ -166,7 +166,7 @@ export function BottomControls({
           >
             <span
               className="material-symbols-outlined"
-              style={{ fontSize: "28px" }}
+              style={{ fontSize: "36px" }}
             >
               forward_10
             </span>
@@ -189,7 +189,7 @@ export function BottomControls({
             >
               <span
                 className="material-symbols-outlined"
-                style={{ fontSize: "24px" }}
+                style={{ fontSize: "36px" }}
               >
                 {muted || volume === 0
                   ? "volume_off"
@@ -231,7 +231,7 @@ export function BottomControls({
           >
             <span
               className="material-symbols-outlined"
-              style={{ fontSize: "24px" }}
+              style={{ fontSize: "36px" }}
             >
               settings
             </span>
@@ -251,7 +251,7 @@ export function BottomControls({
           >
             <span
               className="material-symbols-outlined"
-              style={{ fontSize: "28px" }}
+              style={{ fontSize: "36px" }}
             >
               {fullscreen ? "fullscreen_exit" : "fullscreen"}
             </span>
