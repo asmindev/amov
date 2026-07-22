@@ -136,9 +136,9 @@ export function MovieCard({
                     <Link
                       to="/movie/$id"
                       params={{ id: String(movie.id) }}
-                      className="flex h-8 w-8 items-center justify-center rounded-full bg-white text-black transition-colors hover:bg-neutral-200"
+                      className="flex h-8 w-8 items-center justify-center bg-primary transition-colors hover:bg-neutral-200"
                     >
-                      <Play className="ml-0.5 h-4 w-4 fill-black" />
+                      <Play className="ml-0.5 h-4 w-4 fill-white" />
                     </Link>
                     <button className="flex h-8 w-8 items-center justify-center rounded-full border border-white/20 bg-black/50 text-white transition-colors hover:border-white hover:bg-black/80">
                       <Plus className="h-3.5 w-3.5" />

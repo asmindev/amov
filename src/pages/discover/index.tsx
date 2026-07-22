@@ -15,11 +15,12 @@ export default function DiscoverPage() {
     providers: selectedProviders = [],
     country: selectedCountry = "",
     sortBy: selectedSortBy = "popularity.desc",
+    type: selectedType = "all",
   } = useSearch({ from: "/discover" })
   const navigate = useNavigate({ from: "/discover" })
   const [localQuery, setLocalQuery] = useState(query)
 
-  const { data: genresData } = useGenres()
+  const { data: genresData } = useGenres(selectedType === "tv" ? "tv" : "movie")
   const genres = genresData?.genres ?? []
 
   const {
@@ -35,6 +36,7 @@ export default function DiscoverPage() {
     providers: selectedProviders,
     country: selectedCountry,
     sortBy: selectedSortBy,
+    type: selectedType,
   })
 
   const updateFilters = (newFilters: {
@@ -43,6 +45,7 @@ export default function DiscoverPage() {
     providers?: number[]
     country?: string
     sortBy?: string
+    type?: "all" | "movie" | "tv"
   }) => {
     navigate({
       search: (prev) => {
@@ -53,6 +56,7 @@ export default function DiscoverPage() {
           country?: string
           sortBy?: string
           query?: string
+          type?: "all" | "movie" | "tv"
         } = { ...(prev as object), ...newFilters }
 
         if (updated.genres && updated.genres.length === 0)
@@ -64,6 +68,7 @@ export default function DiscoverPage() {
         if (updated.sortBy === "popularity.desc" || updated.sortBy === "")
           updated.sortBy = undefined
         if (updated.query === "") updated.query = undefined
+        if (updated.type === "all") updated.type = undefined
 
         return updated
       },
@@ -142,6 +147,7 @@ export default function DiscoverPage() {
         selectedProviders={selectedProviders}
         selectedCountry={selectedCountry}
         selectedSortBy={selectedSortBy}
+        selectedType={selectedType}
         updateFilters={updateFilters}
       />
 

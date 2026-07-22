@@ -67,9 +67,32 @@ export type DiscoverFilters = {
   country?: string
   sortBy?: string
   query?: string
+  type?: "all" | "movie" | "tv"
 }
 
 export async function getDiscoverMovies(page = 1, filters?: DiscoverFilters) {
+  const isSearch = !!filters?.query
+
+  if (isSearch) {
+    const searchEndpoint =
+      filters?.type === "tv"
+        ? endpoints.search.tv
+        : filters?.type === "movie"
+          ? endpoints.search.movies
+          : endpoints.search.multi
+
+    const res = await apiClient.get<unknown>(searchEndpoint, {
+      query: filters.query!,
+      page: String(page),
+      include_adult: "false",
+    })
+    return MovieListSchema.parse(res)
+  }
+
+  // Discover (no query)
+  const discoverEndpoint =
+    filters?.type === "tv" ? endpoints.tv.discover : endpoints.movies.discover
+
   const params: Record<string, string> = {
     sort_by: filters?.sortBy || DEFAULT_SORT_BY,
     include_adult: "false",
@@ -81,7 +104,11 @@ export async function getDiscoverMovies(page = 1, filters?: DiscoverFilters) {
   }
 
   if (filters?.year) {
-    params.primary_release_year = filters.year
+    if (filters?.type === "tv") {
+      params.first_air_date_year = filters.year
+    } else {
+      params.primary_release_year = filters.year
+    }
   }
 
   if (filters?.country) {
@@ -93,11 +120,7 @@ export async function getDiscoverMovies(page = 1, filters?: DiscoverFilters) {
     params.watch_region = WATCH_REGION
   }
 
-  if (filters?.query) {
-    params.with_text_query = filters.query
-  }
-
-  const res = await apiClient.get<unknown>(endpoints.movies.discover, params)
+  const res = await apiClient.get<unknown>(discoverEndpoint, params)
   return MovieListSchema.parse(res)
 }
 

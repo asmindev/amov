@@ -38,12 +38,14 @@ type DiscoverFiltersProps = {
   selectedProviders: number[]
   selectedCountry: string
   selectedSortBy: string
+  selectedType: "all" | "movie" | "tv"
   updateFilters: (newFilters: {
     genres?: number[]
     year?: string
     providers?: number[]
     country?: string
     sortBy?: string
+    type?: "all" | "movie" | "tv"
   }) => void
 }
 
@@ -52,7 +54,8 @@ const activeCount = (filters: DiscoverFiltersProps) =>
   (filters.selectedYear ? 1 : 0) +
   (filters.selectedProviders.length > 0 ? 1 : 0) +
   (filters.selectedCountry ? 1 : 0) +
-  (filters.selectedSortBy !== "popularity.desc" ? 1 : 0)
+  (filters.selectedSortBy !== "popularity.desc" ? 1 : 0) +
+  (filters.selectedType !== "all" ? 1 : 0)
 
 // Reusable filter pill wrapper
 function FilterPill({
@@ -84,6 +87,7 @@ export function DiscoverFilters({
   selectedProviders,
   selectedCountry,
   selectedSortBy,
+  selectedType,
   updateFilters,
 }: DiscoverFiltersProps) {
   const totalActive = activeCount({
@@ -93,6 +97,7 @@ export function DiscoverFilters({
     selectedProviders,
     selectedCountry,
     selectedSortBy,
+    selectedType,
     updateFilters,
   })
   const hasFilters = totalActive > 0
@@ -127,6 +132,46 @@ export function DiscoverFilters({
         </div>
 
         <div className="h-4 w-px bg-white/10" />
+
+        {/* Type select */}
+        <FilterPill
+          label="Type"
+          icon={<Clapperboard className="h-3.5 w-3.5" />}
+          isActive={selectedType !== "all"}
+        >
+          <Select
+            value={selectedType}
+            onValueChange={(val: "all" | "movie" | "tv" | null) =>
+              updateFilters({
+                type: val || "all",
+                // Reset genres if switching types since genre lists are completely different
+                genres: [],
+              })
+            }
+          >
+            <SelectTrigger className="h-8 gap-1.5 rounded-md border-white/10 bg-white/5 px-3 text-xs font-medium transition-all hover:bg-white/10 data-[state=open]:bg-white/10">
+              {selectedType === "tv" ? (
+                <Tv className="h-3.5 w-3.5 shrink-0 opacity-70" />
+              ) : (
+                <Clapperboard className="h-3.5 w-3.5 shrink-0 opacity-70" />
+              )}
+              <SelectValue placeholder="Type">
+                {selectedType === "tv"
+                  ? "TV Series"
+                  : selectedType === "movie"
+                    ? "Movie"
+                    : "Type: All"}
+              </SelectValue>
+            </SelectTrigger>
+            <SelectContent align="start">
+              <SelectGroup>
+                <SelectItem value="all">All Content</SelectItem>
+                <SelectItem value="movie">Movies</SelectItem>
+                <SelectItem value="tv">TV Series</SelectItem>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        </FilterPill>
 
         {/* Genre multi-select */}
         <FilterPill
@@ -424,6 +469,21 @@ export function DiscoverFilters({
                   )
                 })}
 
+                {selectedType !== "all" && (
+                  <motion.button
+                    key="type-chip"
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.8 }}
+                    transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                    onClick={() => updateFilters({ type: "all", genres: [] })}
+                    className="flex items-center gap-1 rounded-md bg-primary/15 px-2.5 py-1 text-[11px] font-medium text-primary ring-1 ring-primary/30 transition-colors hover:bg-primary/25"
+                  >
+                    {selectedType === "tv" ? "TV Series" : "Movie"}
+                    <X className="h-3 w-3" />
+                  </motion.button>
+                )}
+
                 {selectedSortBy !== "popularity.desc" && (
                   <motion.button
                     key="sort-chip"
@@ -453,6 +513,7 @@ export function DiscoverFilters({
                     providers: [],
                     country: "",
                     sortBy: "popularity.desc",
+                    type: "all",
                   })
                 }
                 className="h-7 gap-1 rounded-md px-2.5 text-[11px] text-muted-foreground hover:text-white"

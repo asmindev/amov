@@ -8,10 +8,19 @@ export const endpoints = {
     videos: (id: string) => `/movie/${id}/videos`,
     discover: "/discover/movie",
   },
+  tv: {
+    discover: "/discover/tv",
+    detail: (id: string) => `/tv/${id}`,
+    similar: (id: string) => `/tv/${id}/recommendations`,
+    videos: (id: string) => `/tv/${id}/videos`,
+  },
   genres: {
     list: "/genre/movie/list",
+    tvList: "/genre/tv/list",
   },
   search: {
     movies: "/search/movie",
+    tv: "/search/tv",
+    multi: "/search/multi",
   },
 }
