@@ -6,23 +6,20 @@ import {
   type MouseEvent,
   type ChangeEvent,
 } from "react"
-import { motion, AnimatePresence } from "motion/react"
 import Hls from "hls.js"
 import type { StreamSource, StreamSubtitle } from "@/api/decryptor.api"
 import type { DecryptorProvider } from "@/lib/config"
 import { DECRYPTOR_PROVIDERS, DECRYPTOR_URL } from "@/lib/config"
 import { RefreshCw } from "lucide-react"
 import { useWatchProgressTracker } from "@/hooks/use-watch-progress"
-import { getMovieQuality } from "@/helpers/movie-quality"
 import { TopAppBar } from "./player-ui/top-app-bar"
 import { BottomControls } from "./player-ui/bottom-controls"
 import { SettingsModal } from "./player-ui/settings-modal"
-
-interface ParsedCue {
-  start: number
-  end: number
-  text: string
-}
+import { useSubtitles } from "../hooks/use-subtitles"
+import { usePlayerSettings } from "../hooks/use-player-settings"
+import { SubtitleOverlay } from "./player-ui/subtitle-overlay"
+import { PausedOverlay } from "./player-ui/paused-overlay"
+import { SkipIndicator } from "./player-ui/skip-indicator"
 
 interface HlsPlayerProps {
   sources: StreamSource[]
@@ -89,7 +86,6 @@ export function HlsPlayer({
   const [buffering, setBuffering] = useState(false)
   const [hoverX, setHoverX] = useState<number | null>(null)
   const [showVolSlider, setShowVolSlider] = useState(false)
-  const [parsedCues, setParsedCues] = useState<ParsedCue[]>([])
   const [skipIndicator, setSkipIndicator] = useState<{
     type: "forward" | "backward"
     id: number
@@ -106,42 +102,24 @@ export function HlsPlayer({
   const allSubtitles = [...subtitles, ...localSubtitles]
 
   // ── Customization State ────────────────────────────────────────────────────
-  const [playbackRate, setPlaybackRate] = useState(1)
-  const [subSize, setSubSize] = useState(() =>
-    parseInt(localStorage.getItem("amov_sub_size") || "24")
-  )
-  const [subBg, setSubBg] = useState(() => {
-    const val = localStorage.getItem("amov_sub_bg")
-    if (val === "rgba(0,0,0,0.75)") return "transparent"
-    return val || "transparent"
-  })
-  const [subFont, setSubFont] = useState(() => {
-    const val = localStorage.getItem("amov_sub_font")
-    if (val === "var(--font-inter), sans-serif")
-      return '"Netflix Sans", "Helvetica Neue", Helvetica, Arial, sans-serif'
-    return (
-      val || '"Netflix Sans", "Helvetica Neue", Helvetica, Arial, sans-serif'
-    )
-  })
-  const [subLh, setSubLh] = useState(() =>
-    parseFloat(localStorage.getItem("amov_sub_lh") || "1.2")
-  )
-  const [subOffset, setSubOffset] = useState(() =>
-    parseFloat(localStorage.getItem("amov_sub_offset") || "0")
-  )
-  const [subMargin, setSubMargin] = useState(() =>
-    parseInt(localStorage.getItem("amov_sub_margin") || "40")
-  )
+  const {
+    playbackRate,
+    setPlaybackRate,
+    subSize,
+    setSubSize,
+    subBg,
+    setSubBg,
+    subFont,
+    setSubFont,
+    subLh,
+    setSubLh,
+    subOffset,
+    setSubOffset,
+    subMargin,
+    setSubMargin,
+  } = usePlayerSettings()
 
-  // Persist settings
-  useEffect(() => {
-    localStorage.setItem("amov_sub_size", subSize.toString())
-    localStorage.setItem("amov_sub_bg", subBg)
-    localStorage.setItem("amov_sub_font", subFont)
-    localStorage.setItem("amov_sub_lh", subLh.toString())
-    localStorage.setItem("amov_sub_offset", subOffset.toString())
-    localStorage.setItem("amov_sub_margin", subMargin.toString())
-  }, [subSize, subBg, subFont, subLh, subOffset, subMargin])
+  const currentActiveCues = useSubtitles(selectedSub, subOffset, currentTime)
 
   // Track progress → localStorage
   useWatchProgressTracker("movie", movieId, true)
@@ -386,121 +364,9 @@ export function HlsPlayer({
     }
   }, [playbackRate])
 
-  // ── Subtitle Latency Shifter ──────────────────────────────────────────────
-  useEffect(() => {
-    let isCancelled = false
-    async function fetchAndOffsetSub() {
-      if (!selectedSub) {
-        setParsedCues([])
-        return
-      }
-      try {
-        const proxyUrl = `/api/decryptor/proxy?url=${encodeURIComponent(selectedSub!)}`
-        const res = await fetch(proxyUrl)
-        if (!res.ok) throw new Error("fetch sub error")
-        let text = await res.text()
-
-        // Remove BOM if present and normalize newlines
-        text = text
-          .replace(/^\uFEFF/, "")
-          .replace(/\r\n/g, "\n")
-          .replace(/\r/g, "\n")
-
-        // Simple VTT/SRT timestamp shifter & comma to dot converter
-        const shiftedText = text.replace(
-          /(\d{2,}:)?(\d{2}):(\d{2})[.,](\d{3})/g,
-          (_match, h, m, s, ms) => {
-            const hours = h ? parseInt(h) : 0
-            const mins = parseInt(m)
-            const secs = parseInt(s)
-            const millis = parseInt(ms)
-            let totalSeconds = hours * 3600 + mins * 60 + secs + millis / 1000
-            totalSeconds += subOffset
-            if (totalSeconds < 0) totalSeconds = 0
-
-            const outH = Math.floor(totalSeconds / 3600)
-            const outM = Math.floor((totalSeconds % 3600) / 60)
-            const outS = Math.floor(totalSeconds % 60)
-            const outMs = Math.floor(Math.round((totalSeconds % 1) * 1000))
-
-            const pad = (n: number, len = 2) => String(n).padStart(len, "0")
-            if (h || outH > 0) {
-              return `${pad(outH)}:${pad(outM)}:${pad(outS)}.${pad(outMs, 3)}`
-            } else {
-              return `${pad(outM)}:${pad(outS)}.${pad(outMs, 3)}`
-            }
-          }
-        )
-
-        // Ensure it's valid WebVTT (required by browsers for <track>)
-        let finalVttText = shiftedText.trim()
-        if (!finalVttText.startsWith("WEBVTT")) {
-          finalVttText = "WEBVTT\n\n" + finalVttText
-        }
-
-        // Parse cues manually
-        const blocks = finalVttText.split(/\n\s*\n/)
-        const parsed: ParsedCue[] = []
-
-        const parseTimestamp = (ts: string): number => {
-          const clean = ts.trim().replace(",", ".")
-          const parts = clean.split(":")
-          if (parts.length === 3) {
-            const h = parseFloat(parts[0])
-            const m = parseFloat(parts[1])
-            const s = parseFloat(parts[2])
-            return h * 3600 + m * 60 + s
-          } else if (parts.length === 2) {
-            const m = parseFloat(parts[0])
-            const s = parseFloat(parts[1])
-            return m * 60 + s
-          }
-          return 0
-        }
-
-        for (const block of blocks) {
-          const lines = block.trim().split("\n")
-          const timingIndex = lines.findIndex((l) => l.includes("-->"))
-          if (timingIndex !== -1) {
-            const timingLine = lines[timingIndex]
-            const [startStr, endStr] = timingLine.split("-->")
-            if (startStr && endStr) {
-              const start = parseTimestamp(startStr)
-              const end = parseTimestamp(endStr.trim().split(/\s+/)[0])
-              const rawText = lines.slice(timingIndex + 1).join("\n")
-              // Strip HTML tags from subtitle text
-              const text = rawText.replace(/<[^>]+>/g, "")
-              if (!isNaN(start) && !isNaN(end)) {
-                parsed.push({ start, end, text })
-              }
-            }
-          }
-        }
-
-        if (isCancelled) return
-        setParsedCues(parsed)
-      } catch (err) {
-        console.error("Subtitle shift error", err)
-        if (!isCancelled) {
-          setParsedCues([])
-        }
-      }
-    }
-
-    void fetchAndOffsetSub()
-
-    return () => {
-      isCancelled = true
-    }
-  }, [selectedSub, subOffset])
-
   const progressPct = duration ? (currentTime / duration) * 100 : 0
   const bufferedPct = duration ? (bufferedEnd / duration) * 100 : 0
   const hoverPct = hoverX !== null ? hoverX * 100 : null
-
-  const currentActiveCues = parsedCues.filter(
-    (c) => currentTime >= c.start && currentTime <= c.end
-  )
 
   return (
     <div
@@ -525,36 +391,15 @@ export function HlsPlayer({
       />
 
       {/* ── Custom Subtitle Overlay ── */}
-      {currentActiveCues.length > 0 && (
-        <div
-          className={`pointer-events-none absolute inset-x-0 z-50 flex flex-col items-center transition-all duration-300 ease-out ${
-            uiVisible
-              ? "translate-y-[-130px] md:translate-y-[-140px]"
-              : "translate-y-0"
-          }`}
-          style={{ bottom: `${subMargin}px` }}
-        >
-          {currentActiveCues.map((cue, i) => (
-            <div
-              key={i}
-              className="rounded px-4 py-1 text-center"
-              style={{
-                fontFamily: subFont,
-                fontSize: `${subSize}px`,
-                lineHeight: subLh,
-                backgroundColor: subBg,
-                color: "white",
-                fontWeight: 900,
-                textShadow:
-                  "0 0 4px #000, 0 0 4px #000, 0 0 4px #000, 0 0 4px #000, 1px 1px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000",
-                whiteSpace: "pre-wrap",
-              }}
-            >
-              {cue.text}
-            </div>
-          ))}
-        </div>
-      )}
+      <SubtitleOverlay
+        currentActiveCues={currentActiveCues}
+        uiVisible={uiVisible}
+        subMargin={subMargin}
+        subFont={subFont}
+        subSize={subSize}
+        subLh={subLh}
+        subBg={subBg}
+      />
 
       {/* ── Fetching overlay ── */}
       {isFetchingProvider && (
@@ -580,87 +425,21 @@ export function HlsPlayer({
       )}
 
       {/* ── Paused metadata overlay (Netflix Style) ── */}
-      <AnimatePresence>
-        {!playing &&
-          !buffering &&
-          !isFetchingProvider &&
-          openMenu !== "settings" && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.4 }}
-              className="pointer-events-none absolute inset-0 z-20 flex items-center bg-gradient-to-r from-black/85 via-black/40 to-transparent p-8 text-white md:p-16"
-            >
-              <motion.div
-                initial={{ x: -20, opacity: 0 }}
-                animate={{ x: 0, opacity: 1 }}
-                exit={{ x: -20, opacity: 0 }}
-                transition={{ delay: 0.1, duration: 0.4, ease: "easeOut" }}
-                className="max-w-md space-y-4 md:max-w-xl lg:max-w-2xl"
-              >
-                {/* Floating logo/title */}
-                {logoPath ? (
-                  <img
-                    src={`https://image.tmdb.org/t/p/w500${logoPath}`}
-                    alt={movieTitle}
-                    className="h-auto max-h-20 w-auto max-w-[85%] object-contain drop-shadow-[0_4px_8px_rgba(0,0,0,0.8)] md:max-h-28 lg:max-h-36"
-                  />
-                ) : (
-                  <h2 className="text-3xl font-extrabold tracking-wide text-white drop-shadow-[0_4px_8px_rgba(0,0,0,0.8)] md:text-5xl lg:text-6xl">
-                    {movieTitle}
-                  </h2>
-                )}
-
-                {/* Metadata Row */}
-                <div className="flex items-center gap-3 text-sm font-bold text-gray-300">
-                  {voteAverage > 0 && (
-                    <span className="font-bold text-green-500">
-                      {Math.round(voteAverage * 10)}% Match
-                    </span>
-                  )}
-                  <span>{movieYear}</span>
-                  <span className="rounded border border-white/20 bg-white/5 px-1.5 py-0.5 text-[10px] font-bold tracking-wider text-white uppercase">
-                    {getMovieQuality(popularity, movieYear)}
-                  </span>
-                  <span className="rounded border border-white/20 bg-white/5 px-1.5 py-0.5 text-[10px] font-bold tracking-wider text-white uppercase">
-                    HD
-                  </span>
-                </div>
-
-                {/* Description */}
-                {movieOverview && (
-                  <p className="line-clamp-4 text-sm leading-relaxed text-gray-300 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] md:text-base md:leading-loose">
-                    {movieOverview}
-                  </p>
-                )}
-              </motion.div>
-            </motion.div>
-          )}
-      </AnimatePresence>
+      <PausedOverlay
+        playing={playing}
+        buffering={buffering}
+        isFetchingProvider={isFetchingProvider}
+        openMenu={openMenu}
+        movieTitle={movieTitle}
+        movieYear={movieYear}
+        voteAverage={voteAverage}
+        popularity={popularity}
+        movieOverview={movieOverview}
+        logoPath={logoPath}
+      />
 
       {/* ── Skip feedback indicator ── */}
-      <AnimatePresence>
-        {skipIndicator && (
-          <motion.div
-            key={skipIndicator.id}
-            initial={{ opacity: 0, scale: 0.5 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.8 }}
-            transition={{ duration: 0.3, ease: "easeOut" }}
-            className="pointer-events-none absolute inset-0 z-50 flex items-center justify-center"
-          >
-            <div className="flex flex-col items-center gap-2 rounded-full bg-black/60 px-6 py-5 text-white backdrop-blur-md">
-              <span className="material-symbols-outlined animate-pulse !text-[48px]">
-                {skipIndicator.type === "forward" ? "forward_10" : "replay_10"}
-              </span>
-              <span className="text-sm font-bold tracking-wider uppercase">
-                {skipIndicator.type === "forward" ? "+10s" : "-10s"}
-              </span>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <SkipIndicator skipIndicator={skipIndicator} />
 
       {/* ════════════════════════════════════════════════════════════
           UI OVERLAY — Cinematic Obsidian

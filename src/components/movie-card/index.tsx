@@ -261,7 +261,7 @@ export function MovieCard({
                 <img
                   src={getImageUrl(logoPath, "w500")}
                   alt={movie.title}
-                  className="mb-1 max-h-10 w-auto max-w-[60%] object-contain"
+                  className="mb-1 max-h-30 w-fit max-w-[60%] object-contain"
                 />
               ) : (
                 <h4 className="mb-1 line-clamp-1 text-base font-bold text-white">
