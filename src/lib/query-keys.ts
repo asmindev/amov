@@ -6,7 +6,8 @@ export const queryKeys = {
     popular: () => [...queryKeys.movies.all, "popular"] as const,
     netflix: () => [...queryKeys.movies.all, "netflix"] as const,
     discover: () => [...queryKeys.movies.all, "discover"] as const,
-    discoverInfinite: () => [...queryKeys.movies.all, "discover-infinite"] as const,
+    discoverInfinite: () =>
+      [...queryKeys.movies.all, "discover-infinite"] as const,
     detail: (id: string) => [...queryKeys.movies.all, "detail", id] as const,
     similar: (id: string) => [...queryKeys.movies.all, "similar", id] as const,
     videos: (id: string) => [...queryKeys.movies.all, "videos", id] as const,
@@ -19,5 +20,9 @@ export const queryKeys = {
   search: {
     query: (q: string) => ["search", q] as const,
     infinite: (q: string) => ["search-infinite", q] as const,
+  },
+  decryptor: {
+    sources: (tmdbId: string, provider: string) =>
+      ["decryptor", "sources", tmdbId, provider] as const,
   },
 }

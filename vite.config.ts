@@ -10,4 +10,15 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  server: {
+    proxy: {
+      // Proxy /api/decryptor/* → http://localhost:8080/*
+      // Removes the CORS issue entirely — browser stays on same origin
+      "/api/decryptor": {
+        target: "http://localhost:8000",
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/decryptor/, ""),
+      },
+    },
+  },
 })

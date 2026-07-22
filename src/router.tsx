@@ -16,6 +16,9 @@ const LazyMovieDetail = React.lazy(
   () => import("@/pages/movie-detail/index.tsx")
 )
 const LazyWatchlist = React.lazy(() => import("@/pages/watchlist/index.tsx"))
+const LazyNetflixPlayer = React.lazy(
+  () => import("@/pages/netflix-player/index.tsx")
+)
 
 const homeRoute = createRoute({
   getParentRoute: () => rootRoute,
@@ -44,7 +47,10 @@ const discoverRoute = createRoute({
       if (!val) return undefined
       if (Array.isArray(val)) return val.map(Number).filter((n) => !isNaN(n))
       if (typeof val === "string")
-        return val.split(",").map(Number).filter((n) => !isNaN(n))
+        return val
+          .split(",")
+          .map(Number)
+          .filter((n) => !isNaN(n))
       return undefined
     }
 
@@ -89,11 +95,22 @@ const watchlistRoute = createRoute({
   ),
 })
 
+const netflixPlayerRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/movie/$id/netflix",
+  component: () => (
+    <React.Suspense>
+      <LazyNetflixPlayer />
+    </React.Suspense>
+  ),
+})
+
 const routeTree = rootRoute.addChildren([
   homeRoute,
   discoverRoute,
   movieDetailRoute,
   watchlistRoute,
+  netflixPlayerRoute,
 ])
 
 export const router = createRouter({ routeTree })
