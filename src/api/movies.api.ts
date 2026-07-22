@@ -36,9 +36,14 @@ export async function getNetflixMovies() {
 }
 
 export async function getMovieById(id: string) {
+  const lang =
+    typeof window !== "undefined"
+      ? (localStorage.getItem("app-language") || "en-US").split("-")[0]
+      : "en"
+
   const res = await apiClient.get<unknown>(endpoints.movies.detail(id), {
     append_to_response: "images,credits",
-    include_image_language: "en,null",
+    include_image_language: `${lang},en,null`,
   })
   return MovieDetailSchema.parse(res)
 }

@@ -99,7 +99,12 @@ const TmdbMovieDetailSchema = TmdbMovieSchema.extend({
 
 export const MovieDetailSchema = TmdbMovieDetailSchema.transform((m) => {
   const logos = m.images?.logos ?? []
+  const lang =
+    typeof window !== "undefined"
+      ? (localStorage.getItem("app-language") || "en-US").split("-")[0]
+      : "en"
   const logo =
+    logos.find((l) => l.iso_639_1 === lang) ??
     logos.find((l) => l.iso_639_1 === "en") ??
     logos.find((l) => l.iso_639_1 === null) ??
     logos[0]
