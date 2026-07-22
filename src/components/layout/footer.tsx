@@ -4,7 +4,7 @@ import { motion } from "motion/react"
 import {
   ArrowUpRight,
   Globe2,
-  Clapboard,
+  Film,
   Tv,
   Bookmark,
   Sparkles,
@@ -83,7 +83,7 @@ export function Footer() {
                   to="/"
                   className="group inline-flex items-center gap-2 text-white/70 transition-colors hover:text-primary"
                 >
-                  <Clapboard className="h-4 w-4 text-primary opacity-0 transition-opacity group-hover:opacity-100" />
+                  <Film className="h-4 w-4 text-primary opacity-0 transition-opacity group-hover:opacity-100" />
                   <span>Featured Movies</span>
                 </Link>
               </li>
