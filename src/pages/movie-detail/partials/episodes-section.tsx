@@ -72,7 +72,7 @@ export function EpisodesSection({ tvId, seasons = [] }: EpisodesSectionProps) {
           ))}
         </div>
       ) : (
-        <div className="divide-y divide-white/10 rounded-none border border-white/10 bg-white/5 backdrop-blur-sm">
+        <div className="max-h-72 overflow-y-auto divide-y divide-white/10 rounded-none border border-white/10 bg-white/5 backdrop-blur-sm shadow-inner">
           {seasonDetail?.episodes.map((ep) => (
             <div
               key={ep.id}
