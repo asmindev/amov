@@ -163,6 +163,9 @@ export function MovieCard({
                   <span className="rounded border border-white/20 bg-white/5 px-1 text-[10px] font-bold tracking-wider uppercase">
                     HD
                   </span>
+                  <span className="rounded border border-white/20 bg-white/5 px-1 text-[10px] font-bold tracking-wider uppercase">
+                    {movie.mediaType === "tv" ? "TV" : "Movie"}
+                  </span>
                   <span>{formatYear(movie.releaseDate)}</span>
                 </div>
 
@@ -296,6 +299,9 @@ export function MovieCard({
                 </span>
                 <span className="rounded border border-white/20 bg-white/5 px-1 text-[10px] font-bold tracking-wider uppercase">
                   HD
+                </span>
+                <span className="rounded border border-white/20 bg-white/5 px-1 text-[10px] font-bold tracking-wider uppercase">
+                  {movie.mediaType === "tv" ? "TV" : "Movie"}
                 </span>
                 <span>{formatYear(movie.releaseDate)}</span>
                 <span className="text-yellow-500">
