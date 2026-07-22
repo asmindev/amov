@@ -140,12 +140,12 @@ export function DiscoverFilters({
                 <Button
                   variant="outline"
                   size="sm"
-                  className="h-8 gap-1.5 rounded-full border-white/10 bg-white/5 px-3 text-xs font-medium transition-all hover:bg-white/10 data-[state=open]:border-white/20 data-[state=open]:bg-white/10"
+                  className="h-8 gap-1.5 rounded-md border-white/10 bg-white/5 px-3 text-xs font-medium transition-all hover:bg-white/10 data-[state=open]:border-white/20 data-[state=open]:bg-white/10"
                 >
                   <Clapperboard className="h-3.5 w-3.5 opacity-70" />
                   Genres
                   {selectedGenres.length > 0 && (
-                    <span className="flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground">
+                    <span className="flex h-4 w-4 items-center justify-center rounded-sm bg-primary text-[10px] font-bold text-primary-foreground">
                       {selectedGenres.length}
                     </span>
                   )}
@@ -192,7 +192,7 @@ export function DiscoverFilters({
               updateFilters({ year: val === "all" || !val ? "" : val })
             }
           >
-            <SelectTrigger className="h-8 gap-1.5 rounded-full border-white/10 bg-white/5 px-3 text-xs font-medium transition-all hover:bg-white/10 data-[state=open]:bg-white/10">
+            <SelectTrigger className="h-8 gap-1.5 rounded-md border-white/10 bg-white/5 px-3 text-xs font-medium transition-all hover:bg-white/10 data-[state=open]:bg-white/10">
               <Calendar className="h-3.5 w-3.5 shrink-0 opacity-70" />
               <SelectValue placeholder="Year">
                 {!selectedYear || selectedYear === "all"
@@ -225,7 +225,7 @@ export function DiscoverFilters({
               updateFilters({ country: val === "all" || !val ? "" : val })
             }
           >
-            <SelectTrigger className="h-8 gap-1.5 rounded-full border-white/10 bg-white/5 px-3 text-xs font-medium transition-all hover:bg-white/10 data-[state=open]:bg-white/10">
+            <SelectTrigger className="h-8 gap-1.5 rounded-md border-white/10 bg-white/5 px-3 text-xs font-medium transition-all hover:bg-white/10 data-[state=open]:bg-white/10">
               <Globe className="h-3.5 w-3.5 shrink-0 opacity-70" />
               <SelectValue placeholder="Country">
                 {!selectedCountry || selectedCountry === "all"
@@ -258,12 +258,12 @@ export function DiscoverFilters({
                 <Button
                   variant="outline"
                   size="sm"
-                  className="h-8 gap-1.5 rounded-full border-white/10 bg-white/5 px-3 text-xs font-medium transition-all hover:bg-white/10 data-[state=open]:border-white/20 data-[state=open]:bg-white/10"
+                  className="h-8 gap-1.5 rounded-md border-white/10 bg-white/5 px-3 text-xs font-medium transition-all hover:bg-white/10 data-[state=open]:border-white/20 data-[state=open]:bg-white/10"
                 >
                   <Tv className="h-3.5 w-3.5 opacity-70" />
                   Streaming
                   {selectedProviders.length > 0 && (
-                    <span className="flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground">
+                    <span className="flex h-4 w-4 items-center justify-center rounded-sm bg-primary text-[10px] font-bold text-primary-foreground">
                       {selectedProviders.length}
                     </span>
                   )}
@@ -306,7 +306,7 @@ export function DiscoverFilters({
               updateFilters({ sortBy: val || "popularity.desc" })
             }
           >
-            <SelectTrigger className="h-8 gap-1.5 rounded-full border-white/10 bg-white/5 px-3 text-xs font-medium transition-all hover:bg-white/10 data-[state=open]:bg-white/10">
+            <SelectTrigger className="h-8 gap-1.5 rounded-md border-white/10 bg-white/5 px-3 text-xs font-medium transition-all hover:bg-white/10 data-[state=open]:bg-white/10">
               <ArrowUpDown className="h-3.5 w-3.5 shrink-0 opacity-70" />
               <SelectValue placeholder="Sort By">
                 {SORT_OPTIONS.find((opt) => opt.value === selectedSortBy)
@@ -359,7 +359,7 @@ export function DiscoverFilters({
                           genres: selectedGenres.filter((g) => g !== id),
                         })
                       }
-                      className="flex items-center gap-1 rounded-full bg-primary/15 px-2.5 py-1 text-[11px] font-medium text-primary ring-1 ring-primary/30 transition-colors hover:bg-primary/25"
+                      className="flex items-center gap-1 rounded-md bg-primary/15 px-2.5 py-1 text-[11px] font-medium text-primary ring-1 ring-primary/30 transition-colors hover:bg-primary/25"
                     >
                       {genre.name}
                       <X className="h-3 w-3" />
@@ -375,7 +375,7 @@ export function DiscoverFilters({
                     exit={{ opacity: 0, scale: 0.8 }}
                     transition={{ type: "spring", stiffness: 400, damping: 25 }}
                     onClick={() => updateFilters({ year: "" })}
-                    className="flex items-center gap-1 rounded-full bg-primary/15 px-2.5 py-1 text-[11px] font-medium text-primary ring-1 ring-primary/30 transition-colors hover:bg-primary/25"
+                    className="flex items-center gap-1 rounded-md bg-primary/15 px-2.5 py-1 text-[11px] font-medium text-primary ring-1 ring-primary/30 transition-colors hover:bg-primary/25"
                   >
                     {selectedYear}
                     <X className="h-3 w-3" />
@@ -390,7 +390,7 @@ export function DiscoverFilters({
                     exit={{ opacity: 0, scale: 0.8 }}
                     transition={{ type: "spring", stiffness: 400, damping: 25 }}
                     onClick={() => updateFilters({ country: "" })}
-                    className="flex items-center gap-1 rounded-full bg-primary/15 px-2.5 py-1 text-[11px] font-medium text-primary ring-1 ring-primary/30 transition-colors hover:bg-primary/25"
+                    className="flex items-center gap-1 rounded-md bg-primary/15 px-2.5 py-1 text-[11px] font-medium text-primary ring-1 ring-primary/30 transition-colors hover:bg-primary/25"
                   >
                     {COUNTRIES.find((c) => c.code === selectedCountry)?.name}
                     <X className="h-3 w-3" />
@@ -416,7 +416,7 @@ export function DiscoverFilters({
                           providers: selectedProviders.filter((p) => p !== id),
                         })
                       }
-                      className="flex items-center gap-1 rounded-full bg-primary/15 px-2.5 py-1 text-[11px] font-medium text-primary ring-1 ring-primary/30 transition-colors hover:bg-primary/25"
+                      className="flex items-center gap-1 rounded-md bg-primary/15 px-2.5 py-1 text-[11px] font-medium text-primary ring-1 ring-primary/30 transition-colors hover:bg-primary/25"
                     >
                       {provider.name}
                       <X className="h-3 w-3" />
@@ -432,7 +432,7 @@ export function DiscoverFilters({
                     exit={{ opacity: 0, scale: 0.8 }}
                     transition={{ type: "spring", stiffness: 400, damping: 25 }}
                     onClick={() => updateFilters({ sortBy: "popularity.desc" })}
-                    className="flex items-center gap-1 rounded-full bg-primary/15 px-2.5 py-1 text-[11px] font-medium text-primary ring-1 ring-primary/30 transition-colors hover:bg-primary/25"
+                    className="flex items-center gap-1 rounded-md bg-primary/15 px-2.5 py-1 text-[11px] font-medium text-primary ring-1 ring-primary/30 transition-colors hover:bg-primary/25"
                   >
                     {
                       SORT_OPTIONS.find((o) => o.value === selectedSortBy)
@@ -455,7 +455,7 @@ export function DiscoverFilters({
                     sortBy: "popularity.desc",
                   })
                 }
-                className="h-7 gap-1 rounded-full px-2.5 text-[11px] text-muted-foreground hover:text-white"
+                className="h-7 gap-1 rounded-md px-2.5 text-[11px] text-muted-foreground hover:text-white"
               >
                 <X className="h-3 w-3" />
                 Clear all
