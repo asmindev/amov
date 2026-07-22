@@ -56,7 +56,7 @@
   --chart-3: #27272a;
   --chart-4: #3f3f46;
   --chart-5: #52525b;
-  --radius: 0.5rem;
+  --radius: 0;
   --sidebar: #ffffff;
   --sidebar-foreground: #09090b;
   --sidebar-primary: #e50914;
@@ -92,7 +92,7 @@
   --chart-3: #27272a;
   --chart-4: #3f3f46;
   --chart-5: #52525b;
-  --radius: 0.5rem;
+  --radius: 0;
   --sidebar: #0e0e0e;
   --sidebar-foreground: #e2e2e2;
   --sidebar-primary: #e50914;
