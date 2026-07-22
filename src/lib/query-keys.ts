@@ -14,6 +14,17 @@ export const queryKeys = {
     byGenre: (genreId: string) =>
       [...queryKeys.movies.all, "genre", genreId] as const,
   },
+  media: {
+    all: ["media"] as const,
+    detail: (type: string, id: string) =>
+      [...queryKeys.media.all, type, "detail", id] as const,
+    similar: (type: string, id: string) =>
+      [...queryKeys.media.all, type, "similar", id] as const,
+    videos: (type: string, id: string) =>
+      [...queryKeys.media.all, type, "videos", id] as const,
+    season: (tvId: string, seasonNumber: number) =>
+      [...queryKeys.media.all, "tv", tvId, "season", seasonNumber] as const,
+  },
   genres: {
     all: ["genres"] as const,
   },

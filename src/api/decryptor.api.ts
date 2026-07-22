@@ -24,6 +24,8 @@ export interface FetchSourcesParams {
   mediaType: "movie" | "tv"
   provider: string
   imdbId?: string
+  season?: number
+  episode?: number
 }
 
 export async function fetchDecryptedSources(
@@ -36,6 +38,8 @@ export async function fetchDecryptedSources(
     provider: params.provider,
     ...(params.year ? { year: params.year } : {}),
     ...(params.imdbId ? { imdbId: params.imdbId } : {}),
+    ...(params.season !== undefined ? { season: String(params.season) } : {}),
+    ...(params.episode !== undefined ? { episode: String(params.episode) } : {}),
   })
 
   const res = await fetch(`${DECRYPTOR_URL}/sources?${qs.toString()}`)

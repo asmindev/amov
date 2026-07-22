@@ -9,6 +9,7 @@ import {
   MovieDetailSchema,
   MovieListSchema,
   VideoListSchema,
+  EpisodeListSchema,
 } from "@/types/movie.types"
 
 export async function getTrendingMovies() {
@@ -40,27 +41,54 @@ export async function getNetflixMovies() {
   return MovieListSchema.parse(res)
 }
 
-export async function getMovieById(id: string) {
+export async function getMediaDetail(type: "movie" | "tv", id: string) {
   const lang =
     typeof window !== "undefined"
       ? (localStorage.getItem("app-language") || "en-US").split("-")[0]
       : "en"
 
-  const res = await apiClient.get<unknown>(endpoints.movies.detail(id), {
+  const endpoint =
+    type === "tv" ? endpoints.tv.detail(id) : endpoints.movies.detail(id)
+
+  const res = await apiClient.get<unknown>(endpoint, {
     append_to_response: "images,credits",
     include_image_language: `${lang},en,null`,
   })
-  return MovieDetailSchema.parse(res)
+  const parsed = MovieDetailSchema.parse(res)
+  return { ...parsed, mediaType: type }
 }
 
-export async function getSimilarMovies(id: string) {
-  const res = await apiClient.get<unknown>(endpoints.movies.similar(id))
+export async function getMovieById(id: string) {
+  return getMediaDetail("movie", id)
+}
+
+export async function getSimilarMedia(type: "movie" | "tv", id: string) {
+  const endpoint =
+    type === "tv" ? endpoints.tv.similar(id) : endpoints.movies.similar(id)
+  const res = await apiClient.get<unknown>(endpoint)
   return MovieListSchema.parse(res)
 }
 
-export async function getMovieVideos(id: string) {
-  const res = await apiClient.get<unknown>(endpoints.movies.videos(id))
+export async function getSimilarMovies(id: string) {
+  return getSimilarMedia("movie", id)
+}
+
+export async function getMediaVideos(type: "movie" | "tv", id: string) {
+  const endpoint =
+    type === "tv" ? endpoints.tv.videos(id) : endpoints.movies.videos(id)
+  const res = await apiClient.get<unknown>(endpoint)
   return VideoListSchema.parse(res)
+}
+
+export async function getTvSeasonDetail(tvId: string, seasonNumber: number) {
+  const res = await apiClient.get<unknown>(
+    endpoints.tv.season(tvId, seasonNumber)
+  )
+  return EpisodeListSchema.parse(res)
+}
+
+export async function getMovieVideos(id: string) {
+  return getMediaVideos("movie", id)
 }
 
 export async function getMoviesByGenre(genreId: string) {

@@ -44,9 +44,8 @@ export function MovieBillboard({
       )}
 
       {/* Gradients to blend background into content */}
-      <div className="absolute inset-0 bg-gradient-to-t from-background via-background/80 to-transparent" />
-      <div className="absolute inset-0 bg-gradient-to-r from-background/90 via-background/40 to-transparent" />
-      <div className="absolute inset-0 bg-black/20 backdrop-blur-[2px]" />
+      <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-r from-background/80 via-background/20 to-transparent" />
     </div>
   )
 }

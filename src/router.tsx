@@ -72,12 +72,39 @@ const discoverRoute = createRoute({
   ),
 })
 
-const movieDetailRoute = createRoute({
+const mediaDetailRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: "/movie/$id",
-  validateSearch: (search: Record<string, unknown>): { play?: boolean } => {
+  path: "/$type/$id",
+  parseParams: (params) => ({
+    type: params.type === "tv" ? ("tv" as const) : ("movie" as const),
+    id: params.id,
+  }),
+  validateSearch: (
+    search: Record<string, unknown>
+  ): { play?: boolean; season?: number; episode?: number } => {
     return {
       play: search.play === "true" || search.play === true,
+      season: search.season ? Number(search.season) : undefined,
+      episode: search.episode ? Number(search.episode) : undefined,
+    }
+  },
+  component: () => (
+    <React.Suspense>
+      <LazyMovieDetail />
+    </React.Suspense>
+  ),
+})
+
+const movieDetailAliasRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/movie/$id",
+  validateSearch: (
+    search: Record<string, unknown>
+  ): { play?: boolean; season?: number; episode?: number } => {
+    return {
+      play: search.play === "true" || search.play === true,
+      season: search.season ? Number(search.season) : undefined,
+      episode: search.episode ? Number(search.episode) : undefined,
     }
   },
   component: () => (
@@ -99,6 +126,28 @@ const watchlistRoute = createRoute({
 
 const netflixPlayerRoute = createRoute({
   getParentRoute: () => rootRoute,
+  path: "/$type/$id/netflix",
+  parseParams: (params) => ({
+    type: params.type === "tv" ? ("tv" as const) : ("movie" as const),
+    id: params.id,
+  }),
+  validateSearch: (
+    search: Record<string, unknown>
+  ): { season?: number; episode?: number } => {
+    return {
+      season: search.season ? Number(search.season) : undefined,
+      episode: search.episode ? Number(search.episode) : undefined,
+    }
+  },
+  component: () => (
+    <React.Suspense>
+      <LazyNetflixPlayer />
+    </React.Suspense>
+  ),
+})
+
+const legacyNetflixPlayerRoute = createRoute({
+  getParentRoute: () => rootRoute,
   path: "/movie/$id/netflix",
   component: () => (
     <React.Suspense>
@@ -110,9 +159,11 @@ const netflixPlayerRoute = createRoute({
 const routeTree = rootRoute.addChildren([
   homeRoute,
   discoverRoute,
-  movieDetailRoute,
+  mediaDetailRoute,
+  movieDetailAliasRoute,
   watchlistRoute,
   netflixPlayerRoute,
+  legacyNetflixPlayerRoute,
 ])
 
 export const router = createRouter({ routeTree })

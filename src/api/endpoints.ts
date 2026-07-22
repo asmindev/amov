@@ -14,6 +14,8 @@ export const endpoints = {
     detail: (id: string) => `/tv/${id}`,
     similar: (id: string) => `/tv/${id}/recommendations`,
     videos: (id: string) => `/tv/${id}/videos`,
+    season: (id: string, seasonNumber: number) =>
+      `/tv/${id}/season/${seasonNumber}`,
   },
   genres: {
     list: "/genre/movie/list",

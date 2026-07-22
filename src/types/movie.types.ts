@@ -71,23 +71,74 @@ export const CastMemberSchema = TmdbCastMemberSchema.transform((c) => ({
 
 export type CastMember = z.infer<typeof CastMemberSchema>
 
-const TmdbLogoItemSchema = z.object({
+const TmdbImageItemSchema = z.object({
   file_path: z.string(),
-  iso_639_1: z.string().nullable(),
+  iso_639_1: z.string().nullable().optional(),
+  width: z.number().optional(),
+  height: z.number().optional(),
+  vote_average: z.number().optional(),
 })
 
 const TmdbImagesSchema = z.object({
-  logos: z.array(TmdbLogoItemSchema).default([]),
+  logos: z.array(TmdbImageItemSchema).default([]),
+  backdrops: z.array(TmdbImageItemSchema).default([]),
 })
 
+const TmdbTvSeasonSchema = z.object({
+  id: z.number(),
+  name: z.string(),
+  season_number: z.number(),
+  episode_count: z.number().optional().default(0),
+  poster_path: z.string().nullable().optional(),
+  overview: z.string().optional().default(""),
+})
+
+export const TvSeasonSchema = TmdbTvSeasonSchema.transform((s) => ({
+  id: s.id,
+  name: s.name,
+  seasonNumber: s.season_number,
+  episodeCount: s.episode_count,
+  posterPath: s.poster_path ?? null,
+  overview: s.overview,
+}))
+
+export type TvSeason = z.infer<typeof TvSeasonSchema>
+
+export const EpisodeSchema = z.object({
+  id: z.number(),
+  name: z.string(),
+  overview: z.string().optional().default(""),
+  episode_number: z.number(),
+  season_number: z.number(),
+  still_path: z.string().nullable().optional(),
+  air_date: z.string().nullable().optional().default(""),
+  runtime: z.number().nullable().optional(),
+  vote_average: z.number().optional().default(0),
+})
+
+export const EpisodeListSchema = z.object({
+  id: z.number().optional(),
+  name: z.string().optional(),
+  overview: z.string().optional().default(""),
+  season_number: z.number().optional(),
+  episodes: z.array(EpisodeSchema).default([]),
+})
+
+export type Episode = z.infer<typeof EpisodeSchema>
+export type EpisodeList = z.infer<typeof EpisodeListSchema>
+
 const TmdbMovieDetailSchema = TmdbMovieSchema.extend({
-  runtime: z.number().nullable(),
-  tagline: z.string().nullable(),
-  budget: z.number(),
-  revenue: z.number(),
-  status: z.string(),
-  genres: z.array(GenreSchema),
-  imdb_id: z.string().nullable(),
+  runtime: z.number().nullable().optional(),
+  episode_run_time: z.array(z.number()).optional(),
+  number_of_seasons: z.number().optional(),
+  number_of_episodes: z.number().optional(),
+  seasons: z.array(TmdbTvSeasonSchema).optional(),
+  tagline: z.string().nullable().optional(),
+  budget: z.number().optional().default(0),
+  revenue: z.number().optional().default(0),
+  status: z.string().optional().default(""),
+  genres: z.array(GenreSchema).optional().default([]),
+  imdb_id: z.string().nullable().optional(),
   genre_ids: z.array(z.number()).optional().default([]),
   images: TmdbImagesSchema.optional(),
   credits: z
@@ -99,6 +150,7 @@ const TmdbMovieDetailSchema = TmdbMovieSchema.extend({
 
 export const MovieDetailSchema = TmdbMovieDetailSchema.transform((m) => {
   const logos = m.images?.logos ?? []
+  const backdrops = m.images?.backdrops ?? []
   const lang =
     typeof window !== "undefined"
       ? (localStorage.getItem("app-language") || "en-US").split("-")[0]
@@ -109,12 +161,22 @@ export const MovieDetailSchema = TmdbMovieDetailSchema.transform((m) => {
     logos.find((l) => l.iso_639_1 === null) ??
     logos[0]
 
+  // Pick backdrop with highest resolution or fallback to default backdrop_path
+  const bestBackdrop = backdrops.length > 0
+    ? [...backdrops].sort((a, b) => (b.width || 0) - (a.width || 0))[0]?.file_path
+    : null
+
+  const backdropPath = bestBackdrop ?? m.backdrop_path ?? null
+
+  const runtime =
+    m.runtime ?? (m.episode_run_time && m.episode_run_time.length > 0 ? m.episode_run_time[0] : null)
+
   return {
     id: m.id,
     title: m.title || m.name || "",
     overview: m.overview,
     posterPath: m.poster_path ?? null,
-    backdropPath: m.backdrop_path ?? null,
+    backdropPath,
     releaseDate: m.release_date || m.first_air_date || "",
     voteAverage: m.vote_average,
     voteCount: m.vote_count,
@@ -122,13 +184,23 @@ export const MovieDetailSchema = TmdbMovieDetailSchema.transform((m) => {
     popularity: m.popularity,
     adult: m.adult,
     originalLanguage: m.original_language,
-    runtime: m.runtime,
-    tagline: m.tagline,
+    runtime,
+    numberOfSeasons: m.number_of_seasons,
+    numberOfEpisodes: m.number_of_episodes,
+    seasons: m.seasons?.map((s) => ({
+      id: s.id,
+      name: s.name,
+      seasonNumber: s.season_number,
+      episodeCount: s.episode_count,
+      posterPath: s.poster_path ?? null,
+      overview: s.overview,
+    })),
+    tagline: m.tagline ?? null,
     budget: m.budget,
     revenue: m.revenue,
     status: m.status,
     genres: m.genres,
-    imdbId: m.imdb_id,
+    imdbId: m.imdb_id ?? null,
     logoPath: logo?.file_path ?? null,
     mediaType: m.media_type ?? (m.title ? "movie" : m.name ? "tv" : "movie"),
     cast: m.credits?.cast.map((c) => ({

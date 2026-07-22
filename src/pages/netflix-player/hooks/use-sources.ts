@@ -12,6 +12,8 @@ interface UseSourcesParams {
   year: string
   mediaType: "movie" | "tv"
   imdbId?: string
+  season?: number
+  episode?: number
 }
 
 interface UseSourcesReturn {
@@ -31,8 +33,14 @@ export function useSources(params: UseSourcesParams): UseSourcesReturn {
 
   const enabled = !!params.tmdbId && !!params.title
 
+  const queryKey = [
+    ...queryKeys.decryptor.sources(params.tmdbId, provider),
+    params.season,
+    params.episode,
+  ]
+
   const query = useQuery({
-    queryKey: queryKeys.decryptor.sources(params.tmdbId, provider),
+    queryKey,
     queryFn: () =>
       fetchDecryptedSources({
         ...params,

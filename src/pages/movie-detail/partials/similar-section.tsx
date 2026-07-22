@@ -18,7 +18,7 @@ export function SimilarSection({ similarMovies }: SimilarSectionProps) {
       <h2 className="mb-6 font-heading text-2xl font-semibold">
         More Like This
       </h2>
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
         {similarMovies.map((m) => (
           <MovieCard key={m.id} movie={m} className="w-full" />
         ))}

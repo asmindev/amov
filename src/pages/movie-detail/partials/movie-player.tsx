@@ -20,13 +20,27 @@ function formatTimestamp(seconds: number): string {
 interface MoviePlayerProps {
   movieId: number
   movieTitle: string
+  mediaType?: "movie" | "tv"
+  season?: number
+  episode?: number
 }
 
-export function MoviePlayer({ movieId, movieTitle }: MoviePlayerProps) {
-  const saved = getWatchProgress("movie", movieId)
+export function MoviePlayer({
+  movieId,
+  movieTitle,
+  mediaType = "movie",
+  season = 1,
+  episode = 1,
+}: MoviePlayerProps) {
+  const isTv = mediaType === "tv"
+  const saved = getWatchProgress(mediaType, movieId)
+
+  const baseUrl = isTv
+    ? `https://player.videasy.net/tv/${movieId}/${season}/${episode}`
+    : `https://player.videasy.net/movie/${movieId}`
 
   const playerUrl = [
-    `https://player.videasy.net/movie/${movieId}`,
+    baseUrl,
     `?color=${PLAYER_COLOR}`,
     `&overlay=true`,
     saved && saved.timestamp > 30
@@ -34,7 +48,7 @@ export function MoviePlayer({ movieId, movieTitle }: MoviePlayerProps) {
       : "",
   ].join("")
 
-  useWatchProgressTracker("movie", movieId, true)
+  useWatchProgressTracker(mediaType, movieId, true)
 
   return (
     <div className="fixed inset-0 z-[100] bg-black">
@@ -48,8 +62,8 @@ export function MoviePlayer({ movieId, movieTitle }: MoviePlayerProps) {
       />
 
       <Link
-        to="/movie/$id"
-        params={{ id: movieId.toString() }}
+        to="/$type/$id"
+        params={{ type: mediaType, id: movieId.toString() }}
         className="absolute top-6 left-6 z-50 flex items-center gap-2 rounded-full border border-white/20 bg-black/50 px-4 py-2 text-sm font-semibold text-white backdrop-blur-md transition-all hover:scale-105 hover:bg-white/20"
       >
         <ChevronLeft className="h-4 w-4" />

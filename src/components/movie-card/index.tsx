@@ -135,8 +135,11 @@ export function MovieCard({
                 <div className="flex shrink-0 items-center justify-between px-3 pt-3 pb-2">
                   <div className="flex gap-1.5">
                     <Link
-                      to="/movie/$id"
-                      params={{ id: String(movie.id) }}
+                      to="/$type/$id"
+                      params={{
+                        type: movie.mediaType || "movie",
+                        id: String(movie.id),
+                      }}
                       className="flex h-7 w-9 items-center justify-center bg-primary transition-colors hover:bg-primary/90"
                     >
                       <span className="material-symbols-outlined fill !text-[18px]">
@@ -151,8 +154,11 @@ export function MovieCard({
                     </button>
                   </div>
                   <Link
-                    to="/movie/$id"
-                    params={{ id: String(movie.id) }}
+                    to="/$type/$id"
+                    params={{
+                      type: movie.mediaType || "movie",
+                      id: String(movie.id),
+                    }}
                     className="flex h-7 w-9 items-center justify-center border border-white/20 bg-black/50 text-white transition-colors hover:border-white hover:bg-black/80"
                   >
                     <ChevronDown className="h-4 w-4" />
@@ -273,8 +279,11 @@ export function MovieCard({
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Link
-                    to="/movie/$id"
-                    params={{ id: String(movie.id) }}
+                    to="/$type/$id"
+                    params={{
+                      type: movie.mediaType || "movie",
+                      id: String(movie.id),
+                    }}
                     className="flex h-7 w-9 items-center justify-center bg-primary transition-colors hover:bg-primary/90"
                   >
                     <span className="material-symbols-outlined fill ml-0.5 !text-[20px]">
@@ -289,8 +298,11 @@ export function MovieCard({
                   </button>
                 </div>
                 <Link
-                  to="/movie/$id"
-                  params={{ id: String(movie.id) }}
+                  to="/$type/$id"
+                  params={{
+                    type: movie.mediaType || "movie",
+                    id: String(movie.id),
+                  }}
                   className="flex h-9 w-9 items-center justify-center rounded-full border border-white/20 bg-black/50 text-white transition-colors hover:border-white hover:bg-black/80"
                 >
                   <ChevronDown className="h-4 w-4" />

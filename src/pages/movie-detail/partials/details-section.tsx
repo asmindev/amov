@@ -9,8 +9,10 @@ interface DetailsSectionProps {
     status: string
     releaseDate?: string
     originalLanguage: string
-    budget: number
-    revenue: number
+    budget?: number
+    revenue?: number
+    numberOfSeasons?: number
+    numberOfEpisodes?: number
   }
 }
 
@@ -59,6 +61,8 @@ export function DetailsSection({ movie }: DetailsSectionProps) {
           originalLanguage={movie.originalLanguage}
           budget={movie.budget}
           revenue={movie.revenue}
+          numberOfSeasons={movie.numberOfSeasons}
+          numberOfEpisodes={movie.numberOfEpisodes}
         />
       </div>
     </motion.section>

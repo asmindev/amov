@@ -1,6 +1,6 @@
-import { useParams, Link } from "@tanstack/react-router"
+import { useParams, useSearch, Link } from "@tanstack/react-router"
 import { AlertTriangle, ServerCrash } from "lucide-react"
-import { useMovieDetail } from "@/pages/movie-detail/hooks/use-movie-detail"
+import { useMediaDetail } from "@/pages/movie-detail/hooks/use-movie-detail"
 import { useSources } from "./hooks/use-sources"
 import { HlsPlayer } from "./partials/hls-player"
 import { getBackdropUrl as getBdUrl } from "@/helpers/image-url"
@@ -13,12 +13,22 @@ function safeYear(releaseDate: string | null | undefined): string {
 }
 
 export default function NetflixPlayerPage() {
-  const { id } = useParams({ from: "/movie/$id/netflix" })
+  const params = useParams({ strict: false }) as { type?: string; id?: string }
+  const mediaType: "movie" | "tv" = params.type === "tv" ? "tv" : "movie"
+  const id = params.id || ""
+
+  const search = useSearch({ strict: false }) as {
+    season?: number
+    episode?: number
+  }
+  const season = search.season ?? 1
+  const episode = search.episode ?? 1
+
   const {
     data: movie,
     isPending: moviePending,
     isError: movieError,
-  } = useMovieDetail(id)
+  } = useMediaDetail(mediaType, id)
 
   const {
     data: sources,
@@ -35,14 +45,16 @@ export default function NetflixPlayerPage() {
           tmdbId: String(movie.id),
           title: movie.title,
           year: safeYear(movie.releaseDate),
-          mediaType: "movie",
+          mediaType,
           imdbId: movie.imdbId ?? undefined,
+          season: mediaType === "tv" ? season : undefined,
+          episode: mediaType === "tv" ? episode : undefined,
         }
       : {
           tmdbId: id,
           title: "",
           year: "",
-          mediaType: "movie",
+          mediaType,
         }
   )
 
@@ -56,7 +68,7 @@ export default function NetflixPlayerPage() {
       <div className="fixed inset-0 flex items-center justify-center bg-black">
         <div className="text-center">
           <div className="mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-4 border-white/20 border-t-red-500" />
-          <p className="text-sm text-white/60">Loading movie…</p>
+          <p className="text-sm text-white/60">Loading media details…</p>
         </div>
       </div>
     )
@@ -66,13 +78,13 @@ export default function NetflixPlayerPage() {
     return (
       <div className="fixed inset-0 flex flex-col items-center justify-center gap-4 bg-black">
         <AlertTriangle className="h-10 w-10 text-red-400" />
-        <p className="font-semibold text-white">Could not load movie details</p>
+        <p className="font-semibold text-white">Could not load details</p>
         <Link
-          to="/movie/$id"
-          params={{ id }}
+          to="/$type/$id"
+          params={{ type: mediaType, id }}
           className="text-sm text-white/50 underline transition-colors hover:text-white"
         >
-          Back to movie
+          Back to details
         </Link>
       </div>
     )

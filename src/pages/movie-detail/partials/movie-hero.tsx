@@ -35,6 +35,7 @@ interface MovieHeroProps {
     popularity: number
     overview: string
     imdbId: string | null
+    mediaType?: "movie" | "tv"
   }
   trailer?: {
     key: string
@@ -58,6 +59,8 @@ export function MovieHero({
   savedProgress,
   setShowVideo,
 }: MovieHeroProps) {
+  const mediaType = movie.mediaType || "movie"
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 40 }}
@@ -105,9 +108,6 @@ export function MovieHero({
         <span className="rounded-none border border-white/20 bg-white/5 px-1.5 py-0.5 text-[10px] font-extrabold tracking-wider text-white uppercase">
           {getMovieQuality(movie.popularity, movie.releaseDate)}
         </span>
-        <span className="rounded-none border border-white/20 bg-white/5 px-1.5 py-0.5 text-[10px] font-extrabold tracking-wider text-white uppercase">
-          HD
-        </span>
       </div>
 
       <p className="mb-8 max-w-2xl text-lg leading-relaxed text-white/90 drop-shadow-md">
@@ -144,7 +144,7 @@ export function MovieHero({
             />
           </div>
           <button
-            onClick={() => clearWatchProgress("movie", movie.id)}
+            onClick={() => clearWatchProgress(mediaType, movie.id)}
             className="mt-1.5 flex items-center gap-1 text-xs text-white/40 transition-colors hover:text-white/70"
           >
             <RotateCcw className="h-3 w-3" />
@@ -155,8 +155,8 @@ export function MovieHero({
 
       <div className="flex flex-wrap items-center gap-4">
         <Link
-          to="/movie/$id"
-          params={{ id: movie.id.toString() }}
+          to="/$type/$id"
+          params={{ type: mediaType, id: movie.id.toString() }}
           search={{ play: true }}
           className="flex items-center gap-2 rounded-none bg-white px-8 py-3.5 text-base font-bold text-black shadow-lg transition-all hover:scale-105 hover:bg-gray-200 active:scale-95"
         >
@@ -167,8 +167,8 @@ export function MovieHero({
         </Link>
 
         <Link
-          to="/movie/$id/netflix"
-          params={{ id: movie.id.toString() }}
+          to="/$type/$id/netflix"
+          params={{ type: mediaType, id: movie.id.toString() }}
           className="flex items-center gap-2 rounded-none bg-white/15 px-8 py-3.5 text-base font-bold text-white backdrop-blur-md transition-all hover:scale-105 hover:bg-white/25 active:scale-95"
         >
           <span className="material-symbols-outlined !text-[24px]">
