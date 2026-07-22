@@ -64,7 +64,7 @@ export function MovieCard({
           layout: { type: "spring", stiffness: 400, damping: 30 },
           default: { duration: 0.25, ease: [0.4, 0, 0.2, 1] },
         }}
-        className={`group relative z-0 aspect-[2/3] w-48 shrink-0 cursor-pointer overflow-hidden rounded-xl border border-border bg-card text-card-foreground hover:z-30 ${className || ""}`}
+        className={`group relative z-0 aspect-[2/3] w-48 shrink-0 cursor-pointer overflow-hidden rounded-none border border-border bg-card text-card-foreground hover:z-30 ${className || ""}`}
         style={{
           height: 288,
           boxShadow: isHovered
@@ -97,7 +97,7 @@ export function MovieCard({
                   "w500"
                 )}
                 alt={movie.title}
-                className="h-full w-full rounded-xl object-cover"
+                className="h-full w-full rounded-none object-cover"
               />
             </motion.div>
           ) : (
@@ -208,7 +208,7 @@ export function MovieCard({
     <div
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-      className={`group relative z-0 aspect-video w-full cursor-pointer rounded-xl hover:z-50 ${className || ""}`}
+      className={`group relative z-0 aspect-video w-full cursor-pointer rounded-none hover:z-50 ${className || ""}`}
     >
       {/* Rank Indicator */}
       {showRank && rank && (
@@ -223,7 +223,7 @@ export function MovieCard({
       <img
         src={getImageUrl(movie.backdropPath || movie.posterPath, "w780")}
         alt={movie.title}
-        className="h-full w-full rounded-xl object-cover transition-transform duration-300 group-hover:scale-105"
+        className="h-full w-full rounded-none object-cover transition-transform duration-300 group-hover:scale-105"
       />
 
       {/* Popup Overlay */}
@@ -235,7 +235,7 @@ export function MovieCard({
             animate={{ opacity: 1, scale: 1.1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 10 }}
             transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
-            className="absolute -top-4 left-1/2 w-[110%] -translate-x-1/2 overflow-hidden rounded-xl border border-border bg-card text-card-foreground"
+            className="absolute -top-4 left-1/2 w-[110%] -translate-x-1/2 overflow-hidden rounded-none border border-border bg-card text-card-foreground"
             style={{ boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.75)" }}
           >
             {/* Backdrop */}
