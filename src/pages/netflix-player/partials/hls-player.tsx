@@ -40,6 +40,7 @@ interface HlsPlayerProps {
   movieOverview?: string
   popularity?: number
   voteAverage?: number
+  logoPath?: string | null
 }
 
 // ─── Main Component ───────────────────────────────────────────────────────────
@@ -60,6 +61,7 @@ export function HlsPlayer({
   movieOverview,
   popularity = 0,
   voteAverage = 0,
+  logoPath,
 }: HlsPlayerProps) {
   const videoRef = useRef<HTMLVideoElement>(null)
   const hlsRef = useRef<Hls | null>(null)
@@ -577,20 +579,6 @@ export function HlsPlayer({
         </div>
       )}
 
-      {/* ── Big play icon when paused ── */}
-      {!playing && !buffering && !isFetchingProvider && (
-        <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center">
-          <div className="flex h-20 w-20 items-center justify-center rounded-full bg-black/40">
-            <span
-              className="material-symbols-outlined fill"
-              style={{ fontSize: "48px" }}
-            >
-              play_arrow
-            </span>
-          </div>
-        </div>
-      )}
-
       {/* ── Paused metadata overlay (Netflix Style) ── */}
       <AnimatePresence>
         {!playing &&
@@ -612,9 +600,17 @@ export function HlsPlayer({
                 className="max-w-md space-y-4 md:max-w-xl lg:max-w-2xl"
               >
                 {/* Floating logo/title */}
-                <h2 className="text-3xl font-extrabold tracking-wide text-white drop-shadow-[0_4px_8px_rgba(0,0,0,0.8)] md:text-5xl lg:text-6xl">
-                  {movieTitle}
-                </h2>
+                {logoPath ? (
+                  <img
+                    src={`https://image.tmdb.org/t/p/w500${logoPath}`}
+                    alt={movieTitle}
+                    className="h-auto max-h-20 w-auto max-w-[85%] object-contain drop-shadow-[0_4px_8px_rgba(0,0,0,0.8)] md:max-h-28 lg:max-h-36"
+                  />
+                ) : (
+                  <h2 className="text-3xl font-extrabold tracking-wide text-white drop-shadow-[0_4px_8px_rgba(0,0,0,0.8)] md:text-5xl lg:text-6xl">
+                    {movieTitle}
+                  </h2>
+                )}
 
                 {/* Metadata Row */}
                 <div className="flex items-center gap-3 text-sm font-bold text-gray-300">

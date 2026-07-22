@@ -128,6 +128,7 @@ export default function NetflixPlayerPage() {
           movieOverview={movie.overview}
           popularity={movie.popularity}
           voteAverage={movie.voteAverage}
+          logoPath={movie.logoPath}
         />
       ) : (
         /* Fetching sources loading state */
