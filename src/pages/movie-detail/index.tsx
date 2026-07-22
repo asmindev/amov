@@ -1,5 +1,5 @@
 import { useParams, useSearch, Link } from "@tanstack/react-router"
-import { motion, AnimatePresence } from "motion/react"
+import { motion } from "motion/react"
 import { useState, useEffect, useRef, useCallback } from "react"
 import {
   useMovieDetail,
@@ -7,47 +7,29 @@ import {
   useMovieVideos,
 } from "./hooks/use-movie-detail"
 import { getImageUrl, getBackdropUrl } from "@/helpers/image-url"
-import { formatDate, formatYear } from "@/helpers/format-date"
+import { formatYear } from "@/helpers/format-date"
 import { getMovieQuality } from "@/helpers/movie-quality"
 import { getMaturityRating } from "@/helpers/maturity-rating"
 import { HOVER_VIDEO_DELAY } from "@/lib/config"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Badge } from "@/components/ui/badge"
-import { MovieCard } from "@/components/movie-card"
 import {
-  useWatchProgressTracker,
   getWatchProgress,
   clearWatchProgress,
 } from "@/hooks/use-watch-progress"
-import {
-  Globe,
-  TrendingUp,
-  DollarSign,
-  Volume2,
-  VolumeX,
-  ChevronLeft,
-  RotateCcw,
-  History,
-} from "lucide-react"
+import { Volume2, VolumeX, RotateCcw, History } from "lucide-react"
 
-// Videasy player accent color — red theme (#EF4444)
-const PLAYER_COLOR = "EF4444"
+// Import modular partial components
+import { MoviePlayer } from "./partials/movie-player"
+import { InfoSidebar } from "./partials/info-sidebar"
+import { CastSection } from "./partials/cast-section"
+import { SimilarSection } from "./partials/similar-section"
 
 function formatRuntime(minutes: number | null): string {
   if (!minutes) return "N/A"
   const h = Math.floor(minutes / 60)
   const m = minutes % 60
   return h > 0 ? `${h}h ${m}m` : `${m}m`
-}
-
-function formatMoney(amount: number): string {
-  if (!amount) return "N/A"
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    notation: "compact",
-    maximumFractionDigits: 1,
-  }).format(amount)
 }
 
 function formatTimestamp(seconds: number): string {
@@ -57,76 +39,6 @@ function formatTimestamp(seconds: number): string {
   if (h > 0)
     return `${h}:${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`
   return `${m}:${String(s).padStart(2, "0")}`
-}
-
-// ─── Dedicated player view with all Videasy features ─────────────────────────
-
-function MoviePlayer({
-  movieId,
-  movieTitle,
-}: {
-  movieId: number
-  movieTitle: string
-}) {
-  // Load saved progress before mounting the iframe (so URL is stable)
-  const saved = getWatchProgress("movie", movieId)
-
-  // Build the Videasy embed URL with ALL supported parameters
-  const playerUrl = [
-    `https://player.videasy.net/movie/${movieId}`,
-    `?color=${PLAYER_COLOR}`,
-    `&overlay=true`,
-    saved && saved.timestamp > 30
-      ? `&progress=${Math.floor(saved.timestamp)}`
-      : "",
-  ].join("")
-
-  // Track live progress → localStorage
-  useWatchProgressTracker("movie", movieId, true)
-
-  return (
-    <div className="fixed inset-0 z-[100] bg-black">
-      <iframe
-        key={playerUrl}
-        src={playerUrl}
-        className="h-full w-full border-0"
-        allowFullScreen
-        allow="autoplay; encrypted-media; picture-in-picture"
-        title={movieTitle}
-      />
-
-      {/* Back button */}
-      <Link
-        to="/movie/$id"
-        params={{ id: movieId.toString() }}
-        className="absolute top-6 left-6 z-50 flex items-center gap-2 rounded-full border border-white/20 bg-black/50 px-4 py-2 text-sm font-semibold text-white backdrop-blur-md transition-all hover:scale-105 hover:bg-white/20"
-      >
-        <ChevronLeft className="h-4 w-4" />
-        Back to Details
-      </Link>
-
-      {/* Resume indicator — shown briefly when resuming */}
-      {saved && saved.timestamp > 30 && (
-        <AnimatePresence>
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 20 }}
-            transition={{ delay: 1, duration: 0.5 }}
-            className="absolute right-6 bottom-20 z-50 flex items-center gap-3 rounded-xl border border-red-500/30 bg-black/70 px-5 py-3 text-sm text-white shadow-xl backdrop-blur-md"
-          >
-            <History className="h-4 w-4 shrink-0 text-red-400" />
-            <span>
-              Resumed from{" "}
-              <span className="font-bold text-red-400">
-                {formatTimestamp(Math.floor(saved.timestamp))}
-              </span>
-            </span>
-          </motion.div>
-        </AnimatePresence>
-      )}
-    </div>
-  )
 }
 
 // ─── Main page ────────────────────────────────────────────────────────────────
@@ -435,113 +347,24 @@ export default function MovieDetailPage() {
               </div>
 
               <div className="space-y-6">
-                <div className="space-y-4 rounded-none border border-white/5 bg-white/5 p-6 backdrop-blur-sm">
-                  <InfoRow label="Status" value={movie.status} />
-                  <InfoRow
-                    label="Release Date"
-                    value={formatDate(movie.releaseDate ?? "")}
-                  />
-                  <InfoRow
-                    label="Original Language"
-                    value={movie.originalLanguage.toUpperCase()}
-                    icon={<Globe className="h-4 w-4" />}
-                  />
-                  <InfoRow
-                    label="Budget"
-                    value={formatMoney(movie.budget)}
-                    icon={<DollarSign className="h-4 w-4" />}
-                  />
-                  <InfoRow
-                    label="Revenue"
-                    value={formatMoney(movie.revenue)}
-                    icon={<TrendingUp className="h-4 w-4" />}
-                  />
-                </div>
+                <InfoSidebar
+                  status={movie.status}
+                  releaseDate={movie.releaseDate}
+                  originalLanguage={movie.originalLanguage}
+                  budget={movie.budget}
+                  revenue={movie.revenue}
+                />
               </div>
             </motion.section>
 
             {/* Cast Section */}
-            {cast.length > 0 && (
-              <motion.section
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 }}
-              >
-                <h2 className="mb-6 font-heading text-2xl font-semibold">
-                  Cast & Crew
-                </h2>
-                <div className="grid grid-cols-3 gap-4 sm:grid-cols-4 md:grid-cols-6 md:gap-6 lg:grid-cols-8">
-                  {cast.map((member) => (
-                    <div
-                      key={member.id}
-                      className="group flex flex-col text-left"
-                    >
-                      <div className="mb-3 aspect-[2/3] w-full overflow-hidden rounded-none border border-white/10 bg-white/5 transition-transform duration-300 group-hover:scale-105 group-hover:border-white/30">
-                        <img
-                          src={getImageUrl(member.profilePath, "w185")}
-                          alt={member.name}
-                          className="h-full w-full object-cover"
-                          onError={(e) => {
-                            e.currentTarget.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(
-                              member.name
-                            )}&background=111&color=fff&size=200`
-                          }}
-                        />
-                      </div>
-                      <p className="mb-0.5 line-clamp-1 text-sm leading-tight font-bold text-white">
-                        {member.name}
-                      </p>
-                      <p className="line-clamp-1 text-xs text-white/50">
-                        {member.character}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              </motion.section>
-            )}
+            <CastSection cast={cast} />
 
             {/* Similar Movies Section */}
-            {similarMovies.length > 0 && (
-              <motion.section
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4 }}
-              >
-                <h2 className="mb-6 font-heading text-2xl font-semibold">
-                  More Like This
-                </h2>
-                <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
-                  {similarMovies.map((m) => (
-                    <MovieCard key={m.id} movie={m} className="w-full" />
-                  ))}
-                </div>
-              </motion.section>
-            )}
+            <SimilarSection similarMovies={similarMovies} />
           </div>
         </div>
       </div>
-    </div>
-  )
-}
-
-function InfoRow({
-  label,
-  value,
-  icon,
-}: {
-  label: string
-  value: string
-  icon?: React.ReactNode
-}) {
-  return (
-    <div className="flex items-center justify-between gap-4 border-b border-white/5 pb-3 last:border-0 last:pb-0">
-      <span className="flex items-center gap-2 text-sm text-white/50">
-        {icon}
-        {label}
-      </span>
-      <span className="text-right text-sm font-semibold text-white/90">
-        {value}
-      </span>
     </div>
   )
 }
