@@ -130,6 +130,22 @@ export function EpisodesSection({ tvId, seasons = [] }: EpisodesSectionProps) {
                     {ep.overview}
                   </p>
                 )}
+                <div className="pt-1">
+                  <Link
+                    to="/$type/$id/netflix"
+                    params={{ type: "tv", id: tvId }}
+                    search={{
+                      season: ep.season_number,
+                      episode: ep.episode_number,
+                    }}
+                    className="inline-flex items-center gap-1.5 rounded-none border border-white/20 bg-white/10 px-3 py-1 text-xs font-bold text-white transition-all hover:bg-white/20 active:scale-95"
+                  >
+                    <span className="material-symbols-outlined !text-[16px]">
+                      live_tv
+                    </span>
+                    Custom Player
+                  </Link>
+                </div>
               </div>
             </div>
           ))}
