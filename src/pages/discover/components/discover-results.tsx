@@ -1,12 +1,14 @@
 import { MovieCard } from "@/components/movie-card"
 import { Skeleton } from "@/components/ui/skeleton"
-import type { Movie } from "@/types/movie.types"
+import { useMovieDetails } from "@/hooks/use-movie-details"
+import type { Movie, Genre } from "@/types/movie.types"
 
 type DiscoverResultsProps = {
   query: string
   isPending: boolean
   isError: boolean
   movies: Movie[]
+  genres?: Genre[]
   isFetchingNextPage: boolean
   lastElementRef: (node: HTMLDivElement | null) => void
 }
@@ -16,9 +18,12 @@ export function DiscoverResults({
   isPending,
   isError,
   movies,
+  genres,
   isFetchingNextPage,
   lastElementRef,
 }: DiscoverResultsProps) {
+  const movieDetails = useMovieDetails(movies.map((m) => m.id))
+
   return (
     <div className="space-y-6">
       <h2 className="font-heading text-2xl font-semibold">
@@ -41,24 +46,23 @@ export function DiscoverResults({
         <p className="text-center text-destructive">Failed to load movies.</p>
       ) : movies.length > 0 ? (
         <>
-          <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 lg:gap-4">
-            {movies.map((movie, index) => {
-              if (index === movies.length - 1) {
-                return (
-                  <div ref={lastElementRef} key={`${movie.id}-${index}`}>
-                    <MovieCard movie={movie} className="w-full" />
-                  </div>
-                )
-              }
-              return (
-                <div key={`${movie.id}-${index}`}>
-                  <MovieCard movie={movie} className="w-full" />
-                </div>
-              )
-            })}
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4 lg:gap-6">
+            {movies.map((movie, index) => (
+              <div
+                ref={index === movies.length - 1 ? lastElementRef : undefined}
+                key={`${movie.id}-${index}`}
+                className="relative"
+              >
+                <MovieCard
+                  movie={movie}
+                  genres={genres}
+                  logoPath={movieDetails[index]?.logoPath}
+                />
+              </div>
+            ))}
           </div>
           {isFetchingNextPage && (
-            <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4 lg:mt-4 lg:grid-cols-5 lg:gap-4">
+            <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4 lg:mt-4 lg:gap-6">
               {Array.from({ length: 5 }).map((_, i) => (
                 <div
                   key={`next-page-skeleton-${i}`}

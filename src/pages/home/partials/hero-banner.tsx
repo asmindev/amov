@@ -3,8 +3,11 @@ import { Link } from "@tanstack/react-router"
 import { ChevronLeft, ChevronRight, Play, Volume2, VolumeX } from "lucide-react"
 import { motion, AnimatePresence } from "motion/react"
 import { getImageUrl } from "@/helpers/image-url"
-import { formatRating } from "@/helpers/format-rating"
-import { SLIDE_INTERVAL, HOVER_VIDEO_DELAY, HERO_MAX_VISIBLE } from "@/lib/config"
+import {
+  SLIDE_INTERVAL,
+  HOVER_VIDEO_DELAY,
+  HERO_MAX_VISIBLE,
+} from "@/lib/config"
 import { useMovieVideos } from "../hooks/use-movie-videos"
 import { useMovieDetail } from "../hooks/use-movie-detail"
 import type { Movie } from "@/types/movie.types"
@@ -102,7 +105,7 @@ export function HeroBanner({ movies }: HeroBannerProps) {
 
   return (
     <div
-      className="relative h-[85vh] w-full overflow-hidden"
+      className="relative h-[614px] w-full overflow-hidden md:h-[870px]"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
@@ -116,15 +119,16 @@ export function HeroBanner({ movies }: HeroBannerProps) {
           }`}
         />
       ))}
-      <div className="pointer-events-none absolute inset-0 bg-black/10" />
+      <div className="pointer-events-none absolute inset-0 z-[2] bg-gradient-to-t from-background via-background/40 to-transparent" />
+      <div className="pointer-events-none absolute inset-0 z-[2] bg-gradient-to-r from-background via-background/20 to-transparent" />
 
       {video && (
         <iframe
           key={movie.id}
           ref={iframeRef}
           src={`https://www.youtube.com/embed/${video.key}?autoplay=1&mute=1&enablejsapi=1&controls=0&rel=0&disablekb=1&fs=0&iv_load_policy=3&playsinline=1`}
-          className={`yt-player transition-opacity duration-500 ${
-            showVideo ? "opacity-100" : "opacity-0 pointer-events-none"
+          className={`yt-player z-[1] transition-opacity duration-500 ${
+            showVideo ? "opacity-100" : "pointer-events-none opacity-0"
           }`}
           allow="autoplay; encrypted-media"
           allowFullScreen
@@ -145,9 +149,7 @@ export function HeroBanner({ movies }: HeroBannerProps) {
         </button>
       )}
 
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-24 bg-gradient-to-t from-black via-black/40 to-transparent" />
-
-      <div className="absolute bottom-0 left-0 z-10 block w-full px-8 pb-12 pt-24 md:px-16">
+      <div className="absolute bottom-0 left-0 z-10 block w-full px-8 pt-24 pb-12 md:px-16">
         {detail?.logoPath ? (
           <img
             src={`https://image.tmdb.org/t/p/w500${detail.logoPath}`}
@@ -157,39 +159,48 @@ export function HeroBanner({ movies }: HeroBannerProps) {
             }`}
           />
         ) : (
-          <h1 className={`font-heading font-bold text-white drop-shadow-lg origin-bottom-left transition-all duration-700 ${
-            showVideo ? "text-3xl md:text-4xl lg:text-5xl" : "text-4xl md:text-6xl lg:text-7xl"
-          }`}>
+          <h1
+            className={`origin-bottom-left font-heading font-black tracking-tighter text-white drop-shadow-2xl transition-all duration-700 ${
+              showVideo
+                ? "text-3xl md:text-4xl lg:text-5xl"
+                : "text-4xl md:text-6xl lg:text-7xl"
+            }`}
+          >
             {movie.title}
           </h1>
         )}
-        <div className={`overflow-hidden transition-all duration-700 ${
-          showVideo ? "max-h-0 opacity-0 mt-0" : "max-h-32 opacity-100 mt-4"
-        }`}>
-          <p className="max-w-2xl text-sm text-white/80 line-clamp-3 drop-shadow md:text-base">
+        <div
+          className={`overflow-hidden transition-all duration-700 ${
+            showVideo ? "mt-0 max-h-0 opacity-0" : "mt-4 max-h-32 opacity-100"
+          }`}
+        >
+          <p className="line-clamp-3 max-w-2xl text-sm leading-relaxed text-gray-300 drop-shadow md:text-base">
             {movie.overview}
           </p>
         </div>
-        <div className="mt-4 flex items-center gap-4 text-sm text-white/80">
-          <span className="rounded bg-primary/80 px-3 py-1 text-xs font-semibold text-primary-foreground">
-            {formatRating(movie.voteAverage)}
+        <div className="mt-4 flex items-center gap-3 text-sm font-semibold tracking-wide">
+          <span className="text-green-500">
+            {Math.round(movie.voteAverage * 10)}% Match
           </span>
-          <span>{movie.releaseDate?.split("-")[0]}</span>
+          <span className="text-white">{movie.releaseDate?.split("-")[0]}</span>
+          <span className="rounded border border-white/20 bg-white/5 px-1.5 py-0.5 text-[10px] font-bold tracking-wider text-white uppercase">
+            HD
+          </span>
         </div>
-        <div className="mt-4 flex items-center gap-3">
+        <div className="mt-6 flex items-center gap-3">
           <Link
             to="/movie/$id"
             params={{ id: movie.id.toString() }}
             search={{ play: true }}
-            className="inline-flex items-center gap-2 rounded-lg bg-white px-6 py-2 text-sm font-semibold text-black transition-transform hover:scale-105"
+            className="inline-flex items-center gap-2 rounded-lg bg-[#e50914] px-6 py-2.5 text-sm font-bold text-white shadow-lg transition-all hover:scale-105 hover:bg-[#b00710] active:scale-95"
           >
-            <Play className="h-5 w-5 fill-black" />
-            Watch Now
+            <Play className="h-5 w-5 fill-white" />
+            Play
           </Link>
           {video && !showVideo && (
             <button
               onClick={() => setShowVideo(true)}
-              className="inline-flex items-center gap-2 rounded-lg bg-white/20 backdrop-blur-md px-6 py-2 text-sm font-semibold text-white transition-colors hover:bg-white/30 border border-white/20"
+              className="inline-flex items-center gap-2 rounded-lg border border-white/15 bg-white/10 px-6 py-2.5 text-sm font-bold text-white backdrop-blur-md transition-all hover:scale-105 hover:bg-white/20 active:scale-95"
             >
               Trailer
             </button>
@@ -239,12 +250,10 @@ export function HeroBanner({ movies }: HeroBannerProps) {
         </div>
       </div>
 
-      <div className="absolute bottom-4 right-4 z-20 flex items-center gap-2">
+      <div className="absolute right-4 bottom-4 z-20 flex items-center gap-2">
         <button
           onClick={() =>
-            goTo(
-              currentIndex - 1 < 0 ? visibleCount - 1 : currentIndex - 1
-            )
+            goTo(currentIndex - 1 < 0 ? visibleCount - 1 : currentIndex - 1)
           }
           className="rounded-full bg-white/10 p-2 text-white/70 backdrop-blur-sm transition-colors hover:bg-white/20 hover:text-white"
         >
@@ -252,9 +261,7 @@ export function HeroBanner({ movies }: HeroBannerProps) {
         </button>
         <button
           onClick={() =>
-            goTo(
-              currentIndex + 1 >= visibleCount ? 0 : currentIndex + 1
-            )
+            goTo(currentIndex + 1 >= visibleCount ? 0 : currentIndex + 1)
           }
           className="rounded-full bg-white/10 p-2 text-white/70 backdrop-blur-sm transition-colors hover:bg-white/20 hover:text-white"
         >
