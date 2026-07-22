@@ -45,19 +45,43 @@ export function Footer() {
       <div className="relative mx-auto max-w-[1400px] px-6 pt-20 pb-12 md:px-16">
         {/* Top Header Bar with Live Indicator & Action */}
         <div className="mb-20 flex flex-col justify-between gap-8 border-b border-white/10 pb-12 md:flex-row md:items-end">
-          <div className="space-y-4">
-            <div className="inline-flex items-center gap-2.5 rounded-full border border-white/15 bg-white/5 px-4 py-1.5 backdrop-blur-md">
-              <span className="relative flex h-2 w-2">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
-                <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
-              </span>
-              <span className="text-xs font-mono font-medium tracking-wider text-white/80 uppercase">
-                SYSTEM ONLINE • {time || "00:00:00 UTC"}
-              </span>
+          <div className="space-y-6">
+            {/* Surprise Element: Interactive Cinematic Infinite Ticker & Visualizer */}
+            <div className="flex flex-col gap-6">
+              <div className="flex items-center gap-3">
+                {/* Animated Equalizer Soundwave */}
+                <div className="flex h-5 items-end gap-1">
+                  <span className="h-full w-1 animate-[bounce_1s_infinite_100ms] rounded-full bg-primary" />
+                  <span className="h-3/4 w-1 animate-[bounce_1s_infinite_300ms] rounded-full bg-red-500" />
+                  <span className="h-full w-1 animate-[bounce_1s_infinite_200ms] rounded-full bg-white" />
+                  <span className="h-1/2 w-1 animate-[bounce_1s_infinite_400ms] rounded-full bg-primary" />
+                </div>
+                <span className="font-mono text-xs font-semibold tracking-widest text-primary uppercase">
+                  Cinematic Soundscape Active
+                </span>
+                <span className="font-mono text-xs text-white/30">•</span>
+                <span className="font-mono text-xs text-white/50">{time}</span>
+              </div>
+
+              {/* Kinetic Infinite Marquee Bar */}
+              <div className="relative flex w-full max-w-2xl overflow-hidden rounded-none border border-white/10 bg-white/[0.03] py-2.5 backdrop-blur-md">
+                <div className="animate-marquee flex shrink-0 whitespace-nowrap text-xs font-mono tracking-widest text-white/70 uppercase">
+                  <span className="mx-4 text-primary">★ NEXT-GEN STREAMING</span>
+                  <span className="mx-4">4K ULTRA HD CONTENT</span>
+                  <span className="mx-4 text-primary">★ UNLIMITED MOVIES & SHOWS</span>
+                  <span className="mx-4">TMDB METADATA POWERED</span>
+                </div>
+                <div className="animate-marquee flex shrink-0 whitespace-nowrap text-xs font-mono tracking-widest text-white/70 uppercase" aria-hidden="true">
+                  <span className="mx-4 text-primary">★ NEXT-GEN STREAMING</span>
+                  <span className="mx-4">4K ULTRA HD CONTENT</span>
+                  <span className="mx-4 text-primary">★ UNLIMITED MOVIES & SHOWS</span>
+                  <span className="mx-4">TMDB METADATA POWERED</span>
+                </div>
+              </div>
             </div>
 
-            <h3 className="max-w-xl font-heading text-3xl font-black tracking-tight text-white md:text-5xl">
-              Watch movies & series anywhere.
+            <h3 className="max-w-2xl font-heading text-4xl font-black tracking-tight text-white md:text-6xl">
+              Elevating the <span className="bg-gradient-to-r from-red-500 via-primary to-rose-400 bg-clip-text text-transparent">Cinematic Experience.</span>
             </h3>
           </div>
 
@@ -199,9 +223,9 @@ export function Footer() {
           </div>
 
           <div className="flex items-center gap-6 font-mono text-[11px]">
-            <span className="hover:text-white/80 transition-colors">NON-COMMERCIAL PROJECT</span>
+            <span className="hover:text-white/80 transition-colors">DESIGNED FOR CINEMAPHILES</span>
             <span>•</span>
-            <span className="text-white/60">POWERED BY TMDB</span>
+            <span className="text-primary font-bold">V2.4 ULTRA</span>
           </div>
         </div>
       </div>
