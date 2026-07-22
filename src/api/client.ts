@@ -16,10 +16,7 @@ class ApiClient {
     this.token = env.VITE_MOVIE_API_TOKEN
   }
 
-  private buildUrl(
-    path: string,
-    params?: Record<string, string>
-  ): string {
+  private buildUrl(path: string, params?: Record<string, string>): string {
     const base = this.baseUrl.endsWith("/") ? this.baseUrl : `${this.baseUrl}/`
     const cleanPath = path.startsWith("/") ? path.slice(1) : path
     const url = new URL(cleanPath, base)
@@ -30,7 +27,10 @@ class ApiClient {
       })
     }
 
-    const lang = typeof window !== 'undefined' ? localStorage.getItem("app-language") || "en-US" : "en-US"
+    const lang =
+      typeof window !== "undefined"
+        ? localStorage.getItem("app-language") || "en-US"
+        : "en-US"
     url.searchParams.set("language", lang)
 
     return url.toString()
@@ -66,10 +66,7 @@ class ApiClient {
     return response.json()
   }
 
-  async get<T>(
-    path: string,
-    params?: Record<string, string>
-  ): Promise<T> {
+  async get<T>(path: string, params?: Record<string, string>): Promise<T> {
     return this.request<T>(path, { params })
   }
 

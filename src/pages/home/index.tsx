@@ -25,49 +25,50 @@ export default function HomePage() {
         <HeroBanner movies={movies} />
       ) : null}
 
-      <div className="w-full lg:w-11/12 mx-auto space-y-8 mt-6">
-      {trending.isPending ? (
-        <TrendingSectionSkeleton />
-      ) : trending.data ? (
-        <TrendingSection movies={trending.data.results} showRank />
-      ) : trending.isError ? (
-        <p className="text-sm text-destructive">
-          Failed to load trending movies.
-        </p>
-      ) : null}
+      <div className="mx-auto mt-6 w-full space-y-8 lg:w-11/12">
+        {trending.isPending ? (
+          <TrendingSectionSkeleton />
+        ) : trending.data ? (
+          <TrendingSection movies={trending.data.results} showRank />
+        ) : trending.isError ? (
+          <p className="text-sm text-destructive">
+            Failed to load trending movies.
+          </p>
+        ) : null}
 
-      {topRated.isPending ? (
-        <TrendingSectionSkeleton />
-      ) : topRated.data ? (
-        <TrendingSection title="Top Rated" movies={topRated.data.results} />
-      ) : topRated.isError ? (
-        <p className="text-sm text-destructive">
-          Failed to load top rated movies.
-        </p>
-      ) : null}
+        {topRated.isPending ? (
+          <TrendingSectionSkeleton />
+        ) : topRated.data ? (
+          <TrendingSection title="Top Rated" movies={topRated.data.results} />
+        ) : topRated.isError ? (
+          <p className="text-sm text-destructive">
+            Failed to load top rated movies.
+          </p>
+        ) : null}
 
-      {popular.isPending ? (
-        <TrendingSectionSkeleton />
-      ) : popular.data ? (
-        <TrendingSection title="Popular" movies={popular.data.results} />
-      ) : popular.isError ? (
-        <p className="text-sm text-destructive">
-          Failed to load popular movies.
-        </p>
-      ) : null}
+        {popular.isPending ? (
+          <TrendingSectionSkeleton />
+        ) : popular.data ? (
+          <TrendingSection title="Popular" movies={popular.data.results} />
+        ) : popular.isError ? (
+          <p className="text-sm text-destructive">
+            Failed to load popular movies.
+          </p>
+        ) : null}
 
-      {netflix.isPending ? (
-        <TrendingSectionSkeleton />
-      ) : netflix.data ? (
-        <TrendingSection title="Netflix Movies" movies={netflix.data.results} />
-      ) : netflix.isError ? (
-        <p className="text-sm text-destructive">
-          Failed to load Netflix movies.
-        </p>
-      ) : null}
-
+        {netflix.isPending ? (
+          <TrendingSectionSkeleton />
+        ) : netflix.data ? (
+          <TrendingSection
+            title="Netflix Movies"
+            movies={netflix.data.results}
+          />
+        ) : netflix.isError ? (
+          <p className="text-sm text-destructive">
+            Failed to load Netflix movies.
+          </p>
+        ) : null}
       </div>
-
     </div>
   )
 }

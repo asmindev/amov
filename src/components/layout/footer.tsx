@@ -16,7 +16,8 @@ export function Footer() {
             <span>Built with React + Vite</span>
           </div>
           <p className="text-center text-xs text-muted-foreground/60">
-            This product uses the TMDB API but is not endorsed or certified by TMDB.
+            This product uses the TMDB API but is not endorsed or certified by
+            TMDB.
           </p>
           <div className="flex items-center gap-4">
             <a

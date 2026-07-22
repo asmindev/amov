@@ -11,8 +11,7 @@ export function useMovieVideos(id: string) {
       const trailer =
         data.results.find(
           (v) => v.type === "Trailer" && v.site === "YouTube"
-        ) ??
-        data.results.find((v) => v.site === "YouTube")
+        ) ?? data.results.find((v) => v.site === "YouTube")
       return trailer ?? null
     },
   })

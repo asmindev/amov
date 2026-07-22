@@ -67,7 +67,7 @@ function FilterPill({
   return (
     <div className="relative">
       {isActive && (
-        <span className="absolute -right-1 -top-1 z-10 flex h-2 w-2">
+        <span className="absolute -top-1 -right-1 z-10 flex h-2 w-2">
           <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-75" />
           <span className="relative inline-flex h-2 w-2 rounded-full bg-primary" />
         </span>
@@ -107,7 +107,7 @@ export function DiscoverFilters({
       {/* Filter bar */}
       <div className="flex flex-wrap items-center gap-2">
         {/* Section label */}
-        <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground pr-1">
+        <div className="flex items-center gap-2 pr-1 text-sm font-medium text-muted-foreground">
           <SlidersHorizontal className="h-4 w-4" />
           <span>Filters</span>
           <AnimatePresence>
@@ -140,7 +140,7 @@ export function DiscoverFilters({
                 <Button
                   variant="outline"
                   size="sm"
-                  className="h-8 gap-1.5 rounded-full border-white/10 bg-white/5 px-3 text-xs font-medium transition-all hover:bg-white/10 data-[state=open]:bg-white/10 data-[state=open]:border-white/20"
+                  className="h-8 gap-1.5 rounded-full border-white/10 bg-white/5 px-3 text-xs font-medium transition-all hover:bg-white/10 data-[state=open]:border-white/20 data-[state=open]:bg-white/10"
                 >
                   <Clapperboard className="h-3.5 w-3.5 opacity-70" />
                   Genres
@@ -159,7 +159,7 @@ export function DiscoverFilters({
                   Select Genres
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <div className="max-h-[280px] overflow-y-auto scrollbar-hide">
+                <div className="scrollbar-hide max-h-[280px] overflow-y-auto">
                   {genres.map((genre) => (
                     <DropdownMenuCheckboxItem
                       key={genre.id}
@@ -193,7 +193,7 @@ export function DiscoverFilters({
             }
           >
             <SelectTrigger className="h-8 gap-1.5 rounded-full border-white/10 bg-white/5 px-3 text-xs font-medium transition-all hover:bg-white/10 data-[state=open]:bg-white/10">
-              <Calendar className="h-3.5 w-3.5 opacity-70 shrink-0" />
+              <Calendar className="h-3.5 w-3.5 shrink-0 opacity-70" />
               <SelectValue placeholder="Year">
                 {!selectedYear || selectedYear === "all"
                   ? "Year"
@@ -226,7 +226,7 @@ export function DiscoverFilters({
             }
           >
             <SelectTrigger className="h-8 gap-1.5 rounded-full border-white/10 bg-white/5 px-3 text-xs font-medium transition-all hover:bg-white/10 data-[state=open]:bg-white/10">
-              <Globe className="h-3.5 w-3.5 opacity-70 shrink-0" />
+              <Globe className="h-3.5 w-3.5 shrink-0 opacity-70" />
               <SelectValue placeholder="Country">
                 {!selectedCountry || selectedCountry === "all"
                   ? "Country"
@@ -258,7 +258,7 @@ export function DiscoverFilters({
                 <Button
                   variant="outline"
                   size="sm"
-                  className="h-8 gap-1.5 rounded-full border-white/10 bg-white/5 px-3 text-xs font-medium transition-all hover:bg-white/10 data-[state=open]:bg-white/10 data-[state=open]:border-white/20"
+                  className="h-8 gap-1.5 rounded-full border-white/10 bg-white/5 px-3 text-xs font-medium transition-all hover:bg-white/10 data-[state=open]:border-white/20 data-[state=open]:bg-white/10"
                 >
                   <Tv className="h-3.5 w-3.5 opacity-70" />
                   Streaming
@@ -277,7 +277,7 @@ export function DiscoverFilters({
                   Streaming Providers
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <div className="max-h-[280px] overflow-y-auto scrollbar-hide">
+                <div className="scrollbar-hide max-h-[280px] overflow-y-auto">
                   {PROVIDERS.map((provider) => (
                     <DropdownMenuCheckboxItem
                       key={provider.id}
@@ -285,9 +285,7 @@ export function DiscoverFilters({
                       onCheckedChange={(checked) => {
                         const newProviders = checked
                           ? [...selectedProviders, provider.id]
-                          : selectedProviders.filter(
-                              (id) => id !== provider.id
-                            )
+                          : selectedProviders.filter((id) => id !== provider.id)
                         updateFilters({ providers: newProviders })
                       }}
                     >
@@ -309,7 +307,7 @@ export function DiscoverFilters({
             }
           >
             <SelectTrigger className="h-8 gap-1.5 rounded-full border-white/10 bg-white/5 px-3 text-xs font-medium transition-all hover:bg-white/10 data-[state=open]:bg-white/10">
-              <ArrowUpDown className="h-3.5 w-3.5 opacity-70 shrink-0" />
+              <ArrowUpDown className="h-3.5 w-3.5 shrink-0 opacity-70" />
               <SelectValue placeholder="Sort By">
                 {SORT_OPTIONS.find((opt) => opt.value === selectedSortBy)
                   ?.label ?? "Most Popular"}
@@ -351,13 +349,17 @@ export function DiscoverFilters({
                       initial={{ opacity: 0, scale: 0.8 }}
                       animate={{ opacity: 1, scale: 1 }}
                       exit={{ opacity: 0, scale: 0.8 }}
-                      transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                      transition={{
+                        type: "spring",
+                        stiffness: 400,
+                        damping: 25,
+                      }}
                       onClick={() =>
                         updateFilters({
                           genres: selectedGenres.filter((g) => g !== id),
                         })
                       }
-                      className="flex items-center gap-1 rounded-full bg-primary/15 px-2.5 py-1 text-[11px] font-medium text-primary ring-1 ring-primary/30 hover:bg-primary/25 transition-colors"
+                      className="flex items-center gap-1 rounded-full bg-primary/15 px-2.5 py-1 text-[11px] font-medium text-primary ring-1 ring-primary/30 transition-colors hover:bg-primary/25"
                     >
                       {genre.name}
                       <X className="h-3 w-3" />
@@ -373,7 +375,7 @@ export function DiscoverFilters({
                     exit={{ opacity: 0, scale: 0.8 }}
                     transition={{ type: "spring", stiffness: 400, damping: 25 }}
                     onClick={() => updateFilters({ year: "" })}
-                    className="flex items-center gap-1 rounded-full bg-primary/15 px-2.5 py-1 text-[11px] font-medium text-primary ring-1 ring-primary/30 hover:bg-primary/25 transition-colors"
+                    className="flex items-center gap-1 rounded-full bg-primary/15 px-2.5 py-1 text-[11px] font-medium text-primary ring-1 ring-primary/30 transition-colors hover:bg-primary/25"
                   >
                     {selectedYear}
                     <X className="h-3 w-3" />
@@ -388,7 +390,7 @@ export function DiscoverFilters({
                     exit={{ opacity: 0, scale: 0.8 }}
                     transition={{ type: "spring", stiffness: 400, damping: 25 }}
                     onClick={() => updateFilters({ country: "" })}
-                    className="flex items-center gap-1 rounded-full bg-primary/15 px-2.5 py-1 text-[11px] font-medium text-primary ring-1 ring-primary/30 hover:bg-primary/25 transition-colors"
+                    className="flex items-center gap-1 rounded-full bg-primary/15 px-2.5 py-1 text-[11px] font-medium text-primary ring-1 ring-primary/30 transition-colors hover:bg-primary/25"
                   >
                     {COUNTRIES.find((c) => c.code === selectedCountry)?.name}
                     <X className="h-3 w-3" />
@@ -411,12 +413,10 @@ export function DiscoverFilters({
                       }}
                       onClick={() =>
                         updateFilters({
-                          providers: selectedProviders.filter(
-                            (p) => p !== id
-                          ),
+                          providers: selectedProviders.filter((p) => p !== id),
                         })
                       }
-                      className="flex items-center gap-1 rounded-full bg-primary/15 px-2.5 py-1 text-[11px] font-medium text-primary ring-1 ring-primary/30 hover:bg-primary/25 transition-colors"
+                      className="flex items-center gap-1 rounded-full bg-primary/15 px-2.5 py-1 text-[11px] font-medium text-primary ring-1 ring-primary/30 transition-colors hover:bg-primary/25"
                     >
                       {provider.name}
                       <X className="h-3 w-3" />
@@ -432,14 +432,15 @@ export function DiscoverFilters({
                     exit={{ opacity: 0, scale: 0.8 }}
                     transition={{ type: "spring", stiffness: 400, damping: 25 }}
                     onClick={() => updateFilters({ sortBy: "popularity.desc" })}
-                    className="flex items-center gap-1 rounded-full bg-primary/15 px-2.5 py-1 text-[11px] font-medium text-primary ring-1 ring-primary/30 hover:bg-primary/25 transition-colors"
+                    className="flex items-center gap-1 rounded-full bg-primary/15 px-2.5 py-1 text-[11px] font-medium text-primary ring-1 ring-primary/30 transition-colors hover:bg-primary/25"
                   >
-                    {SORT_OPTIONS.find((o) => o.value === selectedSortBy)
-                      ?.label}
+                    {
+                      SORT_OPTIONS.find((o) => o.value === selectedSortBy)
+                        ?.label
+                    }
                     <X className="h-3 w-3" />
                   </motion.button>
                 )}
-
               </AnimatePresence>
 
               <Button

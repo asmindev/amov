@@ -1,6 +1,10 @@
 import { apiClient } from "./client"
 import { endpoints } from "./endpoints"
-import { NETFLIX_PROVIDER_ID, WATCH_REGION, DEFAULT_SORT_BY } from "@/lib/config"
+import {
+  NETFLIX_PROVIDER_ID,
+  WATCH_REGION,
+  DEFAULT_SORT_BY,
+} from "@/lib/config"
 import {
   MovieDetailSchema,
   MovieListSchema,
@@ -105,4 +109,3 @@ export async function searchMovies(query: string, page = 1) {
   })
   return MovieListSchema.parse(res)
 }
-

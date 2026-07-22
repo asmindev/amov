@@ -25,4 +25,6 @@ export const SORT_OPTIONS = [
   { value: "revenue.desc", label: "Highest Grossing" },
 ]
 
-export const YEARS = Array.from({ length: 20 }, (_, i) => String(new Date().getFullYear() - i))
+export const YEARS = Array.from({ length: 20 }, (_, i) =>
+  String(new Date().getFullYear() - i)
+)
