@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { Link } from "@tanstack/react-router"
-import { Play, Plus, ThumbsUp, ChevronDown } from "lucide-react"
+import { Plus, ThumbsUp, ChevronDown } from "lucide-react"
 import { motion, AnimatePresence } from "motion/react"
 import { getImageUrl } from "@/helpers/image-url"
 import { formatYear } from "@/helpers/format-date"
@@ -136,21 +136,23 @@ export function MovieCard({
                     <Link
                       to="/movie/$id"
                       params={{ id: String(movie.id) }}
-                      className="flex h-8 w-8 items-center justify-center bg-primary transition-colors hover:bg-neutral-200"
+                      className="flex h-7 w-9 items-center justify-center bg-primary transition-colors hover:bg-primary/90"
                     >
-                      <Play className="ml-0.5 h-4 w-4 fill-white" />
+                      <span className="material-symbols-outlined fill !text-[18px]">
+                        play_arrow
+                      </span>
                     </Link>
-                    <button className="flex h-8 w-8 items-center justify-center rounded-full border border-white/20 bg-black/50 text-white transition-colors hover:border-white hover:bg-black/80">
+                    <button className="flex h-7 w-9 items-center justify-center border border-white/20 bg-black/50 text-white transition-colors hover:border-white hover:bg-black/80">
                       <Plus className="h-3.5 w-3.5" />
                     </button>
-                    <button className="flex h-8 w-8 items-center justify-center rounded-full border border-white/20 bg-black/50 text-white transition-colors hover:border-white hover:bg-black/80">
+                    <button className="flex h-7 w-9 items-center justify-center border border-white/20 bg-black/50 text-white transition-colors hover:border-white hover:bg-black/80">
                       <ThumbsUp className="h-3.5 w-3.5" />
                     </button>
                   </div>
                   <Link
                     to="/movie/$id"
                     params={{ id: String(movie.id) }}
-                    className="flex h-8 w-8 items-center justify-center rounded-full border border-white/20 bg-black/50 text-white transition-colors hover:border-white hover:bg-black/80"
+                    className="flex h-7 w-9 items-center justify-center border border-white/20 bg-black/50 text-white transition-colors hover:border-white hover:bg-black/80"
                   >
                     <ChevronDown className="h-4 w-4" />
                   </Link>
@@ -274,7 +276,9 @@ export function MovieCard({
                     params={{ id: String(movie.id) }}
                     className="flex h-9 w-9 items-center justify-center rounded-full bg-white text-black transition-colors hover:bg-neutral-200"
                   >
-                    <Play className="ml-0.5 h-5 w-5 fill-black" />
+                    <span className="material-symbols-outlined fill ml-0.5 !text-[20px]">
+                      play_arrow
+                    </span>
                   </Link>
                   <button className="flex h-9 w-9 items-center justify-center rounded-full border border-white/20 bg-black/50 text-white transition-colors hover:border-white hover:bg-black/80">
                     <Plus className="h-4 w-4" />

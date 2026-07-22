@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react"
 import { Link } from "@tanstack/react-router"
-import { ChevronLeft, ChevronRight, Play, Volume2, VolumeX } from "lucide-react"
+import { ChevronLeft, ChevronRight, Volume2, VolumeX } from "lucide-react"
 import { motion, AnimatePresence } from "motion/react"
 import { getImageUrl } from "@/helpers/image-url"
 import {
@@ -194,7 +194,9 @@ export function HeroBanner({ movies }: HeroBannerProps) {
             search={{ play: true }}
             className="inline-flex items-center gap-2 rounded-md bg-primary px-6 py-2.5 text-sm font-bold text-primary-foreground shadow-lg transition-all hover:scale-105 hover:bg-primary/90 active:scale-95"
           >
-            <Play className="h-5 w-5 fill-white" />
+            <span className="material-symbols-outlined fill !text-[20px]">
+              play_arrow
+            </span>
             Play
           </Link>
           {video && !showVideo && (

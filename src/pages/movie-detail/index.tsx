@@ -18,7 +18,6 @@ import {
   clearWatchProgress,
 } from "@/hooks/use-watch-progress"
 import {
-  Play,
   Star,
   Clock,
   Calendar,
@@ -349,7 +348,9 @@ export default function MovieDetailPage() {
               search={{ play: true }}
               className="flex items-center gap-2 rounded-md bg-primary px-8 py-3.5 text-base font-bold text-primary-foreground shadow-lg shadow-primary/20 transition-all hover:scale-105 hover:bg-primary/90 active:scale-95"
             >
-              <Play className="h-5 w-5 fill-primary-foreground" />
+              <span className="material-symbols-outlined fill !text-[24px]">
+                play_arrow
+              </span>
               {savedProgress && savedProgress.timestamp > 30
                 ? "Continue Watching"
                 : "Watch Movie"}
