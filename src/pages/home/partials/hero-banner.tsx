@@ -3,6 +3,7 @@ import { Link } from "@tanstack/react-router"
 import { ChevronLeft, ChevronRight, Volume2, VolumeX } from "lucide-react"
 import { motion, AnimatePresence } from "motion/react"
 import { getImageUrl } from "@/helpers/image-url"
+import { getMovieQuality } from "@/helpers/movie-quality"
 import {
   SLIDE_INTERVAL,
   HOVER_VIDEO_DELAY,
@@ -184,7 +185,7 @@ export function HeroBanner({ movies }: HeroBannerProps) {
           </span>
           <span className="text-white">{movie.releaseDate?.split("-")[0]}</span>
           <span className="rounded border border-white/20 bg-white/5 px-1.5 py-0.5 text-[10px] font-bold tracking-wider text-white uppercase">
-            HD
+            {getMovieQuality(movie.popularity, movie.releaseDate)}
           </span>
         </div>
         <div className="mt-6 flex items-center gap-3">

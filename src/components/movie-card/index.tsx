@@ -4,6 +4,7 @@ import { Plus, ThumbsUp, ChevronDown } from "lucide-react"
 import { motion, AnimatePresence } from "motion/react"
 import { getImageUrl } from "@/helpers/image-url"
 import { formatYear } from "@/helpers/format-date"
+import { getMovieQuality } from "@/helpers/movie-quality"
 import type { Movie, Genre } from "@/types/movie.types"
 
 type MovieCardProps = {
@@ -163,7 +164,7 @@ export function MovieCard({
                     {Math.round(movie.voteAverage * 10)}% Match
                   </span>
                   <span className="rounded border border-white/20 bg-white/5 px-1 text-[10px] font-bold tracking-wider uppercase">
-                    HD
+                    {getMovieQuality(movie.popularity, movie.releaseDate)}
                   </span>
                   <span className="rounded border border-white/20 bg-white/5 px-1 text-[10px] font-bold tracking-wider uppercase">
                     {movie.mediaType === "tv" ? "TV" : "Movie"}
@@ -274,16 +275,16 @@ export function MovieCard({
                   <Link
                     to="/movie/$id"
                     params={{ id: String(movie.id) }}
-                    className="flex h-9 w-9 items-center justify-center rounded-full bg-white text-black transition-colors hover:bg-neutral-200"
+                    className="flex h-7 w-9 items-center justify-center bg-primary transition-colors hover:bg-primary/90"
                   >
                     <span className="material-symbols-outlined fill ml-0.5 !text-[20px]">
                       play_arrow
                     </span>
                   </Link>
-                  <button className="flex h-9 w-9 items-center justify-center rounded-full border border-white/20 bg-black/50 text-white transition-colors hover:border-white hover:bg-black/80">
+                  <button className="flex h-7 w-9 items-center justify-center border border-white/20 bg-black/50 text-white transition-colors hover:border-white hover:bg-black/80">
                     <Plus className="h-4 w-4" />
                   </button>
-                  <button className="flex h-9 w-9 items-center justify-center rounded-full border border-white/20 bg-black/50 text-white transition-colors hover:border-white hover:bg-black/80">
+                  <button className="flex h-7 w-9 items-center justify-center border border-white/20 bg-black/50 text-white transition-colors hover:border-white hover:bg-black/80">
                     <ThumbsUp className="h-4 w-4" />
                   </button>
                 </div>
@@ -302,7 +303,7 @@ export function MovieCard({
                   {Math.round(movie.voteAverage * 10)}% Match
                 </span>
                 <span className="rounded border border-white/20 bg-white/5 px-1 text-[10px] font-bold tracking-wider uppercase">
-                  HD
+                  {getMovieQuality(movie.popularity, movie.releaseDate)}
                 </span>
                 <span className="rounded border border-white/20 bg-white/5 px-1 text-[10px] font-bold tracking-wider uppercase">
                   {movie.mediaType === "tv" ? "TV" : "Movie"}

@@ -8,6 +8,7 @@ import {
 } from "./hooks/use-movie-detail"
 import { getImageUrl, getBackdropUrl } from "@/helpers/image-url"
 import { formatDate, formatYear } from "@/helpers/format-date"
+import { getMovieQuality } from "@/helpers/movie-quality"
 import { HOVER_VIDEO_DELAY } from "@/lib/config"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Badge } from "@/components/ui/badge"
@@ -294,7 +295,7 @@ export default function MovieDetailPage() {
               variant="outline"
               className="border-white/20 bg-white/10 text-white"
             >
-              HD
+              {getMovieQuality(movie.popularity, movie.releaseDate)}
             </Badge>
           </div>
 
