@@ -6,12 +6,14 @@ import {
   type MouseEvent,
   type ChangeEvent,
 } from "react"
+import { motion, AnimatePresence } from "motion/react"
 import Hls from "hls.js"
 import type { StreamSource, StreamSubtitle } from "@/api/decryptor.api"
 import type { DecryptorProvider } from "@/lib/config"
 import { DECRYPTOR_PROVIDERS, DECRYPTOR_URL } from "@/lib/config"
 import { RefreshCw } from "lucide-react"
 import { useWatchProgressTracker } from "@/hooks/use-watch-progress"
+import { getMovieQuality } from "@/helpers/movie-quality"
 import { TopAppBar } from "./player-ui/top-app-bar"
 import { BottomControls } from "./player-ui/bottom-controls"
 import { SettingsModal } from "./player-ui/settings-modal"
@@ -35,6 +37,9 @@ interface HlsPlayerProps {
   onProviderChange: (index: number) => void
   isFetchingProvider: boolean
   imdbId?: string
+  movieOverview?: string
+  popularity?: number
+  voteAverage?: number
 }
 
 // ─── Main Component ───────────────────────────────────────────────────────────
@@ -52,6 +57,9 @@ export function HlsPlayer({
   onProviderChange,
   isFetchingProvider,
   imdbId,
+  movieOverview,
+  popularity = 0,
+  voteAverage = 0,
 }: HlsPlayerProps) {
   const videoRef = useRef<HTMLVideoElement>(null)
   const hlsRef = useRef<Hls | null>(null)
@@ -80,6 +88,18 @@ export function HlsPlayer({
   const [hoverX, setHoverX] = useState<number | null>(null)
   const [showVolSlider, setShowVolSlider] = useState(false)
   const [parsedCues, setParsedCues] = useState<ParsedCue[]>([])
+  const [skipIndicator, setSkipIndicator] = useState<{
+    type: "forward" | "backward"
+    id: number
+  } | null>(null)
+
+  useEffect(() => {
+    if (!skipIndicator) return
+    const t = setTimeout(() => {
+      setSkipIndicator(null)
+    }, 600)
+    return () => clearTimeout(t)
+  }, [skipIndicator])
 
   const allSubtitles = [...subtitles, ...localSubtitles]
 
@@ -252,6 +272,17 @@ export function HlsPlayer({
     }
   }, [openMenu, showUI])
 
+  // ── Handlers ──────────────────────────────────────────────────────────────
+  const seek = useCallback((delta: number) => {
+    const v = videoRef.current
+    if (!v) return
+    v.currentTime = Math.max(0, Math.min(v.duration, v.currentTime + delta))
+    setSkipIndicator({
+      type: delta > 0 ? "forward" : "backward",
+      id: Date.now(),
+    })
+  }, [])
+
   // ── Fullscreen toggle ─────────────────────────────────────────────────────
   const toggleFullscreen = () => {
     const el = containerRef.current
@@ -282,11 +313,11 @@ export function HlsPlayer({
           break
         case "ArrowLeft":
         case "KeyJ":
-          v.currentTime = Math.max(0, v.currentTime - 10)
+          seek(-10)
           break
         case "ArrowRight":
         case "KeyL":
-          v.currentTime = Math.min(v.duration, v.currentTime + 10)
+          seek(10)
           break
         case "ArrowUp":
           v.volume = Math.min(1, v.volume + 0.1)
@@ -304,9 +335,8 @@ export function HlsPlayer({
     }
     window.addEventListener("keydown", onKey)
     return () => window.removeEventListener("keydown", onKey)
-  }, [showUI]) // toggleFullscreen is stable (no deps)
+  }, [showUI, seek]) // toggleFullscreen is stable (no deps)
 
-  // ── Handlers ──────────────────────────────────────────────────────────────
   const togglePlay = () => {
     const v = videoRef.current
     if (!v) return
@@ -315,12 +345,6 @@ export function HlsPlayer({
     } else {
       v.pause()
     }
-  }
-
-  const seek = (delta: number) => {
-    const v = videoRef.current
-    if (!v) return
-    v.currentTime = Math.max(0, Math.min(v.duration, v.currentTime + delta))
   }
 
   const handleProgressClick = (e: MouseEvent<HTMLDivElement>) => {
@@ -566,6 +590,81 @@ export function HlsPlayer({
           </div>
         </div>
       )}
+
+      {/* ── Paused metadata overlay (Netflix Style) ── */}
+      <AnimatePresence>
+        {!playing &&
+          !buffering &&
+          !isFetchingProvider &&
+          openMenu !== "settings" && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.4 }}
+              className="pointer-events-none absolute inset-0 z-20 flex items-center bg-gradient-to-r from-black/85 via-black/40 to-transparent p-8 text-white md:p-16"
+            >
+              <motion.div
+                initial={{ x: -20, opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                exit={{ x: -20, opacity: 0 }}
+                transition={{ delay: 0.1, duration: 0.4, ease: "easeOut" }}
+                className="max-w-md space-y-4 md:max-w-xl lg:max-w-2xl"
+              >
+                {/* Floating logo/title */}
+                <h2 className="text-3xl font-extrabold tracking-wide text-white drop-shadow-[0_4px_8px_rgba(0,0,0,0.8)] md:text-5xl lg:text-6xl">
+                  {movieTitle}
+                </h2>
+
+                {/* Metadata Row */}
+                <div className="flex items-center gap-3 text-sm font-bold text-gray-300">
+                  {voteAverage > 0 && (
+                    <span className="font-bold text-green-500">
+                      {Math.round(voteAverage * 10)}% Match
+                    </span>
+                  )}
+                  <span>{movieYear}</span>
+                  <span className="rounded border border-white/20 bg-white/5 px-1.5 py-0.5 text-[10px] font-bold tracking-wider text-white uppercase">
+                    {getMovieQuality(popularity, movieYear)}
+                  </span>
+                  <span className="rounded border border-white/20 bg-white/5 px-1.5 py-0.5 text-[10px] font-bold tracking-wider text-white uppercase">
+                    HD
+                  </span>
+                </div>
+
+                {/* Description */}
+                {movieOverview && (
+                  <p className="line-clamp-4 text-sm leading-relaxed text-gray-300 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] md:text-base md:leading-loose">
+                    {movieOverview}
+                  </p>
+                )}
+              </motion.div>
+            </motion.div>
+          )}
+      </AnimatePresence>
+
+      {/* ── Skip feedback indicator ── */}
+      <AnimatePresence>
+        {skipIndicator && (
+          <motion.div
+            key={skipIndicator.id}
+            initial={{ opacity: 0, scale: 0.5 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.8 }}
+            transition={{ duration: 0.3, ease: "easeOut" }}
+            className="pointer-events-none absolute inset-0 z-50 flex items-center justify-center"
+          >
+            <div className="flex flex-col items-center gap-2 rounded-full bg-black/60 px-6 py-5 text-white backdrop-blur-md">
+              <span className="material-symbols-outlined animate-pulse !text-[48px]">
+                {skipIndicator.type === "forward" ? "forward_10" : "replay_10"}
+              </span>
+              <span className="text-sm font-bold tracking-wider uppercase">
+                {skipIndicator.type === "forward" ? "+10s" : "-10s"}
+              </span>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* ════════════════════════════════════════════════════════════
           UI OVERLAY — Cinematic Obsidian

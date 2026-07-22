@@ -125,6 +125,9 @@ export default function NetflixPlayerPage() {
           onProviderChange={setProviderIndex}
           isFetchingProvider={sourcesPending}
           imdbId={movie?.imdbId ?? undefined}
+          movieOverview={movie.overview}
+          popularity={movie.popularity}
+          voteAverage={movie.voteAverage}
         />
       ) : (
         /* Fetching sources loading state */

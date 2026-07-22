@@ -144,7 +144,7 @@ export function BottomControls({
           <Button
             variant="ghost"
             size="icon"
-            className="group/btn relative hidden h-10 w-10 scale-95 rounded-full text-on-surface-variant hover:bg-white/10 hover:text-white active:scale-90 sm:flex"
+            className="group/btn relative flex h-10 w-10 scale-95 rounded-full text-on-surface-variant hover:bg-white/10 hover:text-white active:scale-90"
             onClick={() => seek(-10)}
           >
             <span
@@ -161,7 +161,7 @@ export function BottomControls({
           <Button
             variant="ghost"
             size="icon"
-            className="group/btn relative hidden h-10 w-10 scale-95 rounded-full text-on-surface-variant hover:bg-white/10 hover:text-white active:scale-90 sm:flex"
+            className="group/btn relative flex h-10 w-10 scale-95 rounded-full text-on-surface-variant hover:bg-white/10 hover:text-white active:scale-90"
             onClick={() => seek(10)}
           >
             <span
@@ -233,10 +233,10 @@ export function BottomControls({
               className="material-symbols-outlined"
               style={{ fontSize: "24px" }}
             >
-              subtitles
+              settings
             </span>
             <span className="text-label-sm pointer-events-none absolute -top-10 left-1/2 -translate-x-1/2 rounded bg-[#222222] px-2 py-1 font-label-sm whitespace-nowrap text-[#e2e2e2] opacity-0 transition-opacity group-hover/btn:opacity-100">
-              Audio & Subtitles
+              Settings
             </span>
             {(openMenu === "settings" || selectedSub) && (
               <span className="absolute -bottom-2 h-1 w-1 rounded-full bg-primary-container"></span>
