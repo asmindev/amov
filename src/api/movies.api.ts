@@ -16,6 +16,11 @@ export async function getTrendingMovies() {
   return MovieListSchema.parse(res)
 }
 
+export async function getTrendingAll() {
+  const res = await apiClient.get<unknown>(endpoints.movies.trendingAll)
+  return MovieListSchema.parse(res)
+}
+
 export async function getTopRatedMovies() {
   const res = await apiClient.get<unknown>(endpoints.movies.topRated)
   return MovieListSchema.parse(res)
@@ -129,11 +134,3 @@ export async function getDiscoverMovies(page = 1, filters?: DiscoverFilters) {
   return MovieListSchema.parse(res)
 }
 
-export async function searchMovies(query: string, page = 1) {
-  const res = await apiClient.get<unknown>(endpoints.search.movies, {
-    query,
-    include_adult: "false",
-    page: String(page),
-  })
-  return MovieListSchema.parse(res)
-}

@@ -1,6 +1,7 @@
 export const endpoints = {
   movies: {
     trending: "/trending/movie/week",
+    trendingAll: "/trending/all/week",
     topRated: "/movie/top_rated",
     popular: "/movie/popular",
     detail: (id: string) => `/movie/${id}`,
