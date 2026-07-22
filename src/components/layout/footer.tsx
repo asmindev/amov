@@ -52,12 +52,12 @@ export function Footer() {
                 <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
               </span>
               <span className="text-xs font-mono font-medium tracking-wider text-white/80 uppercase">
-                AMOV Stream Network • {time || "00:00:00 UTC"}
+                SYSTEM ONLINE • {time || "00:00:00 UTC"}
               </span>
             </div>
 
-            <h3 className="max-w-xl font-heading text-3xl font-extrabold tracking-tight text-white md:text-5xl">
-              Elevating the Cinematic Cinema Experience.
+            <h3 className="max-w-xl font-heading text-3xl font-black tracking-tight text-white md:text-5xl">
+              Watch movies & series anywhere.
             </h3>
           </div>
 
@@ -199,9 +199,9 @@ export function Footer() {
           </div>
 
           <div className="flex items-center gap-6 font-mono text-[11px]">
-            <span className="hover:text-white/80 transition-colors">DESIGNED FOR CINEMAPHILES</span>
+            <span className="hover:text-white/80 transition-colors">NON-COMMERCIAL PROJECT</span>
             <span>•</span>
-            <span className="text-primary font-bold">V2.4 ULTRA</span>
+            <span className="text-white/60">POWERED BY TMDB</span>
           </div>
         </div>
       </div>
