@@ -70,9 +70,6 @@ export function PausedOverlay({
                 <span className="rounded border border-white/20 bg-white/5 px-1.5 py-0.5 text-[10px] font-bold tracking-wider text-white uppercase">
                   {getMovieQuality(popularity, movieYear)}
                 </span>
-                <span className="rounded border border-white/20 bg-white/5 px-1.5 py-0.5 text-[10px] font-bold tracking-wider text-white uppercase">
-                  HD
-                </span>
               </div>
 
               {/* Description */}
