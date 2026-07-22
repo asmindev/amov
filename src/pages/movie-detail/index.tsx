@@ -9,6 +9,7 @@ import {
 import { getImageUrl, getBackdropUrl } from "@/helpers/image-url"
 import { formatDate, formatYear } from "@/helpers/format-date"
 import { getMovieQuality } from "@/helpers/movie-quality"
+import { getMaturityRating } from "@/helpers/maturity-rating"
 import { HOVER_VIDEO_DELAY } from "@/lib/config"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Badge } from "@/components/ui/badge"
@@ -19,9 +20,6 @@ import {
   clearWatchProgress,
 } from "@/hooks/use-watch-progress"
 import {
-  Star,
-  Clock,
-  Calendar,
   Globe,
   TrendingUp,
   DollarSign,
@@ -30,7 +28,6 @@ import {
   ChevronLeft,
   RotateCcw,
   History,
-  MonitorPlay,
 } from "lucide-react"
 
 // Videasy player accent color — red theme (#EF4444)
@@ -278,25 +275,27 @@ export default function MovieDetailPage() {
             </h1>
           )}
 
-          <div className="mb-6 flex flex-wrap items-center gap-4 text-sm font-medium">
-            <span className="flex items-center gap-1.5 rounded-md bg-green-400/10 px-2 py-1 text-green-400">
-              <Star className="h-4 w-4 fill-green-400" />
-              {(movie.voteAverage * 10).toFixed(0)}% Match
-            </span>
-            <span className="flex items-center gap-1.5 text-white/80">
-              <Calendar className="h-4 w-4 text-white/50" />
+          <div className="mb-6 flex flex-wrap items-center gap-3.5 text-sm font-bold">
+            {movie.voteAverage > 0 && (
+              <span className="text-[#46d369]">
+                {(movie.voteAverage * 10).toFixed(0)}% Match
+              </span>
+            )}
+            <span className="text-gray-300">
               {formatYear(movie.releaseDate)}
             </span>
-            <span className="flex items-center gap-1.5 text-white/80">
-              <Clock className="h-4 w-4 text-white/50" />
+            <span className="rounded-none border border-white/20 bg-white/5 px-1.5 py-0.5 text-[10px] font-extrabold tracking-wider text-white uppercase">
+              {getMaturityRating(movie.genres, movie.voteAverage)}
+            </span>
+            <span className="text-gray-300">
               {formatRuntime(movie.runtime)}
             </span>
-            <Badge
-              variant="outline"
-              className="border-white/20 bg-white/10 text-white"
-            >
+            <span className="rounded-none border border-white/20 bg-white/5 px-1.5 py-0.5 text-[10px] font-extrabold tracking-wider text-white uppercase">
               {getMovieQuality(movie.popularity, movie.releaseDate)}
-            </Badge>
+            </span>
+            <span className="rounded-none border border-white/20 bg-white/5 px-1.5 py-0.5 text-[10px] font-extrabold tracking-wider text-white uppercase">
+              HD
+            </span>
           </div>
 
           <p className="mb-8 max-w-2xl text-lg leading-relaxed text-white/90 drop-shadow-md">
@@ -321,9 +320,9 @@ export default function MovieDetailPage() {
                     ` / ${formatTimestamp(Math.floor(savedProgress.duration))}`}
                 </span>
               </div>
-              <div className="h-1 w-full rounded-full bg-white/10">
+              <div className="h-1.5 w-full bg-white/10">
                 <div
-                  className="h-1 rounded-full bg-primary transition-all duration-300"
+                  className="h-1.5 bg-primary transition-all duration-300"
                   style={{
                     width:
                       savedProgress.duration > 0
@@ -347,30 +346,35 @@ export default function MovieDetailPage() {
               to="/movie/$id"
               params={{ id: movie.id.toString() }}
               search={{ play: true }}
-              className="flex items-center gap-2 rounded-md bg-primary px-8 py-3.5 text-base font-bold text-primary-foreground shadow-lg shadow-primary/20 transition-all hover:scale-105 hover:bg-primary/90 active:scale-95"
+              className="flex items-center gap-2 rounded-none bg-white px-8 py-3.5 text-base font-bold text-black shadow-lg transition-all hover:scale-105 hover:bg-gray-200 active:scale-95"
             >
               <span className="material-symbols-outlined fill !text-[24px]">
                 play_arrow
               </span>
               {savedProgress && savedProgress.timestamp > 30
-                ? "Continue Watching"
-                : "Watch Movie"}
+                ? "Resume"
+                : "Play"}
             </Link>
 
             <Link
               to="/movie/$id/netflix"
               params={{ id: movie.id.toString() }}
-              className="flex items-center gap-2 rounded-lg border border-white/20 bg-white/10 px-8 py-3.5 text-base font-bold text-white backdrop-blur-md transition-colors hover:bg-white/20 active:scale-95"
+              className="flex items-center gap-2 rounded-none bg-white/15 px-8 py-3.5 text-base font-bold text-white backdrop-blur-md transition-all hover:scale-105 hover:bg-white/25 active:scale-95"
             >
-              <MonitorPlay className="h-5 w-5" />
+              <span className="material-symbols-outlined !text-[24px]">
+                live_tv
+              </span>
               Custom Player
             </Link>
 
             {trailer && !showVideo && (
               <button
                 onClick={() => setShowVideo(true)}
-                className="flex items-center gap-2 rounded-lg border border-white/20 bg-white/10 px-8 py-3.5 text-base font-bold text-white backdrop-blur-md transition-colors hover:bg-white/20 active:scale-95"
+                className="flex items-center gap-2 rounded-none bg-white/15 px-8 py-3.5 text-base font-bold text-white backdrop-blur-md transition-all hover:scale-105 hover:bg-white/25 active:scale-95"
               >
+                <span className="material-symbols-outlined !text-[24px]">
+                  movie
+                </span>
                 Trailer
               </button>
             )}
@@ -379,9 +383,12 @@ export default function MovieDetailPage() {
                 href={`https://www.imdb.com/title/${movie.imdbId}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-2 rounded-lg border border-white/20 bg-white/10 px-8 py-3.5 text-base font-bold text-white backdrop-blur-md transition-colors hover:bg-white/20 active:scale-95"
+                className="flex items-center gap-2 rounded-none bg-white/15 px-8 py-3.5 text-base font-bold text-white backdrop-blur-md transition-all hover:scale-105 hover:bg-white/25 active:scale-95"
               >
-                View on IMDb
+                <span className="material-symbols-outlined !text-[24px]">
+                  open_in_new
+                </span>
+                IMDb
               </a>
             )}
           </div>
@@ -418,7 +425,7 @@ export default function MovieDetailPage() {
                       <Badge
                         key={g.id}
                         variant="secondary"
-                        className="rounded-full bg-white/5 px-4 py-1.5 text-sm text-white/90 hover:bg-white/10"
+                        className="rounded-none border border-white/15 bg-white/5 px-4 py-1.5 text-sm text-white/90 hover:bg-white/10"
                       >
                         {g.name}
                       </Badge>
@@ -428,7 +435,7 @@ export default function MovieDetailPage() {
               </div>
 
               <div className="space-y-6">
-                <div className="space-y-4 rounded-2xl border border-white/5 bg-white/5 p-6 backdrop-blur-sm">
+                <div className="space-y-4 rounded-none border border-white/5 bg-white/5 p-6 backdrop-blur-sm">
                   <InfoRow label="Status" value={movie.status} />
                   <InfoRow
                     label="Release Date"
@@ -467,9 +474,9 @@ export default function MovieDetailPage() {
                   {cast.map((member) => (
                     <div
                       key={member.id}
-                      className="group flex flex-col items-center text-center"
+                      className="group flex flex-col text-left"
                     >
-                      <div className="mb-3 aspect-square w-full max-w-[96px] overflow-hidden rounded-full border border-white/10 bg-white/5 transition-transform duration-300 group-hover:scale-105 group-hover:border-white/30">
+                      <div className="mb-3 aspect-[2/3] w-full overflow-hidden rounded-none border border-white/10 bg-white/5 transition-transform duration-300 group-hover:scale-105 group-hover:border-white/30">
                         <img
                           src={getImageUrl(member.profilePath, "w185")}
                           alt={member.name}
@@ -481,10 +488,10 @@ export default function MovieDetailPage() {
                           }}
                         />
                       </div>
-                      <p className="mb-1 text-sm leading-tight font-bold text-white">
+                      <p className="mb-0.5 line-clamp-1 text-sm leading-tight font-bold text-white">
                         {member.name}
                       </p>
-                      <p className="text-xs text-white/50">
+                      <p className="line-clamp-1 text-xs text-white/50">
                         {member.character}
                       </p>
                     </div>
