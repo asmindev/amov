@@ -146,7 +146,7 @@ export function BottomControls({
           <Button
             variant="ghost"
             size="icon"
-            className="group/btn relative flex h-10 w-10 scale-95 rounded-full text-on-surface-variant hover:bg-white/10 hover:text-white active:scale-90"
+            className="group/btn relative hidden h-10 w-10 scale-95 rounded-full text-on-surface-variant hover:bg-white/10 hover:text-white active:scale-90 md:flex"
             onClick={() => seek(-10)}
           >
             <span
@@ -163,7 +163,7 @@ export function BottomControls({
           <Button
             variant="ghost"
             size="icon"
-            className="group/btn relative flex h-10 w-10 scale-95 rounded-full text-on-surface-variant hover:bg-white/10 hover:text-white active:scale-90"
+            className="group/btn relative hidden h-10 w-10 scale-95 rounded-full text-on-surface-variant hover:bg-white/10 hover:text-white active:scale-90 md:flex"
             onClick={() => seek(10)}
           >
             <span
