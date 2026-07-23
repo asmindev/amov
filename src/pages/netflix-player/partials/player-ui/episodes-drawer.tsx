@@ -85,8 +85,16 @@ export function EpisodesDrawer({
         </div>
 
         <button
-          onClick={onClose}
-          className="flex h-7 w-7 items-center justify-center rounded-full bg-white/10 text-white/70 transition-colors hover:bg-white/20 hover:text-white"
+          type="button"
+          onClick={(e) => {
+            e.preventDefault()
+            e.stopPropagation()
+            onClose()
+          }}
+          onMouseDown={(e) => e.stopPropagation()}
+          onPointerDown={(e) => e.stopPropagation()}
+          className="flex h-8 w-8 items-center justify-center rounded-full bg-white/10 text-white/70 transition-colors hover:bg-white/20 hover:text-white"
+          aria-label="Close episodes drawer"
         >
           <X className="h-4 w-4" />
         </button>

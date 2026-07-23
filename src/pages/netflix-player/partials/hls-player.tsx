@@ -396,6 +396,7 @@ export function HlsPlayer({
         poster={poster}
         crossOrigin="anonymous"
         playsInline
+        disablePictureInPicture
         onClick={() => {
           togglePlay()
           showUI()
