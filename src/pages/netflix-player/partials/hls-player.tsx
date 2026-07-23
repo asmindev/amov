@@ -6,46 +6,25 @@ import {
   type MouseEvent,
   type ChangeEvent,
 } from "react"
-import Hls from "hls.js"
-import type { StreamSource, StreamSubtitle } from "@/api/decryptor.api"
-import type { DecryptorProvider } from "@/lib/config"
-import { DECRYPTOR_PROVIDERS, DECRYPTOR_URL } from "@/lib/config"
+import type { StreamSubtitle } from "@/api/decryptor.api"
 import { RefreshCw } from "lucide-react"
 import { AnimatePresence } from "motion/react"
 import { useWatchProgressTracker } from "@/hooks/use-watch-progress"
-import type { TvSeason } from "@/types/movie.types"
 import { TopAppBar } from "./player-ui/top-app-bar"
 import { BottomControls } from "./player-ui/bottom-controls"
 import { SettingsModal } from "./player-ui/settings-modal"
 import { EpisodesDrawer } from "./player-ui/episodes-drawer"
 import { useSubtitles } from "../hooks/use-subtitles"
 import { usePlayerSettings } from "../hooks/use-player-settings"
+import { useAutoSelectSubtitle } from "../hooks/use-auto-select-subtitle"
+import { useVideoEvents } from "../hooks/use-video-events"
+import { useFullscreen } from "../hooks/use-fullscreen"
+import { useKeyboardControls } from "../hooks/use-keyboard-controls"
+import { useHlsLoader } from "../hooks/use-hls-loader"
 import { SubtitleOverlay } from "./player-ui/subtitle-overlay"
 import { PausedOverlay } from "./player-ui/paused-overlay"
 import { SkipIndicator } from "./player-ui/skip-indicator"
-
-interface HlsPlayerProps {
-  sources: StreamSource[]
-  subtitles: StreamSubtitle[]
-  movieId: number
-  movieTitle: string
-  movieYear: string
-  poster?: string
-  provider: DecryptorProvider
-  providerIndex: number
-  allProviders: typeof DECRYPTOR_PROVIDERS
-  onProviderChange: (index: number) => void
-  isFetchingProvider: boolean
-  imdbId?: string
-  movieOverview?: string
-  popularity?: number
-  voteAverage?: number
-  logoPath?: string | null
-  mediaType?: "movie" | "tv"
-  season?: number
-  episode?: number
-  seasons?: TvSeason[]
-}
+import type { HlsPlayerProps } from "../hls-player.types"
 
 // ─── Main Component ───────────────────────────────────────────────────────────
 
@@ -72,7 +51,7 @@ export function HlsPlayer({
   seasons = [],
 }: HlsPlayerProps) {
   const videoRef = useRef<HTMLVideoElement>(null)
-  const hlsRef = useRef<Hls | null>(null)
+  const hlsRef = useRef(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const hideTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const progressBarRef = useRef<HTMLDivElement>(null)
@@ -84,7 +63,6 @@ export function HlsPlayer({
   const [bufferedEnd, setBufferedEnd] = useState(0)
   const [volume, setVolume] = useState(1)
   const [muted, setMuted] = useState(false)
-  const [fullscreen, setFullscreen] = useState(false)
   const [uiVisible, setUiVisible] = useState(true)
   const [mobileSkipVisible, setMobileSkipVisible] = useState(true)
   const mobileSkipTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -116,23 +94,7 @@ export function HlsPlayer({
 
   const allSubtitles = [...subtitles, ...localSubtitles]
 
-  // Auto-select Indonesian subtitle when available; otherwise let the user choose.
-  useEffect(() => {
-    if (subtitles.length > 0 && selectedSub === null) {
-      const defaultSub = subtitles.find(
-        (s) =>
-          s.lang === "id" ||
-          s.lang === "ind" ||
-          s.lang === "in" ||
-          (s.language || "").toLowerCase().includes("indonesi")
-      )
-      if (defaultSub) {
-        setSelectedSub(defaultSub.url)
-      }
-    }
-  }, [subtitles, selectedSub])
-
-  // ── Customization State ────────────────────────────────────────────────────
+  // ── Customization ──────────────────────────────────────────────────────────
   const {
     playbackRate,
     setPlaybackRate,
@@ -156,187 +118,58 @@ export function HlsPlayer({
     currentTime
   )
 
-  // Track progress → localStorage
-  useWatchProgressTracker("movie", movieId, true)
+  // ── Hooks ──────────────────────────────────────────────────────────────────
+  useAutoSelectSubtitle(subtitles, selectedSub, setSelectedSub)
 
-  // ── HLS Load ──────────────────────────────────────────────────────────────
-  useEffect(() => {
-    const video = videoRef.current
-    if (!video || sources.length === 0) return
-    const src = sources[selectedQuality]?.url
-    if (!src) return
+  useHlsLoader({ videoRef, hlsRef, sources, selectedQuality, movieId })
 
-    const savedTs = (() => {
-      try {
-        const raw = localStorage.getItem("amov_watch_progress")
-        if (!raw) return 0
-        const all = JSON.parse(raw) as Record<string, { timestamp: number }>
-        return all[`movie_${movieId}`]?.timestamp ?? 0
-      } catch {
-        return 0
-      }
-    })()
-
-    hlsRef.current?.destroy()
-    hlsRef.current = null
-
-    const isHls = src.includes(".m3u8") || src.includes("/hls/")
-    if (Hls.isSupported() && isHls) {
-      let currentRemoteBase = ""
-      if (src.startsWith("http://") || src.startsWith("https://")) {
-        currentRemoteBase = src.substring(0, src.lastIndexOf("/") + 1)
-      }
-
-      const hls = new Hls({
-        startPosition: savedTs > 30 ? savedTs : -1,
-        xhrSetup: (xhr, url) => {
-          let targetUrl = url
-          const localHost = window.location.host
-          const isLocal =
-            url.includes(localHost) ||
-            url.includes("/api/decryptor") ||
-            (!url.startsWith("http://") && !url.startsWith("https://"))
-
-          if (isLocal && currentRemoteBase) {
-            // Fix: hls.js resolved relative segment against local proxy URL. Reconstruct original CDN URL!
-            const relativePath = url
-              .replace(/^https?:\/\/[^\/]+/, "")
-              .replace(/^\/api\/decryptor\//, "")
-              .replace(/^\//, "")
-            targetUrl = new URL(relativePath, currentRemoteBase).toString()
-          } else if (!isLocal) {
-            currentRemoteBase = url.substring(0, url.lastIndexOf("/") + 1)
-          }
-
-          const proxyUrl = `${DECRYPTOR_URL}/proxy?url=${encodeURIComponent(targetUrl)}`
-          xhr.open("GET", proxyUrl, true)
-        },
-      })
-      hls.loadSource(src)
-      hls.attachMedia(video)
-      hls.on(Hls.Events.MANIFEST_PARSED, () => {
-        void video.play()
-      })
-      hlsRef.current = hls
-    } else {
-      // Stream raw MP4 or fallback video via proxy to prevent CORS, 403, and 429 errors
-      const proxiedUrl = src.startsWith("http")
-        ? `${DECRYPTOR_URL}/proxy?url=${encodeURIComponent(src)}`
-        : src
-
-      video.src = proxiedUrl
-
-      if (savedTs > 30) {
-        video.addEventListener(
-          "loadedmetadata",
-          () => {
-            video.currentTime = savedTs
-          },
-          { once: true }
-        )
-      }
-      void video.play().catch(() => {
-        // Autoplay policy or user gesture catch
-      })
-    }
-    return () => {
-      hlsRef.current?.destroy()
-      hlsRef.current = null
-    }
-  }, [sources, selectedQuality, movieId])
-
-  // ── Video events ──────────────────────────────────────────────────────────
-  useEffect(() => {
-    const v = videoRef.current
-    if (!v) return
-    const onPlay = () => setPlaying(true)
-    const onPause = () => {
+  useVideoEvents({
+    videoRef,
+    onPlay: () => setPlaying(true),
+    onPause: () => {
       setPlaying(false)
       setUiVisible(true)
       if (hideTimerRef.current) clearTimeout(hideTimerRef.current)
-    }
-    const onTimeUpdate = () => {
+    },
+    onTimeUpdate: () => {
+      const v = videoRef.current
+      if (!v) return
       setCurrentTime(v.currentTime)
       if (v.buffered.length > 0)
         setBufferedEnd(v.buffered.end(v.buffered.length - 1))
-    }
-    const onDuration = () => setDuration(v.duration)
-    const onWaiting = () => setBuffering(true)
-    const onPlaying = () => setBuffering(false)
-    const onVolume = () => {
-      setVolume(v.volume)
-      setMuted(v.muted)
-    }
-
-    v.addEventListener("play", onPlay)
-    v.addEventListener("pause", onPause)
-    v.addEventListener("timeupdate", onTimeUpdate)
-    v.addEventListener("durationchange", onDuration)
-    v.addEventListener("waiting", onWaiting)
-    v.addEventListener("playing", onPlaying)
-    v.addEventListener("volumechange", onVolume)
-    return () => {
-      v.removeEventListener("play", onPlay)
-      v.removeEventListener("pause", onPause)
-      v.removeEventListener("timeupdate", onTimeUpdate)
-      v.removeEventListener("durationchange", onDuration)
-      v.removeEventListener("waiting", onWaiting)
-      v.removeEventListener("playing", onPlaying)
-      v.removeEventListener("volumechange", onVolume)
-    }
-  }, [])
-
-  // ── Fullscreen sync & Native TextTrack Mode Sync ────────────────────────
-  useEffect(() => {
-    const v = videoRef.current
-
-    const syncTrackMode = (isNativeFs: boolean) => {
-      if (!v || !v.textTracks || v.textTracks.length === 0) return
-      const track = v.textTracks[0]
-      if (track) {
-        // Disable native track rendering in web mode so only Custom Netflix SubtitleOverlay is shown,
-        // enable "showing" on iOS Native Fullscreen on iPhone
-        track.mode = isNativeFs ? "showing" : "disabled"
-      }
-    }
-
-    const handler = () => {
-      const isFs =
-        !!document.fullscreenElement ||
-        !!(document as unknown as { webkitFullscreenElement?: Element })
-          .webkitFullscreenElement
-      setFullscreen(isFs)
-      syncTrackMode(false)
-    }
-
-    document.addEventListener("fullscreenchange", handler)
-    document.addEventListener("webkitfullscreenchange", handler)
-
-    const onWebkitBeginFs = () => {
-      setFullscreen(true)
-      syncTrackMode(true)
-    }
-    const onWebkitEndFs = () => {
-      setFullscreen(false)
-      syncTrackMode(false)
-    }
-
-    if (v) {
-      v.addEventListener("webkitbeginfullscreen", onWebkitBeginFs)
-      v.addEventListener("webkitendfullscreen", onWebkitEndFs)
-      // Initial track mode setup
-      syncTrackMode(false)
-    }
-
-    return () => {
-      document.removeEventListener("fullscreenchange", handler)
-      document.removeEventListener("webkitfullscreenchange", handler)
+    },
+    onDuration: () => {
+      const v = videoRef.current
+      if (v) setDuration(v.duration)
+    },
+    onWaiting: () => setBuffering(true),
+    onPlaying: () => setBuffering(false),
+    onVolume: () => {
+      const v = videoRef.current
       if (v) {
-        v.removeEventListener("webkitbeginfullscreen", onWebkitBeginFs)
-        v.removeEventListener("webkitendfullscreen", onWebkitEndFs)
+        setVolume(v.volume)
+        setMuted(v.muted)
       }
+    },
+  })
+
+  const { fullscreen, iosNativeFullscreen, toggleFullscreen } = useFullscreen(
+    containerRef,
+    videoRef
+  )
+
+  // ── Native track mode sync ──────────────────────────────────────────────────
+  useEffect(() => {
+    const video = videoRef.current
+    if (!video) return
+    const tracks = video.textTracks
+    for (let i = 0; i < tracks.length; i++) {
+      tracks[i].mode = iosNativeFullscreen ? "showing" : "disabled"
     }
-  }, [vttUrl])
+  }, [iosNativeFullscreen, vttUrl])
+
+  // Track progress → localStorage
+  useWatchProgressTracker("movie", movieId, true)
 
   // ── UI hide/show ──────────────────────────────────────────────────────────
   const showUI = useCallback(() => {
@@ -356,7 +189,6 @@ export function HlsPlayer({
     }, 2000)
   }, [])
 
-  // Keep UI visible when menu is open
   useEffect(() => {
     if (openMenu !== null) {
       if (hideTimerRef.current) clearTimeout(hideTimerRef.current)
@@ -378,81 +210,14 @@ export function HlsPlayer({
     })
   }, [])
 
-  // ── Fullscreen toggle ─────────────────────────────────────────────────────
-  const toggleFullscreen = () => {
-    const el = containerRef.current
-    const v = videoRef.current
+  useKeyboardControls({ videoRef, seek, showUI, toggleFullscreen })
 
-    // 1. Standard W3C Fullscreen (Chrome, Firefox, Safari Desktop, iPadOS)
-    if (el && typeof el.requestFullscreen === "function") {
-      if (!document.fullscreenElement) {
-        void el.requestFullscreen()
-      } else {
-        void document.exitFullscreen()
-      }
-    }
-    // 2. iOS Safari iPhone Native Video Presentation Mode
-    else if (
-      v &&
-      "webkitEnterFullscreen" in v &&
-      typeof (v as unknown as { webkitEnterFullscreen: () => void })
-        .webkitEnterFullscreen === "function"
-    ) {
-      const iosVideo = v as unknown as {
-        webkitEnterFullscreen: () => void
-        webkitExitFullscreen: () => void
-        webkitDisplayingFullscreen?: boolean
-      }
-      if (iosVideo.webkitDisplayingFullscreen) {
-        iosVideo.webkitExitFullscreen?.()
-      } else {
-        iosVideo.webkitEnterFullscreen()
-      }
-    }
-  }
-
-  // ── Keyboard ──────────────────────────────────────────────────────────────
+  // ── Apply Playback Rate ───────────────────────────────────────────────────
   useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if ((e.target as HTMLElement).tagName === "INPUT") return
-      const v = videoRef.current
-      if (!v) return
-      showUI()
-      switch (e.code) {
-        case "Space":
-        case "KeyK":
-          e.preventDefault()
-          if (v.paused) {
-            void v.play()
-          } else {
-            v.pause()
-          }
-          break
-        case "ArrowLeft":
-        case "KeyJ":
-          seek(-10)
-          break
-        case "ArrowRight":
-        case "KeyL":
-          seek(10)
-          break
-        case "ArrowUp":
-          v.volume = Math.min(1, v.volume + 0.1)
-          break
-        case "ArrowDown":
-          v.volume = Math.max(0, v.volume - 0.1)
-          break
-        case "KeyM":
-          v.muted = !v.muted
-          break
-        case "KeyF":
-          toggleFullscreen()
-          break
-      }
+    if (videoRef.current) {
+      videoRef.current.playbackRate = playbackRate
     }
-    window.addEventListener("keydown", onKey)
-    return () => window.removeEventListener("keydown", onKey)
-  }, [showUI, seek]) // toggleFullscreen is stable (no deps)
+  }, [playbackRate])
 
   const togglePlay = () => {
     const v = videoRef.current
@@ -494,13 +259,6 @@ export function HlsPlayer({
     v.muted = !v.muted
   }
 
-  // ── Apply Playback Rate ───────────────────────────────────────────────────
-  useEffect(() => {
-    if (videoRef.current) {
-      videoRef.current.playbackRate = playbackRate
-    }
-  }, [playbackRate])
-
   const progressPct = duration ? (currentTime / duration) * 100 : 0
   const bufferedPct = duration ? (bufferedEnd / duration) * 100 : 0
   const hoverPct = hoverX !== null ? hoverX * 100 : null
@@ -532,21 +290,22 @@ export function HlsPlayer({
             src={vttUrl}
             srcLang="id"
             label="Indonesian Subtitle"
-            default
           />
         )}
       </video>
 
       {/* ── Custom Subtitle Overlay ── */}
-      <SubtitleOverlay
-        currentActiveCues={currentActiveCues}
-        uiVisible={uiVisible}
-        subMargin={subMargin}
-        subFont={subFont}
-        subSize={subSize}
-        subLh={subLh}
-        subBg={subBg}
-      />
+      {!iosNativeFullscreen && (
+        <SubtitleOverlay
+          currentActiveCues={currentActiveCues}
+          uiVisible={uiVisible}
+          subMargin={subMargin}
+          subFont={subFont}
+          subSize={subSize}
+          subLh={subLh}
+          subBg={subBg}
+        />
+      )}
 
       {/* ── Fetching overlay ── */}
       {isFetchingProvider && (

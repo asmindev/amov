@@ -1,10 +1,130 @@
-import { useState, useEffect } from "react"
-import { DECRYPTOR_URL } from "@/lib/config"
+import { useState, useEffect, useRef } from "react"
 
 export interface ParsedCue {
   start: number
   end: number
   text: string
+}
+
+const TIMESTAMP_RE = /(\d{1,2}:)?(\d{2}):(\d{2})[.,](\d{3})/
+
+function parseTimestamp(ts: string): number {
+  const clean = ts.trim().replace(",", ".")
+  const match = clean.match(TIMESTAMP_RE)
+  if (!match) return NaN
+  const hours = match[1] ? parseFloat(match[1]) : 0
+  const mins = parseFloat(match[2])
+  const secs = parseFloat(match[3])
+  const millis = parseFloat(match[4])
+  return hours * 3600 + mins * 60 + secs + millis / 1000
+}
+
+/**
+ * Line-based VTT/SRT parser that handles all formats:
+ * - SRT with or without blank lines between cues
+ * - SRT with or without cue numbers
+ * - Standard VTT
+ * - Mixed formats
+ */
+function parseCues(text: string): ParsedCue[] {
+  const lines = text.split("\n")
+  const cues: ParsedCue[] = []
+
+  let i = 0
+  // Skip WEBVTT header if present
+  if (lines[0]?.trim().startsWith("WEBVTT")) {
+    i = 1
+    // Skip until first blank line after header
+    while (i < lines.length && lines[i].trim() !== "") i++
+    i++
+  }
+
+  while (i < lines.length) {
+    // Skip blank lines
+    while (i < lines.length && lines[i].trim() === "") i++
+    if (i >= lines.length) break
+
+    // Look for a timing line containing "-->"
+    let timingIndex = -1
+    let scan = i
+    // Search ahead up to 3 lines for the timing line (SRT may have a cue number first)
+    while (scan < Math.min(i + 4, lines.length)) {
+      if (lines[scan].includes("-->")) {
+        timingIndex = scan
+        break
+      }
+      scan++
+    }
+
+    if (timingIndex === -1) {
+      i++
+      continue
+    }
+
+    const timingLine = lines[timingIndex]
+    const arrowSplit = timingLine.split("-->")
+    if (arrowSplit.length < 2) {
+      i = timingIndex + 1
+      continue
+    }
+
+    const startStr = arrowSplit[0]
+    const endPart = arrowSplit[1].trim().split(/[\s\t]+/)[0]
+    const start = parseTimestamp(startStr)
+    const end = parseTimestamp(endPart)
+
+    if (isNaN(start) || isNaN(end)) {
+      i = timingIndex + 1
+      continue
+    }
+
+    // Collect text lines after the timing line until next blank line or next timing line
+    i = timingIndex + 1
+    const textLines: string[] = []
+    while (i < lines.length && lines[i].trim() !== "" && !lines[i].includes("-->")) {
+      textLines.push(lines[i])
+      i++
+    }
+
+    const text = textLines.join("\n").replace(/<[^>]+>/g, "").trim()
+    if (text) {
+      cues.push({ start, end, text })
+    }
+  }
+
+  return cues
+}
+
+/**
+ * Apply time offset to VTT/SRT timestamps in-place text.
+ * Handles both comma and dot decimal separators.
+ */
+function shiftTimestamps(text: string, offset: number): string {
+  if (offset === 0) return text
+  return text.replace(
+    /(\d{1,2}:)?(\d{2}):(\d{2})[.,](\d{3})/g,
+    (_match, h, m, s, ms) => {
+      const hours = h ? parseFloat(h) : 0
+      const mins = parseInt(m)
+      const secs = parseInt(s)
+      const millis = parseInt(ms)
+      let totalSeconds = hours * 3600 + mins * 60 + secs + millis / 1000
+      totalSeconds += offset
+      if (totalSeconds < 0) totalSeconds = 0
+
+      const outH = Math.floor(totalSeconds / 3600)
+      const outM = Math.floor((totalSeconds % 3600) / 60)
+      const outS = Math.floor(totalSeconds % 60)
+      const outMs = Math.floor(Math.round((totalSeconds % 1) * 1000))
+
+      const pad = (n: number, len = 2) => String(n).padStart(len, "0")
+      if (h || outH > 0) {
+        return `${pad(outH)}:${pad(outM)}:${pad(outS)}.${pad(outMs, 3)}`
+      } else {
+        return `${pad(outM)}:${pad(outS)}.${pad(outMs, 3)}`
+      }
+    }
+  )
 }
 
 export function useSubtitles(
@@ -14,112 +134,52 @@ export function useSubtitles(
 ) {
   const [parsedCues, setParsedCues] = useState<ParsedCue[]>([])
   const [vttUrl, setVttUrl] = useState<string | null>(null)
+  const blobUrlRef = useRef<string | null>(null)
 
   useEffect(() => {
     let isCancelled = false
-    async function fetchAndOffsetSub() {
+
+    async function fetchAndParse() {
       if (!selectedSub) {
         setParsedCues([])
+        setVttUrl(null)
         return
       }
       try {
-        const proxyUrl = selectedSub.startsWith("http://") || selectedSub.startsWith("https://")
-          ? `${DECRYPTOR_URL}/proxy?url=${encodeURIComponent(selectedSub)}`
-          : selectedSub
-        const res = await fetch(proxyUrl)
+        const res = await fetch(selectedSub)
         if (!res.ok) throw new Error("fetch sub error")
         let text = await res.text()
 
-        // Remove BOM if present and normalize newlines
         text = text
           .replace(/^\uFEFF/, "")
           .replace(/\r\n/g, "\n")
           .replace(/\r/g, "\n")
 
-        // Simple VTT/SRT timestamp shifter & comma to dot converter
-        const shiftedText = text.replace(
-          /(\d{2,}:)?(\d{2}):(\d{2})[.,](\d{3})/g,
-          (_match, h, m, s, ms) => {
-            const hours = h ? parseInt(h) : 0
-            const mins = parseInt(m)
-            const secs = parseInt(s)
-            const millis = parseInt(ms)
-            let totalSeconds = hours * 3600 + mins * 60 + secs + millis / 1000
-            totalSeconds += subOffset
-            if (totalSeconds < 0) totalSeconds = 0
+        const shiftedText = shiftTimestamps(text, subOffset)
 
-            const outH = Math.floor(totalSeconds / 3600)
-            const outM = Math.floor((totalSeconds % 3600) / 60)
-            const outS = Math.floor(totalSeconds % 60)
-            const outMs = Math.floor(Math.round((totalSeconds % 1) * 1000))
-
-            const pad = (n: number, len = 2) => String(n).padStart(len, "0")
-            if (h || outH > 0) {
-              return `${pad(outH)}:${pad(outM)}:${pad(outS)}.${pad(outMs, 3)}`
-            } else {
-              return `${pad(outM)}:${pad(outS)}.${pad(outMs, 3)}`
-            }
-          }
-        )
-
-        // Ensure it's valid WebVTT (required by browsers for <track>)
         let finalVttText = shiftedText.trim()
         if (!finalVttText.startsWith("WEBVTT")) {
           finalVttText = "WEBVTT\n\n" + finalVttText
         }
 
-        // Parse cues manually
-        const blocks = finalVttText.split(/\n\s*\n/)
-        const parsed: ParsedCue[] = []
+        // Generate Blob URL for native <track>
+        if (blobUrlRef.current) URL.revokeObjectURL(blobUrlRef.current)
+        const blob = new Blob([finalVttText], { type: "text/vtt" })
+        const url = URL.createObjectURL(blob)
+        blobUrlRef.current = url
 
-        const parseTimestamp = (ts: string): number => {
-          const clean = ts.trim().replace(",", ".")
-          const parts = clean.split(":")
-          if (parts.length === 3) {
-            const h = parseFloat(parts[0])
-            const m = parseFloat(parts[1])
-            const s = parseFloat(parts[2])
-            return h * 3600 + m * 60 + s
-          } else if (parts.length === 2) {
-            const m = parseFloat(parts[0])
-            const s = parseFloat(parts[1])
-            return m * 60 + s
-          }
-          return 0
+        if (isCancelled) {
+          URL.revokeObjectURL(url)
+          return
         }
 
-        for (const block of blocks) {
-          const lines = block.trim().split("\n")
-          const timingIndex = lines.findIndex((l) => l.includes("-->"))
-          if (timingIndex !== -1) {
-            const timingLine = lines[timingIndex]
-            const [startStr, endStr] = timingLine.split("-->")
-            if (startStr && endStr) {
-              const start = parseTimestamp(startStr)
-              const end = parseTimestamp(endStr.trim().split(/\s+/)[0])
-              const rawText = lines.slice(timingIndex + 1).join("\n")
-              // Strip HTML tags from subtitle text
-              const text = rawText.replace(/<[^>]+>/g, "")
-              if (!isNaN(start) && !isNaN(end)) {
-                parsed.push({ start, end, text })
-              }
-            }
-          }
-        }
+        // Parse cues using robust line-based parser
+        const parsed = parseCues(finalVttText)
 
-        if (isCancelled) return
+        setVttUrl(url)
         setParsedCues(parsed)
-
-        // Generate Blob URL for HTML5 native <track> tag (iOS Safari Native Fullscreen)
-        try {
-          const blob = new Blob([finalVttText], { type: "text/vtt" })
-          const url = URL.createObjectURL(blob)
-          setVttUrl(url)
-        } catch {
-          setVttUrl(null)
-        }
       } catch (err) {
-        console.error("Subtitle shift error", err)
+        console.error("Subtitle parse error", err)
         if (!isCancelled) {
           setParsedCues([])
           setVttUrl(null)
@@ -127,10 +187,14 @@ export function useSubtitles(
       }
     }
 
-    void fetchAndOffsetSub()
+    void fetchAndParse()
 
     return () => {
       isCancelled = true
+      if (blobUrlRef.current) {
+        URL.revokeObjectURL(blobUrlRef.current)
+        blobUrlRef.current = null
+      }
     }
   }, [selectedSub, subOffset])
 
