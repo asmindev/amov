@@ -471,10 +471,6 @@ export function HlsPlayer({
   const hoverPct = hoverX !== null ? hoverX * 100 : null
 
   const activeSubObj = allSubtitles.find((s) => s.url === selectedSub)
-  const isIOS =
-    typeof navigator !== "undefined" &&
-    (/iPhone|iPod|iPad/i.test(navigator.userAgent) ||
-      (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1))
 
   return (
     <div
