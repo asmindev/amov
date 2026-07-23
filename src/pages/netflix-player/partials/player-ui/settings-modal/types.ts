@@ -46,7 +46,6 @@ export interface SubtitlesSettingsSectionProps {
   setSelectedSub: (val: string | null) => void
   subtitles: StreamSubtitle[]
   showHeading?: boolean
-  scrollClassName?: string
 }
 
 export interface CustomizationSettingsSectionProps {

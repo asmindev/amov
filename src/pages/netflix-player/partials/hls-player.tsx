@@ -114,13 +114,12 @@ export function HlsPlayer({
 
   const allSubtitles = [...subtitles, ...localSubtitles]
 
-  // Auto-select Indonesian ('id') or English ('en') or first available subtitle when subtitles load
+  // Auto-select Indonesian subtitle when available; otherwise let the user choose.
   useEffect(() => {
     if (subtitles.length > 0 && selectedSub === null) {
-      const defaultSub =
-        subtitles.find((s) => s.lang === "id" || s.lang === "ind") ||
-        subtitles.find((s) => s.lang === "en" || s.lang === "eng") ||
-        subtitles[0]
+      const defaultSub = subtitles.find(
+        (s) => s.lang === "id" || s.lang === "ind"
+      )
       if (defaultSub) {
         setSelectedSub(defaultSub.url)
       }

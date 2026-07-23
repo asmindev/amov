@@ -1,3 +1,4 @@
+import { useMemo, useState } from "react"
 import { Button } from "@/components/ui/button"
 import {
   Select,
@@ -6,6 +7,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { Check, Search, X } from "lucide-react"
 import { SUBTITLE_PROVIDERS } from "./constants"
 import type { SubtitlesSettingsSectionProps } from "./types"
 
@@ -18,17 +20,28 @@ export function SubtitlesSettingsSection({
   setSelectedSub,
   subtitles,
   showHeading = true,
-  scrollClassName = "settings-scroll flex-1 space-y-1 overflow-y-auto",
 }: SubtitlesSettingsSectionProps) {
+  const [search, setSearch] = useState("")
+
+  const filtered = useMemo(() => {
+    if (!search.trim()) return subtitles
+    const q = search.toLowerCase()
+    return subtitles.filter(
+      (s) =>
+        (s.language || "").toLowerCase().includes(q) ||
+        (s.lang || "").toLowerCase().includes(q)
+    )
+  }, [subtitles, search])
+
   return (
-    <div className="min-h-0 flex flex-1 flex-col">
+    <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
       {showHeading && (
         <h3 className="text-label-md mb-4 font-label-md font-extrabold tracking-wider text-secondary uppercase">
           Subtitles
         </h3>
       )}
 
-      <div className="mb-4 flex gap-2">
+      <div className="mb-3 flex gap-2">
         <Select
           value={selectedProvider}
           onValueChange={(value) => setSelectedProvider(value ?? "opensubtitles")}
@@ -63,39 +76,63 @@ export function SubtitlesSettingsSection({
         </Button>
       </div>
 
-      <div className={scrollClassName}>
-        <Button
-          variant="ghost"
-          className={`group w-full justify-between font-body-md ${!selectedSub ? "bg-white/5" : "hover:bg-white/5"}`}
-          onClick={() => setSelectedSub(null)}
-        >
-          <span
-            className={`group-hover:text-white ${!selectedSub ? "text-foreground" : "text-muted-foreground"}`}
+      {/* Search */}
+      <div className="relative mb-2">
+        <Search className="pointer-events-none absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
+        <input
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Search language..."
+          className="h-8 w-full rounded-md border border-border bg-white/5 pl-8 pr-7 text-xs text-foreground placeholder:text-muted-foreground outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20"
+        />
+        {search && (
+          <button
+            onClick={() => setSearch("")}
+            className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
           >
-            Off
-          </span>
-          {!selectedSub && (
-            <span className="material-symbols-outlined text-primary">check</span>
-          )}
-        </Button>
+            <X className="h-3.5 w-3.5" />
+          </button>
+        )}
+      </div>
 
-        {subtitles.map((sub) => (
-          <Button
-            key={sub.url}
-            variant="ghost"
-            className={`group w-full justify-between font-body-md ${selectedSub === sub.url ? "bg-white/5" : "hover:bg-white/5"}`}
-            onClick={() => setSelectedSub(sub.url)}
-          >
-            <span
-              className={`group-hover:text-white ${selectedSub === sub.url ? "text-foreground" : "text-muted-foreground"}`}
+      {/* List */}
+      <div className="settings-scroll min-h-0 flex-1 space-y-0.5 overflow-y-auto rounded-lg border border-border bg-white/[0.02] p-1">
+        <button
+          onClick={() => setSelectedSub(null)}
+          className={`flex w-full items-center justify-between rounded-md px-3 py-2 text-left text-xs transition-colors ${
+            !selectedSub
+              ? "bg-primary/10 text-foreground"
+              : "text-muted-foreground hover:bg-white/5 hover:text-foreground"
+          }`}
+        >
+          <span>Off</span>
+          {!selectedSub && <Check className="h-3.5 w-3.5 text-primary" />}
+        </button>
+
+        {filtered.length === 0 && search && (
+          <div className="py-6 text-center text-xs text-muted-foreground">
+            No subtitles match "{search}"
+          </div>
+        )}
+
+        {filtered.map((sub) => {
+          const key = sub.url
+          const isActive = selectedSub === key
+          return (
+            <button
+              key={key}
+              onClick={() => setSelectedSub(key)}
+              className={`flex w-full items-center justify-between rounded-md px-3 py-2 text-left text-xs transition-colors ${
+                isActive
+                  ? "bg-primary/10 text-foreground"
+                  : "text-muted-foreground hover:bg-white/5 hover:text-foreground"
+              }`}
             >
-              {sub.language || sub.lang}
-            </span>
-            {selectedSub === sub.url && (
-              <span className="material-symbols-outlined text-primary">check</span>
-            )}
-          </Button>
-        ))}
+              <span className="truncate capitalize">{sub.language || sub.lang}</span>
+              {isActive && <Check className="h-3.5 w-3.5 shrink-0 text-primary" />}
+            </button>
+          )
+        })}
       </div>
     </div>
   )

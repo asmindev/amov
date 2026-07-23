@@ -5,15 +5,15 @@ import type { SettingsSectionsProps } from "./types"
 
 export function SettingsSectionsDesktop(props: SettingsSectionsProps) {
   return (
-    <div className="hidden h-full flex-1 gap-8 overflow-hidden md:flex">
-      <div className="flex flex-1 flex-col overflow-hidden border-r border-border pr-4">
+    <div className="hidden h-full min-h-0 flex-1 gap-8 overflow-hidden md:flex">
+      <div className="flex min-h-0 flex-1 flex-col overflow-hidden border-r border-border pr-4">
         <AudioSettingsSection
           playbackRate={props.playbackRate}
           setPlaybackRate={props.setPlaybackRate}
         />
       </div>
 
-      <div className="flex flex-1 flex-col overflow-hidden border-r border-border pr-4">
+      <div className="flex min-h-0 flex-1 flex-col overflow-hidden border-r border-border pr-4">
         <SubtitlesSettingsSection
           selectedProvider={props.selectedProvider}
           setSelectedProvider={props.setSelectedProvider}
@@ -25,7 +25,7 @@ export function SettingsSectionsDesktop(props: SettingsSectionsProps) {
         />
       </div>
 
-      <div className="flex flex-1 flex-col overflow-hidden">
+      <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
         <CustomizationSettingsSection
           subOffset={props.subOffset}
           setSubOffset={props.setSubOffset}

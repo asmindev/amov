@@ -75,7 +75,7 @@ export function SettingsModal({
       }}
     >
       <div
-        className="flex max-h-[80vh] w-[90%] max-w-4xl flex-col rounded-xl border border-border bg-popover/90 p-6 text-popover-foreground shadow-2xl backdrop-blur-xl"
+        className="flex h-[80vh] w-[90%] max-w-4xl flex-col overflow-hidden rounded-xl border border-border bg-popover/90 p-6 text-popover-foreground shadow-2xl backdrop-blur-xl"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="mb-6 flex items-center justify-between border-b border-border pb-4">
@@ -92,7 +92,7 @@ export function SettingsModal({
           </Button>
         </div>
 
-        <div className="min-h-0 flex-1 overflow-hidden">
+        <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
           <SettingsSectionsMobile
             playbackRate={playbackRate}
             setPlaybackRate={setPlaybackRate}
