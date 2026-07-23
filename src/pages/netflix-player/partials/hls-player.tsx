@@ -86,6 +86,8 @@ export function HlsPlayer({
   const [muted, setMuted] = useState(false)
   const [fullscreen, setFullscreen] = useState(false)
   const [uiVisible, setUiVisible] = useState(true)
+  const [mobileSkipVisible, setMobileSkipVisible] = useState(true)
+  const mobileSkipTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const [selectedQuality, setSelectedQuality] = useState(0)
   const [localSubtitles, setLocalSubtitles] = useState<StreamSubtitle[]>([])
   const [selectedSub, setSelectedSub] = useState<string | null>(null)
@@ -223,7 +225,8 @@ export function HlsPlayer({
     const onPlay = () => setPlaying(true)
     const onPause = () => {
       setPlaying(false)
-      showUI()
+      setUiVisible(true)
+      if (hideTimerRef.current) clearTimeout(hideTimerRef.current)
     }
     const onTimeUpdate = () => {
       setCurrentTime(v.currentTime)
@@ -266,11 +269,18 @@ export function HlsPlayer({
   // ── UI hide/show ──────────────────────────────────────────────────────────
   const showUI = useCallback(() => {
     setUiVisible(true)
+    setMobileSkipVisible(true)
+
     if (hideTimerRef.current) clearTimeout(hideTimerRef.current)
     hideTimerRef.current = setTimeout(() => {
-      if (!openMenuRef.current) {
+      if (videoRef.current && !videoRef.current.paused && !openMenuRef.current) {
         setUiVisible(false)
       }
+    }, 3500)
+
+    if (mobileSkipTimerRef.current) clearTimeout(mobileSkipTimerRef.current)
+    mobileSkipTimerRef.current = setTimeout(() => {
+      setMobileSkipVisible(false)
     }, 2000)
   }, [])
 
@@ -495,7 +505,11 @@ export function HlsPlayer({
         />
 
         {/* ── Mobile Vertical Center Quick Skip Controls (Left & Right) ── */}
-        <div className="pointer-events-auto md:hidden">
+        <div
+          className={`pointer-events-auto transition-opacity duration-300 md:hidden ${
+            mobileSkipVisible ? "opacity-100" : "opacity-0 pointer-events-none"
+          }`}
+        >
           <button
             type="button"
             onClick={(e) => {
