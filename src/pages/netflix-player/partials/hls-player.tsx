@@ -494,6 +494,37 @@ export function HlsPlayer({
           setOpenMenu={setOpenMenu}
         />
 
+        {/* ── Mobile Vertical Center Quick Skip Controls (Left & Right) ── */}
+        <div className="pointer-events-auto md:hidden">
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation()
+              seek(-10)
+            }}
+            className="fixed left-4 top-1/2 z-40 flex h-14 w-14 -translate-y-1/2 items-center justify-center rounded-full border border-white/20 bg-black/40 text-white backdrop-blur-md transition-all active:scale-90"
+            aria-label="Skip backward 10 seconds"
+          >
+            <span className="material-symbols-outlined !text-[36px]">
+              replay_10
+            </span>
+          </button>
+
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation()
+              seek(10)
+            }}
+            className="fixed right-4 top-1/2 z-40 flex h-14 w-14 -translate-y-1/2 items-center justify-center rounded-full border border-white/20 bg-black/40 text-white backdrop-blur-md transition-all active:scale-90"
+            aria-label="Skip forward 10 seconds"
+          >
+            <span className="material-symbols-outlined !text-[36px]">
+              forward_10
+            </span>
+          </button>
+        </div>
+
         {/* ── SETTINGS MODAL ─────────────────────────────────────────────── */}
         {openMenu === "settings" && (
           <SettingsModal
