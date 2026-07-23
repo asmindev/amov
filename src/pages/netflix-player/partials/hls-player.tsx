@@ -463,7 +463,10 @@ export function HlsPlayer({
   const hoverPct = hoverX !== null ? hoverX * 100 : null
 
   const activeSubObj = allSubtitles.find((s) => s.url === selectedSub)
-  const isIPhone = typeof navigator !== "undefined" && /iPhone|iPod/i.test(navigator.userAgent)
+  const isIOS =
+    typeof navigator !== "undefined" &&
+    (/iPhone|iPod|iPad/i.test(navigator.userAgent) ||
+      (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1))
 
   return (
     <div
@@ -486,12 +489,13 @@ export function HlsPlayer({
           showUI()
         }}
       >
-        {isIPhone && vttUrl && activeSubObj && (
+        {isIOS && vttUrl && (
           <track
+            key={vttUrl}
             kind="subtitles"
             src={vttUrl}
-            srcLang={activeSubObj.lang || "en"}
-            label={activeSubObj.language || activeSubObj.lang || "Subtitles"}
+            srcLang={activeSubObj?.lang || "id"}
+            label={activeSubObj?.language || activeSubObj?.lang || "Indonesian"}
             default
           />
         )}
