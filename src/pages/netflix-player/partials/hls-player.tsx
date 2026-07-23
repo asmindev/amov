@@ -479,6 +479,7 @@ export function HlsPlayer({
       >
         {/* ── TOP BAR ─────────────────────────────────────────────── */}
         <TopAppBar
+          mediaType={mediaType}
           movieId={movieId}
           movieTitle={movieTitle}
           provider={provider}

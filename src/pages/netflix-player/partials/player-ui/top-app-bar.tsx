@@ -3,6 +3,7 @@ import type { Dispatch, SetStateAction } from "react"
 import { Button } from "@/components/ui/button"
 
 export interface TopAppBarProps {
+  mediaType: "movie" | "tv"
   movieId: number
   movieTitle: string
   provider: string
@@ -16,6 +17,7 @@ export interface TopAppBarProps {
 }
 
 export function TopAppBar({
+  mediaType,
   movieId,
   movieTitle,
   provider,
@@ -29,8 +31,8 @@ export function TopAppBar({
     <div className="pointer-events-none fixed top-0 z-40 flex w-full items-center justify-between bg-gradient-to-b from-black/80 to-transparent px-edge-margin-mobile py-4 md:px-edge-margin-desktop">
       <div className="flex items-center gap-2 md:gap-4">
         <Link
-          to="/movie/$id"
-          params={{ id: movieId.toString() }}
+          to="/$type/$id"
+          params={{ type: mediaType, id: movieId.toString() }}
           className="pointer-events-auto flex h-12 w-12 items-center justify-center text-white/80 transition-all hover:scale-110 hover:text-white"
           onClick={(e) => e.stopPropagation()}
         >
