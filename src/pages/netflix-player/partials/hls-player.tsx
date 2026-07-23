@@ -277,7 +277,15 @@ export function HlsPlayer({
     document.addEventListener("webkitfullscreenchange", handler)
 
     const v = videoRef.current
-    const onWebkitBeginFs = () => setFullscreen(true)
+    const onWebkitBeginFs = () => {
+      setFullscreen(true)
+      // iOS Native Player requires TextTrack mode to be set to "showing"
+      if (v && v.textTracks && v.textTracks.length > 0) {
+        for (let i = 0; i < v.textTracks.length; i++) {
+          v.textTracks[i].mode = "showing"
+        }
+      }
+    }
     const onWebkitEndFs = () => setFullscreen(false)
 
     if (v) {
@@ -489,7 +497,7 @@ export function HlsPlayer({
           showUI()
         }}
       >
-        {isIOS && vttUrl && (
+        {vttUrl && (
           <track
             key={vttUrl}
             kind="subtitles"
