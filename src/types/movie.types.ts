@@ -139,6 +139,11 @@ const TmdbMovieDetailSchema = TmdbMovieSchema.extend({
   status: z.string().optional().default(""),
   genres: z.array(GenreSchema).optional().default([]),
   imdb_id: z.string().nullable().optional(),
+  external_ids: z
+    .object({
+      imdb_id: z.string().nullable().optional(),
+    })
+    .optional(),
   genre_ids: z.array(z.number()).optional().default([]),
   images: TmdbImagesSchema.optional(),
   credits: z
@@ -200,7 +205,7 @@ export const MovieDetailSchema = TmdbMovieDetailSchema.transform((m) => {
     revenue: m.revenue,
     status: m.status,
     genres: m.genres,
-    imdbId: m.imdb_id ?? null,
+    imdbId: m.imdb_id ?? m.external_ids?.imdb_id ?? null,
     logoPath: logo?.file_path ?? null,
     mediaType: m.media_type ?? (m.title ? "movie" : m.name ? "tv" : "movie"),
     cast: m.credits?.cast.map((c) => ({
