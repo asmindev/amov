@@ -11,6 +11,7 @@ export default defineConfig({
     },
   },
   server: {
+    host: true,
     proxy: {
       // Proxy /api/decryptor/* → http://localhost:8080/*
       // Removes the CORS issue entirely — browser stays on same origin
