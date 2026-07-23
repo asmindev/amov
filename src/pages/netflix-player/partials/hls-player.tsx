@@ -223,8 +223,7 @@ export function HlsPlayer({
     const onPlay = () => setPlaying(true)
     const onPause = () => {
       setPlaying(false)
-      setUiVisible(true)
-      if (hideTimerRef.current) clearTimeout(hideTimerRef.current)
+      showUI()
     }
     const onTimeUpdate = () => {
       setCurrentTime(v.currentTime)
@@ -269,9 +268,10 @@ export function HlsPlayer({
     setUiVisible(true)
     if (hideTimerRef.current) clearTimeout(hideTimerRef.current)
     hideTimerRef.current = setTimeout(() => {
-      if (videoRef.current && !videoRef.current.paused && !openMenuRef.current)
+      if (!openMenuRef.current) {
         setUiVisible(false)
-    }, 3500)
+      }
+    }, 2000)
   }, [])
 
   // Keep UI visible when menu is open
