@@ -118,7 +118,11 @@ export function HlsPlayer({
   useEffect(() => {
     if (subtitles.length > 0 && selectedSub === null) {
       const defaultSub = subtitles.find(
-        (s) => s.lang === "id" || s.lang === "ind"
+        (s) =>
+          s.lang === "id" ||
+          s.lang === "ind" ||
+          s.lang === "in" ||
+          (s.language || "").toLowerCase().includes("indonesi")
       )
       if (defaultSub) {
         setSelectedSub(defaultSub.url)
