@@ -462,6 +462,9 @@ export function HlsPlayer({
   const bufferedPct = duration ? (bufferedEnd / duration) * 100 : 0
   const hoverPct = hoverX !== null ? hoverX * 100 : null
 
+  const activeSubObj = allSubtitles.find((s) => s.url === selectedSub)
+  const isIPhone = typeof navigator !== "undefined" && /iPhone|iPod/i.test(navigator.userAgent)
+
   return (
     <div
       ref={containerRef}
@@ -483,12 +486,12 @@ export function HlsPlayer({
           showUI()
         }}
       >
-        {vttUrl && (
+        {isIPhone && vttUrl && activeSubObj && (
           <track
             kind="subtitles"
             src={vttUrl}
-            srcLang="id"
-            label="Indonesian Subtitle"
+            srcLang={activeSubObj.lang || "en"}
+            label={activeSubObj.language || activeSubObj.lang || "Subtitles"}
             default
           />
         )}
