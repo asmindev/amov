@@ -286,26 +286,46 @@ export function HlsPlayer({
     }
   }, [])
 
-  // ── Fullscreen sync ───────────────────────────────────────────────────────
+  // ── Fullscreen sync & Native TextTrack Mode Sync ────────────────────────
   useEffect(() => {
+    const v = videoRef.current
+
+    const syncTrackMode = (isNativeFs: boolean) => {
+      if (!v || !v.textTracks || v.textTracks.length === 0) return
+      const track = v.textTracks[0]
+      if (track) {
+        // "hidden" keeps cues loading silently in background for custom overlay,
+        // "showing" displays native iOS captions when in webkit Native Fullscreen on iPhone
+        track.mode = isNativeFs ? "showing" : "hidden"
+      }
+    }
+
     const handler = () => {
       const isFs =
         !!document.fullscreenElement ||
         !!(document as unknown as { webkitFullscreenElement?: Element })
           .webkitFullscreenElement
       setFullscreen(isFs)
+      syncTrackMode(false)
     }
 
     document.addEventListener("fullscreenchange", handler)
     document.addEventListener("webkitfullscreenchange", handler)
 
-    const v = videoRef.current
-    const onWebkitBeginFs = () => setFullscreen(true)
-    const onWebkitEndFs = () => setFullscreen(false)
+    const onWebkitBeginFs = () => {
+      setFullscreen(true)
+      syncTrackMode(true)
+    }
+    const onWebkitEndFs = () => {
+      setFullscreen(false)
+      syncTrackMode(false)
+    }
 
     if (v) {
       v.addEventListener("webkitbeginfullscreen", onWebkitBeginFs)
       v.addEventListener("webkitendfullscreen", onWebkitEndFs)
+      // Initial track mode setup
+      syncTrackMode(false)
     }
 
     return () => {
@@ -316,7 +336,7 @@ export function HlsPlayer({
         v.removeEventListener("webkitendfullscreen", onWebkitEndFs)
       }
     }
-  }, [])
+  }, [vttUrl])
 
   // ── UI hide/show ──────────────────────────────────────────────────────────
   const showUI = useCallback(() => {
