@@ -158,7 +158,8 @@ export function HlsPlayer({
     hlsRef.current?.destroy()
     hlsRef.current = null
 
-    if (Hls.isSupported() && !src.includes(".mp4") && !src.includes("/mp4/")) {
+    const isHls = src.includes(".m3u8") || src.includes("/hls/")
+    if (Hls.isSupported() && isHls) {
       const hls = new Hls({
         startPosition: savedTs > 30 ? savedTs : -1,
         xhrSetup: (xhr, url) => {
@@ -173,11 +174,12 @@ export function HlsPlayer({
       })
       hlsRef.current = hls
     } else {
-      // Native playback (Safari HLS or raw MP4)
-      video.src =
-        src.includes(".mp4") || src.includes("/mp4/")
-          ? src
-          : `${DECRYPTOR_URL}/proxy?url=${encodeURIComponent(src)}`
+      // Stream raw MP4 or fallback video via proxy to prevent CORS, 403, and 429 errors
+      const proxiedUrl = src.startsWith("http")
+        ? `${DECRYPTOR_URL}/proxy?url=${encodeURIComponent(src)}`
+        : src
+
+      video.src = proxiedUrl
 
       if (savedTs > 30) {
         video.addEventListener(
@@ -188,7 +190,9 @@ export function HlsPlayer({
           { once: true }
         )
       }
-      void video.play()
+      void video.play().catch(() => {
+        // Autoplay policy or user gesture catch
+      })
     }
     return () => {
       hlsRef.current?.destroy()
