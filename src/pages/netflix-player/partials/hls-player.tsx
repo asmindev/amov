@@ -11,6 +11,7 @@ import type { StreamSource, StreamSubtitle } from "@/api/decryptor.api"
 import type { DecryptorProvider } from "@/lib/config"
 import { DECRYPTOR_PROVIDERS, DECRYPTOR_URL } from "@/lib/config"
 import { RefreshCw } from "lucide-react"
+import { AnimatePresence } from "motion/react"
 import { useWatchProgressTracker } from "@/hooks/use-watch-progress"
 import type { TvSeason } from "@/types/movie.types"
 import { TopAppBar } from "./player-ui/top-app-bar"
@@ -507,15 +508,17 @@ export function HlsPlayer({
         )}
 
         {/* ── EPISODES DRAWER OVERLAY ──────────────────────────────────────── */}
-        {openMenu === "episodes" && mediaType === "tv" && (
-          <EpisodesDrawer
-            tvId={String(movieId)}
-            currentSeason={season}
-            currentEpisode={episode}
-            seasons={seasons}
-            onClose={() => setOpenMenu(null)}
-          />
-        )}
+        <AnimatePresence>
+          {openMenu === "episodes" && mediaType === "tv" && (
+            <EpisodesDrawer
+              tvId={String(movieId)}
+              currentSeason={season}
+              currentEpisode={episode}
+              seasons={seasons}
+              onClose={() => setOpenMenu(null)}
+            />
+          )}
+        </AnimatePresence>
 
         {/* ── BOTTOM CONTROLS ─────────────────────────────────────── */}
         <BottomControls
