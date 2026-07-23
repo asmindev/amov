@@ -35,6 +35,7 @@ export function useSources(params: UseSourcesParams): UseSourcesReturn {
 
   const queryKey = [
     ...queryKeys.decryptor.sources(params.tmdbId, provider),
+    params.imdbId,
     params.season,
     params.episode,
   ]

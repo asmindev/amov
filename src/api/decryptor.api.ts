@@ -2,6 +2,7 @@ import { DECRYPTOR_URL } from "@/lib/config"
 
 export interface StreamSource {
   quality: string
+  size?: string | null
   url: string
   type?: string
   headers?: Record<string, string> | null
@@ -60,39 +61,59 @@ export async function fetchDecryptedSources(
 ): Promise<DecryptorResult> {
   // ── 1. Handle Moviebox Provider ──
   if (params.provider.toLowerCase() === "moviebox") {
-    // Search Moviebox by title to resolve subjectId
-    const searchRes = await fetch(`${DECRYPTOR_URL}/moviebox/search?q=${encodeURIComponent(params.title)}`)
-    if (!searchRes.ok) {
-      throw new Error(`Moviebox search failed for "${params.title}"`)
-    }
-    const searchJson = (await searchRes.json()) as {
-      results?: Array<{ subjectId: string; title: string; year: string; subjectType: number }>
-    }
-    const results = searchJson.results ?? []
-    if (results.length === 0) {
-      throw new Error(`Moviebox: no search results found for "${params.title}"`)
-    }
+    let mbJson: UnifiedMediaResponse | null = null
 
-    // Match candidate by year and subjectType
-    const targetType = params.mediaType === "tv" ? 2 : 1
-    const candidate =
-      results.find((r) => r.subjectType === targetType && params.year && r.year === params.year) ||
-      results.find((r) => r.subjectType === targetType) ||
-      results[0]
+    // Direct IMDB ID Reverse Lookup if imdbId is present
+    if (params.imdbId && params.imdbId.startsWith("tt")) {
+      const mbQs = new URLSearchParams({
+        imdbId: params.imdbId,
+        ...(params.season !== undefined ? { seasonId: String(params.season) } : {}),
+        ...(params.episode !== undefined ? { episodeId: String(params.episode) } : {}),
+      })
 
-    const mbQs = new URLSearchParams({
-      subjectId: candidate.subjectId,
-      seasonId: String(params.season ?? 1),
-      episodeId: String(params.episode ?? 1),
-    })
-
-    const mbRes = await fetch(`${DECRYPTOR_URL}/moviebox/sources?${mbQs.toString()}`)
-    if (!mbRes.ok) {
-      const body = (await mbRes.json().catch(() => ({}))) as { detail?: string }
-      throw new Error(body.detail ?? `Moviebox HTTP ${mbRes.status}`)
+      const mbRes = await fetch(`${DECRYPTOR_URL}/moviebox/sources?${mbQs.toString()}`)
+      if (mbRes.ok) {
+        mbJson = (await mbRes.json()) as UnifiedMediaResponse
+      }
     }
 
-    const mbJson = (await mbRes.json()) as UnifiedMediaResponse
+    // Fallback: search Moviebox catalog by title if imdbId is missing or yielded no sources
+    if (!mbJson || !mbJson.sources || mbJson.sources.length === 0) {
+      const searchRes = await fetch(
+        `${DECRYPTOR_URL}/moviebox/search?q=${encodeURIComponent(params.title)}`
+      )
+      if (!searchRes.ok) {
+        throw new Error(`Moviebox search failed for "${params.title}"`)
+      }
+      const searchJson = (await searchRes.json()) as {
+        results?: Array<{ subjectId: string; title: string; year: string; subjectType: number }>
+      }
+      const results = searchJson.results ?? []
+      if (results.length === 0) {
+        throw new Error(`Moviebox: title "${params.title}" not found on Moviebox`)
+      }
+
+      // Match candidate by subjectType (1=movie, 2=tv) and year
+      const targetType = params.mediaType === "tv" ? 2 : 1
+      const candidate =
+        results.find((r) => r.subjectType === targetType && params.year && r.year === params.year) ||
+        results.find((r) => r.subjectType === targetType) ||
+        results[0]
+
+      const mbQs = new URLSearchParams({
+        subjectId: candidate.subjectId,
+        ...(params.season !== undefined ? { seasonId: String(params.season) } : {}),
+        ...(params.episode !== undefined ? { episodeId: String(params.episode) } : {}),
+      })
+
+      const mbRes = await fetch(`${DECRYPTOR_URL}/moviebox/sources?${mbQs.toString()}`)
+      if (!mbRes.ok) {
+        const body = (await mbRes.json().catch(() => ({}))) as { detail?: string }
+        throw new Error(body.detail ?? `Moviebox HTTP ${mbRes.status}`)
+      }
+      mbJson = (await mbRes.json()) as UnifiedMediaResponse
+    }
+
     return {
       provider: "Moviebox",
       meta: mbJson.meta,
@@ -134,7 +155,6 @@ export async function fetchDecryptedSources(
     data?: { sources: StreamSource[]; subtitles: StreamSubtitle[] }
   }
 
-  // New UnifiedMediaResponse format
   if (json.meta) {
     return {
       provider: json.meta.provider || params.provider,
@@ -145,7 +165,6 @@ export async function fetchDecryptedSources(
     }
   }
 
-  // Fallback for legacy format
   return {
     provider: params.provider,
     sources: json.data?.sources ?? [],
@@ -157,6 +176,21 @@ export async function fetchProviderSubtitles(
   provider: string,
   params: Omit<FetchSourcesParams, "provider">
 ): Promise<StreamSubtitle[]> {
+  if (provider.toLowerCase() === "moviebox") {
+    const mbQs = new URLSearchParams({
+      ...(params.imdbId ? { imdbId: params.imdbId } : {}),
+      ...(params.season !== undefined ? { seasonId: String(params.season) } : {}),
+      ...(params.episode !== undefined ? { episodeId: String(params.episode) } : {}),
+    })
+
+    const res = await fetch(`${DECRYPTOR_URL}/moviebox/sources?${mbQs.toString()}`)
+    if (!res.ok) {
+      throw new Error("Gagal mengambil subtitle dari Moviebox")
+    }
+    const json = (await res.json()) as UnifiedMediaResponse
+    return json.subtitles ?? []
+  }
+
   const qs = new URLSearchParams({
     tmdbId: params.tmdbId,
     mediaType: params.mediaType,

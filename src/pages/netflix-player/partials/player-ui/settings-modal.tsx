@@ -192,6 +192,7 @@ export function SettingsModal({
                 </SelectTrigger>
                 <SelectContent className="z-[70]">
                   <SelectItem value="opensubtitles">OpenSubtitles</SelectItem>
+                  <SelectItem value="moviebox">Moviebox</SelectItem>
                   <SelectItem value="yoru">Yoru</SelectItem>
                   <SelectItem value="neon">Neon</SelectItem>
                   <SelectItem value="cypher">Cypher</SelectItem>
@@ -426,7 +427,7 @@ export function SettingsModal({
                 }`}
                 onClick={() => setSelectedQuality(i)}
               >
-                {src.quality} {i === 0 && "(Best)"}
+                {src.quality}{src.size ? ` (${src.size})` : ""} {i === 0 && "(Best)"}
               </Button>
             ))}
           </div>
