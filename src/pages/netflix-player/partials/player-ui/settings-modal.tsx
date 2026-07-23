@@ -245,7 +245,7 @@ export function SettingsModal({
                   <span
                     className={`group-hover:text-white ${selectedSub === sub.url ? "text-foreground" : "text-muted-foreground"}`}
                   >
-                    {sub.lang}
+                    {sub.language || sub.lang}
                   </span>
                   {selectedSub === sub.url && (
                     <span className="material-symbols-outlined text-primary">
