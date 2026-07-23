@@ -13,6 +13,7 @@ export function useSubtitles(
   currentTime: number
 ) {
   const [parsedCues, setParsedCues] = useState<ParsedCue[]>([])
+  const [vttUrl, setVttUrl] = useState<string | null>(null)
 
   useEffect(() => {
     let isCancelled = false
@@ -108,10 +109,20 @@ export function useSubtitles(
 
         if (isCancelled) return
         setParsedCues(parsed)
+
+        // Generate Blob URL for HTML5 native <track> tag (iOS Safari Native Fullscreen)
+        try {
+          const blob = new Blob([finalVttText], { type: "text/vtt" })
+          const url = URL.createObjectURL(blob)
+          setVttUrl(url)
+        } catch {
+          setVttUrl(null)
+        }
       } catch (err) {
         console.error("Subtitle shift error", err)
         if (!isCancelled) {
           setParsedCues([])
+          setVttUrl(null)
         }
       }
     }
@@ -127,5 +138,5 @@ export function useSubtitles(
     (c) => currentTime >= c.start && currentTime <= c.end
   )
 
-  return currentActiveCues
+  return { currentActiveCues, vttUrl }
 }

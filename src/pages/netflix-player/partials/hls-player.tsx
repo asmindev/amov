@@ -150,7 +150,11 @@ export function HlsPlayer({
     setSubMargin,
   } = usePlayerSettings()
 
-  const currentActiveCues = useSubtitles(selectedSub, subOffset, currentTime)
+  const { currentActiveCues, vttUrl } = useSubtitles(
+    selectedSub,
+    subOffset,
+    currentTime
+  )
 
   // Track progress → localStorage
   useWatchProgressTracker("movie", movieId, true)
@@ -474,12 +478,21 @@ export function HlsPlayer({
         poster={poster}
         crossOrigin="anonymous"
         playsInline
-        disablePictureInPicture
         onClick={() => {
           togglePlay()
           showUI()
         }}
-      />
+      >
+        {vttUrl && (
+          <track
+            kind="subtitles"
+            src={vttUrl}
+            srcLang="id"
+            label="Indonesian Subtitle"
+            default
+          />
+        )}
+      </video>
 
       {/* ── Custom Subtitle Overlay ── */}
       <SubtitleOverlay
