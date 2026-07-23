@@ -10,5 +10,5 @@ export const DEFAULT_SORT_BY = "popularity.desc"
 // Videasy Decryptor backend (proxied via Vite dev server to avoid CORS)
 // Vite forwards /api/decryptor/* → http://localhost:8000/*
 export const DECRYPTOR_URL = "/api/decryptor"
-export const DECRYPTOR_PROVIDERS = ["Yoru", "Neon", "Cypher", "Breach", "Moviebox"] as const
+export const DECRYPTOR_PROVIDERS = ["Yoru", "Moviebox", "Neon", "Cypher", "Breach"] as const
 export type DecryptorProvider = (typeof DECRYPTOR_PROVIDERS)[number]
