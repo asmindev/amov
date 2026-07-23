@@ -12,9 +12,11 @@ import type { DecryptorProvider } from "@/lib/config"
 import { DECRYPTOR_PROVIDERS, DECRYPTOR_URL } from "@/lib/config"
 import { RefreshCw } from "lucide-react"
 import { useWatchProgressTracker } from "@/hooks/use-watch-progress"
+import type { TvSeason } from "@/types/movie.types"
 import { TopAppBar } from "./player-ui/top-app-bar"
 import { BottomControls } from "./player-ui/bottom-controls"
 import { SettingsModal } from "./player-ui/settings-modal"
+import { EpisodesDrawer } from "./player-ui/episodes-drawer"
 import { useSubtitles } from "../hooks/use-subtitles"
 import { usePlayerSettings } from "../hooks/use-player-settings"
 import { SubtitleOverlay } from "./player-ui/subtitle-overlay"
@@ -38,6 +40,10 @@ interface HlsPlayerProps {
   popularity?: number
   voteAverage?: number
   logoPath?: string | null
+  mediaType?: "movie" | "tv"
+  season?: number
+  episode?: number
+  seasons?: TvSeason[]
 }
 
 // ─── Main Component ───────────────────────────────────────────────────────────
@@ -59,6 +65,10 @@ export function HlsPlayer({
   popularity = 0,
   voteAverage = 0,
   logoPath,
+  mediaType = "movie",
+  season = 1,
+  episode = 1,
+  seasons = [],
 }: HlsPlayerProps) {
   const videoRef = useRef<HTMLVideoElement>(null)
   const hlsRef = useRef<Hls | null>(null)
@@ -78,7 +88,9 @@ export function HlsPlayer({
   const [selectedQuality, setSelectedQuality] = useState(0)
   const [localSubtitles, setLocalSubtitles] = useState<StreamSubtitle[]>([])
   const [selectedSub, setSelectedSub] = useState<string | null>(null)
-  const [openMenu, setOpenMenu] = useState<"settings" | "provider" | null>(null)
+  const [openMenu, setOpenMenu] = useState<
+    "settings" | "provider" | "episodes" | null
+  >(null)
   const openMenuRef = useRef(openMenu)
   useEffect(() => {
     openMenuRef.current = openMenu
@@ -493,6 +505,17 @@ export function HlsPlayer({
           />
         )}
 
+        {/* ── EPISODES DRAWER OVERLAY ──────────────────────────────────────── */}
+        {openMenu === "episodes" && mediaType === "tv" && (
+          <EpisodesDrawer
+            tvId={String(movieId)}
+            currentSeason={season}
+            currentEpisode={episode}
+            seasons={seasons}
+            onClose={() => setOpenMenu(null)}
+          />
+        )}
+
         {/* ── BOTTOM CONTROLS ─────────────────────────────────────── */}
         <BottomControls
           progressBarRef={progressBarRef}
@@ -519,6 +542,7 @@ export function HlsPlayer({
           selectedSub={selectedSub}
           fullscreen={fullscreen}
           toggleFullscreen={toggleFullscreen}
+          mediaType={mediaType}
         />
       </div>
     </div>

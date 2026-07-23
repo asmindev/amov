@@ -30,10 +30,11 @@ export interface BottomControlsProps {
   toggleMute: () => void
   handleVolumeChange: (e: ChangeEvent<HTMLInputElement>) => void
   openMenu: string | null
-  setOpenMenu: Dispatch<SetStateAction<"settings" | "provider" | null>>
+  setOpenMenu: Dispatch<SetStateAction<"settings" | "provider" | "episodes" | null>>
   selectedSub: string | null
   fullscreen: boolean
   toggleFullscreen: () => void
+  mediaType?: "movie" | "tv"
 }
 
 export function BottomControls({
@@ -61,6 +62,7 @@ export function BottomControls({
   selectedSub,
   fullscreen,
   toggleFullscreen,
+  mediaType = "movie",
 }: BottomControlsProps) {
   return (
     <div
@@ -220,6 +222,36 @@ export function BottomControls({
 
         {/* Right Controls */}
         <div className="flex items-center gap-control-gap">
+          {/* Episodes Button (Only for TV Shows) */}
+          {mediaType === "tv" && (
+            <Button
+              variant="ghost"
+              size="icon"
+              className={`group/btn relative flex h-10 w-10 scale-95 flex-col items-center justify-center rounded-full transition-all duration-200 hover:bg-white/10 active:scale-90 ${
+                openMenu === "episodes"
+                  ? "text-primary"
+                  : "text-secondary hover:text-white"
+              }`}
+              onClick={(e) => {
+                e.stopPropagation()
+                setOpenMenu(openMenu === "episodes" ? null : "episodes")
+              }}
+            >
+              <span
+                className="material-symbols-outlined"
+                style={{ fontSize: "32px" }}
+              >
+                video_library
+              </span>
+              <span className="text-label-sm pointer-events-none absolute -top-10 left-1/2 -translate-x-1/2 rounded bg-[#222222] px-2 py-1 font-label-sm whitespace-nowrap text-[#e2e2e2] opacity-0 transition-opacity group-hover/btn:opacity-100">
+                Episodes
+              </span>
+              {openMenu === "episodes" && (
+                <span className="absolute -bottom-2 h-1 w-1 rounded-full bg-primary"></span>
+              )}
+            </Button>
+          )}
+
           <Button
             variant="ghost"
             size="icon"

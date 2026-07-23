@@ -10,7 +10,9 @@ export interface TopAppBarProps {
   allProviders: readonly string[]
   onProviderChange: (index: number) => void
   openMenu: string | null
-  setOpenMenu: Dispatch<SetStateAction<"settings" | "provider" | null>>
+  setOpenMenu: Dispatch<
+    SetStateAction<"settings" | "provider" | "episodes" | null>
+  >
 }
 
 export function TopAppBar({

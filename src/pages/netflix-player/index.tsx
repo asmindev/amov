@@ -141,6 +141,10 @@ export default function NetflixPlayerPage() {
           popularity={movie.popularity}
           voteAverage={movie.voteAverage}
           logoPath={movie.logoPath}
+          mediaType={mediaType}
+          season={season}
+          episode={episode}
+          seasons={movie.seasons}
         />
       ) : (
         /* Fetching sources loading state */

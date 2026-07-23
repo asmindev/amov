@@ -1,11 +1,11 @@
 import { motion, AnimatePresence } from "motion/react"
 import { getMovieQuality } from "@/helpers/movie-quality"
 
-interface PausedOverlayProps {
+export interface PausedOverlayProps {
   playing: boolean
   buffering: boolean
   isFetchingProvider: boolean
-  openMenu: "settings" | "provider" | null
+  openMenu: "settings" | "provider" | "episodes" | null
   movieTitle: string
   movieYear: string
   voteAverage: number
