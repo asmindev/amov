@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react"
+import { DECRYPTOR_URL } from "@/lib/config"
 
 export interface ParsedCue {
   start: number
@@ -21,7 +22,9 @@ export function useSubtitles(
         return
       }
       try {
-        const proxyUrl = `/api/decryptor/proxy?url=${encodeURIComponent(selectedSub)}`
+        const proxyUrl = selectedSub.startsWith("http://") || selectedSub.startsWith("https://")
+          ? `${DECRYPTOR_URL}/proxy?url=${encodeURIComponent(selectedSub)}`
+          : selectedSub
         const res = await fetch(proxyUrl)
         if (!res.ok) throw new Error("fetch sub error")
         let text = await res.text()
