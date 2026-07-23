@@ -54,13 +54,13 @@ export function EpisodesDrawer({
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, y: 30, scale: 0.95 }}
       transition={{ duration: 0.25, ease: "easeOut" }}
-      className="pointer-events-auto fixed bottom-[20%] left-1/2 z-[60] flex w-[92%] max-w-3xl -translate-x-1/2 flex-col rounded-2xl border border-white/15 bg-black/90 p-5 text-white shadow-2xl backdrop-blur-xl md:p-6"
+      className="pointer-events-auto fixed bottom-[20%] left-1/2 z-[60] flex w-[94%] max-w-6xl -translate-x-1/2 flex-col rounded-2xl border border-white/15 bg-black/90 p-4 text-white shadow-2xl backdrop-blur-xl md:p-5"
       onClick={(e) => e.stopPropagation()}
     >
       {/* Header */}
-      <div className="mb-4 flex items-center justify-between border-b border-white/10 pb-4">
+      <div className="mb-3 flex items-center justify-between border-b border-white/10 pb-3">
         <div className="flex items-center gap-3">
-          <h3 className="font-heading text-lg font-bold tracking-tight md:text-xl">
+          <h3 className="font-heading text-base font-bold tracking-tight md:text-lg">
             Episodes
           </h3>
 
@@ -69,7 +69,7 @@ export function EpisodesDrawer({
             <select
               value={selectedSeason}
               onChange={(e) => setSelectedSeason(Number(e.target.value))}
-              className="rounded-lg border border-white/20 bg-neutral-900 px-3 py-1.5 text-xs font-semibold text-white focus:border-white focus:outline-none"
+              className="rounded-lg border border-white/20 bg-neutral-900 px-3 py-1 text-xs font-semibold text-white focus:border-white focus:outline-none"
             >
               {validSeasons.map((s) => (
                 <option
@@ -86,21 +86,24 @@ export function EpisodesDrawer({
 
         <button
           onClick={onClose}
-          className="flex h-8 w-8 items-center justify-center rounded-full bg-white/10 text-white/70 transition-colors hover:bg-white/20 hover:text-white"
+          className="flex h-7 w-7 items-center justify-center rounded-full bg-white/10 text-white/70 transition-colors hover:bg-white/20 hover:text-white"
         >
           <X className="h-4 w-4" />
         </button>
       </div>
 
-      {/* Episode List */}
+      {/* Horizontal Episode Carousel */}
       {isPending ? (
-        <div className="max-h-[50vh] space-y-3 overflow-y-auto pr-1">
-          {[1, 2, 3].map((n) => (
-            <Skeleton key={n} className="h-20 w-full rounded-xl bg-white/10" />
+        <div className="flex flex-row gap-4 overflow-x-auto py-2">
+          {[1, 2, 3, 4].map((n) => (
+            <Skeleton
+              key={n}
+              className="h-44 w-60 shrink-0 rounded-xl bg-white/10"
+            />
           ))}
         </div>
       ) : (
-        <div className="max-h-[50vh] divide-y divide-white/10 overflow-y-auto pr-1 scrollbar-thin scrollbar-thumb-white/20">
+        <div className="flex flex-row gap-4 overflow-x-auto py-2 pr-2 scrollbar-thin scrollbar-thumb-white/20">
           {seasonDetail?.episodes.map((ep) => {
             const isCurrent =
               selectedSeason === currentSeason &&
@@ -110,12 +113,14 @@ export function EpisodesDrawer({
               <div
                 key={ep.id}
                 onClick={() => handleSelectEpisode(ep.episode_number)}
-                className={`group flex cursor-pointer items-center justify-between gap-4 p-3 transition-colors hover:bg-white/10 md:p-4 ${
-                  isCurrent ? "bg-white/10" : ""
+                className={`group flex w-60 shrink-0 cursor-pointer flex-col overflow-hidden rounded-xl border transition-all hover:scale-[1.02] md:w-64 ${
+                  isCurrent
+                    ? "border-primary/50 bg-white/15 shadow-lg shadow-primary/10"
+                    : "border-white/10 bg-white/5 hover:border-white/30 hover:bg-white/10"
                 }`}
               >
                 {/* Thumbnail */}
-                <div className="relative aspect-video w-28 shrink-0 overflow-hidden rounded-lg bg-black/50 md:w-36">
+                <div className="relative aspect-video w-full overflow-hidden bg-black/60">
                   {ep.still_path ? (
                     <img
                       src={getImageUrl(ep.still_path, "w500")}
@@ -123,54 +128,54 @@ export function EpisodesDrawer({
                       className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
                     />
                   ) : (
-                    <div className="flex h-full w-full items-center justify-center text-[10px] text-white/40">
+                    <div className="flex h-full w-full items-center justify-center text-xs text-white/40">
                       No Image
                     </div>
                   )}
 
                   <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 transition-opacity group-hover:opacity-100">
-                    <Play className="h-6 w-6 fill-white text-white" />
+                    <div className="flex h-9 w-9 items-center justify-center rounded-full bg-white text-black shadow-lg">
+                      <Play className="ml-0.5 h-4 w-4 fill-current" />
+                    </div>
                   </div>
+
+                  {/* EP Number Badge */}
+                  <span className="absolute top-2 left-2 rounded-md bg-black/70 px-2 py-0.5 font-mono text-[11px] font-bold text-white/90 backdrop-blur-md">
+                    EP {ep.episode_number}
+                  </span>
+
+                  {/* Playing Badge */}
+                  {isCurrent && (
+                    <span className="absolute top-2 right-2 flex items-center gap-1 rounded-md bg-primary/90 px-2 py-0.5 text-[10px] font-extrabold text-white shadow-md">
+                      <Check className="h-3 w-3" /> PLAYING
+                    </span>
+                  )}
                 </div>
 
                 {/* Details */}
-                <div className="flex min-w-0 flex-1 flex-col space-y-1">
-                  <div className="flex items-center gap-2">
-                    <span className="font-mono text-xs font-bold text-white/50">
-                      E{ep.episode_number}
-                    </span>
-                    <h4
-                      className={`line-clamp-1 text-sm font-bold ${
-                        isCurrent ? "text-primary" : "text-white"
-                      }`}
-                    >
-                      {ep.name}
-                    </h4>
+                <div className="flex flex-1 flex-col justify-between p-3">
+                  <div className="space-y-1">
+                    <div className="flex items-center justify-between gap-1">
+                      <h4
+                        className={`line-clamp-1 text-xs font-bold ${
+                          isCurrent ? "text-primary" : "text-white"
+                        }`}
+                      >
+                        {ep.name}
+                      </h4>
+                      {ep.runtime && (
+                        <span className="shrink-0 text-[10px] text-white/40">
+                          {formatRuntime(ep.runtime)}
+                        </span>
+                      )}
+                    </div>
+
+                    {ep.overview && (
+                      <p className="line-clamp-2 text-[11px] leading-relaxed text-white/60">
+                        {ep.overview}
+                      </p>
+                    )}
                   </div>
-
-                  {ep.overview && (
-                    <p className="line-clamp-2 text-xs text-white/60">
-                      {ep.overview}
-                    </p>
-                  )}
-                </div>
-
-                {/* Status Indicator / Duration */}
-                <div className="flex shrink-0 items-center gap-3">
-                  {ep.runtime && (
-                    <span className="hidden text-xs text-white/40 md:inline">
-                      {formatRuntime(ep.runtime)}
-                    </span>
-                  )}
-                  {isCurrent ? (
-                    <span className="flex items-center gap-1 rounded-full bg-primary/20 px-2.5 py-1 text-[11px] font-bold text-primary border border-primary/30">
-                      <Check className="h-3 w-3" /> Playing
-                    </span>
-                  ) : (
-                    <button className="hidden rounded-full border border-white/20 bg-white/5 px-3 py-1 text-xs font-semibold text-white/80 transition-colors group-hover:border-white group-hover:bg-white group-hover:text-black md:block">
-                      Play
-                    </button>
-                  )}
                 </div>
               </div>
             )
