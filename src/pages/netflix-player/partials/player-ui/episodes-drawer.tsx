@@ -141,9 +141,10 @@ export function EpisodesDrawer({
                     </div>
                   )}
 
-                  <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
-                    <div className="flex h-9 w-9 items-center justify-center rounded-full bg-white text-black shadow-lg">
-                      <span className="material-symbols-outlined fill ml-0.5 !text-[20px]">
+                  {/* Hover Play Button Overlay */}
+                  <div className="pointer-events-none absolute inset-0 hidden items-center justify-center bg-black/50 group-hover:flex">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white text-black shadow-xl">
+                      <span className="material-symbols-outlined fill ml-0.5 !text-[24px]">
                         play_arrow
                       </span>
                     </div>
