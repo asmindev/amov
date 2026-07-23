@@ -261,9 +261,34 @@ export function HlsPlayer({
 
   // ── Fullscreen sync ───────────────────────────────────────────────────────
   useEffect(() => {
-    const handler = () => setFullscreen(!!document.fullscreenElement)
+    const handler = () => {
+      const isFs =
+        !!document.fullscreenElement ||
+        !!(document as unknown as { webkitFullscreenElement?: Element })
+          .webkitFullscreenElement
+      setFullscreen(isFs)
+    }
+
     document.addEventListener("fullscreenchange", handler)
-    return () => document.removeEventListener("fullscreenchange", handler)
+    document.addEventListener("webkitfullscreenchange", handler)
+
+    const v = videoRef.current
+    const onWebkitBeginFs = () => setFullscreen(true)
+    const onWebkitEndFs = () => setFullscreen(false)
+
+    if (v) {
+      v.addEventListener("webkitbeginfullscreen", onWebkitBeginFs)
+      v.addEventListener("webkitendfullscreen", onWebkitEndFs)
+    }
+
+    return () => {
+      document.removeEventListener("fullscreenchange", handler)
+      document.removeEventListener("webkitfullscreenchange", handler)
+      if (v) {
+        v.removeEventListener("webkitbeginfullscreen", onWebkitBeginFs)
+        v.removeEventListener("webkitendfullscreen", onWebkitEndFs)
+      }
+    }
   }, [])
 
   // ── UI hide/show ──────────────────────────────────────────────────────────
@@ -309,11 +334,33 @@ export function HlsPlayer({
   // ── Fullscreen toggle ─────────────────────────────────────────────────────
   const toggleFullscreen = () => {
     const el = containerRef.current
-    if (!el) return
-    if (!document.fullscreenElement) {
-      void el.requestFullscreen()
-    } else {
-      void document.exitFullscreen()
+    const v = videoRef.current
+
+    // 1. Standard W3C Fullscreen (Chrome, Firefox, Safari Desktop, iPadOS)
+    if (el && typeof el.requestFullscreen === "function") {
+      if (!document.fullscreenElement) {
+        void el.requestFullscreen()
+      } else {
+        void document.exitFullscreen()
+      }
+    }
+    // 2. iOS Safari iPhone Native Video Presentation Mode
+    else if (
+      v &&
+      "webkitEnterFullscreen" in v &&
+      typeof (v as unknown as { webkitEnterFullscreen: () => void })
+        .webkitEnterFullscreen === "function"
+    ) {
+      const iosVideo = v as unknown as {
+        webkitEnterFullscreen: () => void
+        webkitExitFullscreen: () => void
+        webkitDisplayingFullscreen?: boolean
+      }
+      if (iosVideo.webkitDisplayingFullscreen) {
+        iosVideo.webkitExitFullscreen?.()
+      } else {
+        iosVideo.webkitEnterFullscreen()
+      }
     }
   }
 
