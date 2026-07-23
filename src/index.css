@@ -283,11 +283,3 @@ iframe.yt-player {
 .animate-marquee {
   animation: marquee 20s linear infinite;
 }
-
-/* Hide native browser subtitle cues in standard web mode so only custom Netflix SubtitleOverlay is rendered */
-video::cue {
-  background: transparent !important;
-  color: transparent !important;
-  font-size: 0px !important;
-  opacity: 0 !important;
-}

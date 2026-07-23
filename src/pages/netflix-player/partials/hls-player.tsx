@@ -294,9 +294,9 @@ export function HlsPlayer({
       if (!v || !v.textTracks || v.textTracks.length === 0) return
       const track = v.textTracks[0]
       if (track) {
-        // "hidden" keeps cues loading silently in background for custom overlay,
-        // "showing" displays native iOS captions when in webkit Native Fullscreen on iPhone
-        track.mode = isNativeFs ? "showing" : "hidden"
+        // Disable native track rendering in web mode so only Custom Netflix SubtitleOverlay is shown,
+        // enable "showing" on iOS Native Fullscreen on iPhone
+        track.mode = isNativeFs ? "showing" : "disabled"
       }
     }
 
