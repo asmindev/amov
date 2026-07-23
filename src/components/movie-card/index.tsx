@@ -217,7 +217,7 @@ export function MovieCard({
     <div
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-      className={`group relative z-0 aspect-video w-full cursor-pointer rounded-none hover:z-50 ${className || ""}`}
+      className={`group relative z-0 aspect-video w-full cursor-pointer rounded-none hover:z-50 ${isHovered ? "z-50" : ""} ${className || ""}`}
     >
       {/* Rank Indicator */}
       {showRank && rank && (

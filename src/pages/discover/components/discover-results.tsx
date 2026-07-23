@@ -46,12 +46,11 @@ export function DiscoverResults({
         <p className="text-center text-destructive">Failed to load movies.</p>
       ) : movies.length > 0 ? (
         <>
-          <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4 lg:gap-6">
+          <div className="isolate grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4 lg:gap-6">
             {movies.map((movie, index) => (
               <div
                 ref={index === movies.length - 1 ? lastElementRef : undefined}
                 key={`${movie.id}-${index}`}
-                className="relative"
               >
                 <MovieCard
                   movie={movie}
@@ -62,11 +61,11 @@ export function DiscoverResults({
             ))}
           </div>
           {isFetchingNextPage && (
-            <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4 lg:mt-4 lg:gap-6">
+            <div className="isolate mt-2 grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4 lg:mt-4 lg:gap-6">
               {Array.from({ length: 5 }).map((_, i) => (
                 <div
                   key={`next-page-skeleton-${i}`}
-                  className="flex flex-col gap-2"
+                  className="relative z-0 flex flex-col gap-2"
                 >
                   <Skeleton className="aspect-video w-full rounded-xl" />
                   <div className="space-y-1">

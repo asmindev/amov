@@ -21,7 +21,7 @@ export function SubtitlesSettingsSection({
   scrollClassName = "settings-scroll flex-1 space-y-1 overflow-y-auto",
 }: SubtitlesSettingsSectionProps) {
   return (
-    <>
+    <div className="min-h-0 flex flex-1 flex-col">
       {showHeading && (
         <h3 className="text-label-md mb-4 font-label-md font-extrabold tracking-wider text-secondary uppercase">
           Subtitles
@@ -97,6 +97,6 @@ export function SubtitlesSettingsSection({
           </Button>
         ))}
       </div>
-    </>
+    </div>
   )
 }

@@ -66,7 +66,7 @@ export function MovieHero({
       initial={{ opacity: 0, y: 40 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.7, ease: "easeOut" }}
-      className="relative mx-auto w-full max-w-[1400px] px-6 pt-[35vh] pb-8 md:px-16"
+      className="relative mx-auto w-full max-w-[1400px] px-6 pt-[62vh] pb-8 md:px-16 md:pt-[35vh]"
     >
       {showVideo && (
         <button
@@ -110,7 +110,7 @@ export function MovieHero({
         </span>
       </div>
 
-      <p className="mb-8 max-w-2xl text-lg leading-relaxed text-white/90 drop-shadow-md">
+      <p className="hidden max-w-2xl text-lg leading-relaxed text-white/90 drop-shadow-md md:mb-8 md:block">
         {movie.overview}
       </p>
 
@@ -153,14 +153,14 @@ export function MovieHero({
         </motion.div>
       )}
 
-      <div className="flex flex-wrap items-center gap-4">
+      <div className="mt-2 flex flex-wrap items-center gap-4">
         <Link
           to="/$type/$id"
           params={{ type: mediaType, id: movie.id.toString() }}
           search={{ play: true }}
-          className="flex items-center gap-2 rounded-none bg-white px-8 py-3.5 text-base font-bold text-black shadow-lg transition-all hover:scale-105 hover:bg-gray-200 active:scale-95"
+          className="flex items-center gap-1.5 rounded-none bg-white px-5 py-3 text-sm font-bold text-black shadow-lg transition-all hover:scale-105 hover:bg-gray-200 active:scale-95 md:gap-2 md:px-8 md:py-3.5 md:text-base"
         >
-          <span className="material-symbols-outlined fill !text-[24px]">
+          <span className="material-symbols-outlined fill !text-[20px] md:!text-[24px]">
             play_arrow
           </span>
           {savedProgress && savedProgress.timestamp > 30 ? "Resume" : "Play"}
@@ -169,9 +169,9 @@ export function MovieHero({
         <Link
           to="/$type/$id/netflix"
           params={{ type: mediaType, id: movie.id.toString() }}
-          className="flex items-center gap-2 rounded-none bg-white/15 px-8 py-3.5 text-base font-bold text-white backdrop-blur-md transition-all hover:scale-105 hover:bg-white/25 active:scale-95"
+          className="flex items-center gap-1.5 rounded-none bg-white/15 px-5 py-3 text-sm font-bold text-white backdrop-blur-md transition-all hover:scale-105 hover:bg-white/25 active:scale-95 md:gap-2 md:px-8 md:py-3.5 md:text-base"
         >
-          <span className="material-symbols-outlined !text-[24px]">
+          <span className="material-symbols-outlined !text-[20px] md:!text-[24px]">
             live_tv
           </span>
           Custom Player
@@ -187,19 +187,6 @@ export function MovieHero({
             </span>
             Trailer
           </button>
-        )}
-        {movie.imdbId && (
-          <a
-            href={`https://www.imdb.com/title/${movie.imdbId}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-2 rounded-none bg-white/15 px-8 py-3.5 text-base font-bold text-white backdrop-blur-md transition-all hover:scale-105 hover:bg-white/25 active:scale-95"
-          >
-            <span className="material-symbols-outlined !text-[24px]">
-              open_in_new
-            </span>
-            IMDb
-          </a>
         )}
       </div>
     </motion.div>

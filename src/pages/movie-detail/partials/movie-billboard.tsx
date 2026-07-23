@@ -32,7 +32,7 @@ export function MovieBillboard({
         <div className="pointer-events-none absolute inset-0">
           <iframe
             ref={iframeRef}
-            src={`https://www.youtube.com/embed/${trailer.key}?autoplay=1&mute=1&enablejsapi=1&controls=0&rel=0&disablekb=1&fs=0&iv_load_policy=3&playsinline=1`}
+            src={`https://www.youtube.com/embed/${trailer.key}?autoplay=1&mute=1&enablejsapi=1&controls=0&rel=0&disablekb=1&fs=0&iv_load_policy=3&playsinline=1&loop=1&playlist=${trailer.key}`}
             className={`yt-player transition-opacity duration-1000 ${
               showVideo ? "opacity-100" : "opacity-0"
             }`}
