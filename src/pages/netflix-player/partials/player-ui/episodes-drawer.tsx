@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { motion } from "motion/react"
-import { X, Play, Check } from "lucide-react"
+import { X, Check } from "lucide-react"
 import { useTvSeasonEpisodes } from "@/pages/movie-detail/hooks/use-movie-detail"
 import { getImageUrl } from "@/helpers/image-url"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -141,9 +141,11 @@ export function EpisodesDrawer({
                     </div>
                   )}
 
-                  <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 transition-opacity group-hover:opacity-100">
+                  <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
                     <div className="flex h-9 w-9 items-center justify-center rounded-full bg-white text-black shadow-lg">
-                      <Play className="ml-0.5 h-4 w-4 fill-current" />
+                      <span className="material-symbols-outlined fill ml-0.5 !text-[20px]">
+                        play_arrow
+                      </span>
                     </div>
                   </div>
 
