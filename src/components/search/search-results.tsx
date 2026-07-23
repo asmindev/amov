@@ -36,17 +36,13 @@ export function SearchResults({
           item={item}
           onSelect={() => {
             addSearchHistory(item.title)
-            if (item.mediaType === "tv") {
-              navigate({
-                to: "/discover",
-                search: { query: item.title },
-              })
-            } else {
-              navigate({
-                to: "/movie/$id",
-                params: { id: String(item.id) },
-              })
-            }
+            navigate({
+              to: "/$type/$id",
+              params: {
+                type: item.mediaType || "movie",
+                id: String(item.id),
+              },
+            })
             onClose()
           }}
         />

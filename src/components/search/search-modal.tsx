@@ -17,7 +17,7 @@ import {
   clearSearchHistory,
 } from "./use-search"
 import { useTrendingSearches } from "./use-trending-searches"
-import { History, TrendingUp, Trash2, Loader2 } from "lucide-react"
+import { History, TrendingUp, Trash2 } from "lucide-react"
 
 interface SearchModalProps {
   open: boolean
@@ -50,8 +50,12 @@ export function SearchModal({ open, onOpenChange }: SearchModalProps) {
       open={open}
       onOpenChange={handleOpenChange}
       className="sm:max-w-2xl top-[12%]"
+
     >
-      <Command shouldFilter={false} className="rounded-xl">
+      <Command
+        shouldFilter={false}
+        className="rounded-xl [&_[data-slot=input-group]]:h-14! [&_[data-slot=input-group-addon]]:pl-2 [&_[data-slot=command-input-wrapper]:focus-within_[data-slot=input-group-addon]>svg]:!text-destructive [&_[data-slot=command-input-wrapper]:focus-within_[data-slot=input-group-addon]>svg]:[stroke-width:2.5]"
+      >
         <CommandInput
           value={query}
           onValueChange={setQuery}
@@ -70,12 +74,21 @@ export function SearchModal({ open, onOpenChange }: SearchModalProps) {
                     </span>
                   }
                 >
-                  {trending.slice(0, 6).map((item) => (
+                  {trending.slice(0, 4).map((item) => (
                     <SearchItem
                       key={`trending-${item.id}`}
                       item={item}
                       showRating
-                      onSelect={() => setQuery(item.title)}
+                      onSelect={() => {
+                        navigate({
+                          to: "/$type/$id",
+                          params: {
+                            type: item.mediaType || "movie",
+                            id: String(item.id),
+                          },
+                        })
+                        onOpenChange(false)
+                      }}
                     />
                   ))}
                 </CommandGroup>
@@ -84,9 +97,7 @@ export function SearchModal({ open, onOpenChange }: SearchModalProps) {
               <SearchHistory onSelect={(h) => setQuery(h)} />
             </>
           ) : debouncedQuery.length === 0 ? null : isFetching ? (
-            <div className="flex items-center justify-center py-12">
-              <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
-            </div>
+            <SearchLoadingState />
           ) : (
             <SearchResults
               results={results}
@@ -98,6 +109,25 @@ export function SearchModal({ open, onOpenChange }: SearchModalProps) {
         </CommandList>
       </Command>
     </CommandDialog>
+  )
+}
+
+function SearchLoadingState() {
+  return (
+    <div className="space-y-2 py-2">
+      {Array.from({ length: 5 }).map((_, index) => (
+        <div
+          key={index}
+          className="flex items-center gap-3 rounded-lg px-2 py-3 animate-pulse"
+        >
+          <div className="h-12 w-8 shrink-0 rounded-md bg-white/10" />
+          <div className="min-w-0 flex-1 space-y-2">
+            <div className="h-3 w-3/4 rounded bg-white/10" />
+            <div className="h-2 w-1/2 rounded bg-white/5" />
+          </div>
+        </div>
+      ))}
+    </div>
   )
 }
 
