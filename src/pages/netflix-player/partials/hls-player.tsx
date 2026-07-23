@@ -182,10 +182,33 @@ export function HlsPlayer({
 
     const isHls = src.includes(".m3u8") || src.includes("/hls/")
     if (Hls.isSupported() && isHls) {
+      let currentRemoteBase = ""
+      if (src.startsWith("http://") || src.startsWith("https://")) {
+        currentRemoteBase = src.substring(0, src.lastIndexOf("/") + 1)
+      }
+
       const hls = new Hls({
         startPosition: savedTs > 30 ? savedTs : -1,
         xhrSetup: (xhr, url) => {
-          const proxyUrl = `${DECRYPTOR_URL}/proxy?url=${encodeURIComponent(url)}`
+          let targetUrl = url
+          const localHost = window.location.host
+          const isLocal =
+            url.includes(localHost) ||
+            url.includes("/api/decryptor") ||
+            (!url.startsWith("http://") && !url.startsWith("https://"))
+
+          if (isLocal && currentRemoteBase) {
+            // Fix: hls.js resolved relative segment against local proxy URL. Reconstruct original CDN URL!
+            const relativePath = url
+              .replace(/^https?:\/\/[^\/]+/, "")
+              .replace(/^\/api\/decryptor\//, "")
+              .replace(/^\//, "")
+            targetUrl = new URL(relativePath, currentRemoteBase).toString()
+          } else if (!isLocal) {
+            currentRemoteBase = url.substring(0, url.lastIndexOf("/") + 1)
+          }
+
+          const proxyUrl = `${DECRYPTOR_URL}/proxy?url=${encodeURIComponent(targetUrl)}`
           xhr.open("GET", proxyUrl, true)
         },
       })
@@ -277,15 +300,7 @@ export function HlsPlayer({
     document.addEventListener("webkitfullscreenchange", handler)
 
     const v = videoRef.current
-    const onWebkitBeginFs = () => {
-      setFullscreen(true)
-      // iOS Native Player requires TextTrack mode to be set to "showing"
-      if (v && v.textTracks && v.textTracks.length > 0) {
-        for (let i = 0; i < v.textTracks.length; i++) {
-          v.textTracks[i].mode = "showing"
-        }
-      }
-    }
+    const onWebkitBeginFs = () => setFullscreen(true)
     const onWebkitEndFs = () => setFullscreen(false)
 
     if (v) {
@@ -470,8 +485,6 @@ export function HlsPlayer({
   const bufferedPct = duration ? (bufferedEnd / duration) * 100 : 0
   const hoverPct = hoverX !== null ? hoverX * 100 : null
 
-  const activeSubObj = allSubtitles.find((s) => s.url === selectedSub)
-
   return (
     <div
       ref={containerRef}
@@ -495,11 +508,10 @@ export function HlsPlayer({
       >
         {vttUrl && (
           <track
-            key={vttUrl}
             kind="subtitles"
             src={vttUrl}
-            srcLang={activeSubObj?.lang || "id"}
-            label={activeSubObj?.language || activeSubObj?.lang || "Indonesian"}
+            srcLang="id"
+            label="Indonesian Subtitle"
             default
           />
         )}
