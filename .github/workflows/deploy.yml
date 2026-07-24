@@ -38,6 +38,7 @@ jobs:
           VITE_API_BASE_URL: ${{ secrets.VITE_API_BASE_URL || 'https://api.themoviedb.org/3' }}
           VITE_MOVIE_API_TOKEN: ${{ secrets.VITE_MOVIE_API_TOKEN }}
           VITE_IMAGE_BASE_URL: ${{ secrets.VITE_IMAGE_BASE_URL || 'https://image.tmdb.org/t/p' }}
+          VITE_DECRYPTOR_URL: ${{ secrets.VITE_DECRYPTOR_URL || 'http://localhost:8000' }}
         run: |
           bun run build
           cp dist/index.html dist/404.html
