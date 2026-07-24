@@ -7,9 +7,9 @@ export const NETFLIX_PROVIDER_ID = "8"
 export const WATCH_REGION = "ID"
 export const DEFAULT_SORT_BY = "popularity.desc"
 
-// Videasy Decryptor backend (proxied via Vite dev server to avoid CORS)
-// Vite forwards /api/decryptor/* → http://localhost:8000/*
-export const DECRYPTOR_URL = "/api/decryptor"
+// Videasy Decryptor backend URL (direct connection to FastAPI backend for fast HTTP/2 video streaming)
+export const DECRYPTOR_URL =
+  import.meta.env.VITE_DECRYPTOR_URL || "http://localhost:8000"
 export const DECRYPTOR_PROVIDERS = [
   "Yoru",
   "Moviebox",
