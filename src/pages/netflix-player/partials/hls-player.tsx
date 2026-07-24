@@ -125,6 +125,7 @@ export function HlsPlayer({
   // ── Hooks ──────────────────────────────────────────────────────────────────
   useAutoSelectSubtitle(subtitles, selectedSub, setSelectedSub)
 
+  const hasRefetchedRef = useRef(false)
   const failedQualitiesRef = useRef<Set<number>>(new Set())
 
   useEffect(() => {
@@ -138,9 +139,13 @@ export function HlsPlayer({
       failedQualitiesRef.current.add(selectedQuality)
 
       // 1. Try next available CDN mirror/quality source in current provider
-      const nextQual = sources.findIndex((_, idx) => !failedQualitiesRef.current.has(idx))
+      const nextQual = sources.findIndex(
+        (_, idx) => !failedQualitiesRef.current.has(idx)
+      )
       if (nextQual !== -1 && nextQual < sources.length) {
-        console.warn(`Source ${selectedQuality} failed. Auto-switching to CDN mirror ${nextQual}...`)
+        console.warn(
+          `Source ${selectedQuality} failed. Auto-switching to CDN mirror ${nextQual}...`
+        )
         setStreamError(null)
         setNetworkErrorCount(0)
         setSelectedQuality(nextQual)
@@ -149,7 +154,11 @@ export function HlsPlayer({
 
       // 2. Refetch fresh signed URLs for current provider if not done yet
       if (!hasRefetchedRef.current && onRefetchCurrentProvider) {
-        console.warn("All CDN mirrors failed for provider", provider, ". Auto-refreshing signed URLs...")
+        console.warn(
+          "All CDN mirrors failed for provider",
+          provider,
+          ". Auto-refreshing signed URLs..."
+        )
         hasRefetchedRef.current = true
         failedQualitiesRef.current.clear()
         setStreamError(null)
@@ -168,7 +177,16 @@ export function HlsPlayer({
         return () => clearTimeout(timer)
       }
     }
-  }, [streamError, selectedQuality, sources, providerIndex, allProviders.length, provider, onProviderChange, onRefetchCurrentProvider])
+  }, [
+    streamError,
+    selectedQuality,
+    sources,
+    providerIndex,
+    allProviders.length,
+    provider,
+    onProviderChange,
+    onRefetchCurrentProvider,
+  ])
 
   useHlsLoader({
     videoRef,

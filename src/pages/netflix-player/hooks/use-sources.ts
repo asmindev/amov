@@ -25,7 +25,7 @@ interface UseSourcesReturn {
   providerIndex: number
   setProviderIndex: (index: number) => void
   allProviders: typeof DECRYPTOR_PROVIDERS
-  refetch: () => Promise<any>
+  refetch: () => Promise<unknown>
 }
 
 export function useSources(params: UseSourcesParams): UseSourcesReturn {
