@@ -11,8 +11,8 @@ export const DEFAULT_SORT_BY = "popularity.desc"
 export const DECRYPTOR_URL =
   import.meta.env.VITE_DECRYPTOR_URL || "http://localhost:8000"
 export const DECRYPTOR_PROVIDERS = [
-  "Moviebox",
   "Yoru",
+  "Moviebox",
   "Neon",
   "Cypher",
   "Breach",
