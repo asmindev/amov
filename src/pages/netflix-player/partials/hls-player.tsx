@@ -194,7 +194,11 @@ export function HlsPlayer({
 
     if (hideTimerRef.current) clearTimeout(hideTimerRef.current)
     hideTimerRef.current = setTimeout(() => {
-      if (videoRef.current && !videoRef.current.paused && !openMenuRef.current) {
+      if (
+        videoRef.current &&
+        !videoRef.current.paused &&
+        !openMenuRef.current
+      ) {
         setUiVisible(false)
       }
     }, 3500)
@@ -319,7 +323,21 @@ export function HlsPlayer({
             kind="subtitles"
             src={vttUrl}
             srcLang="id"
-            label="Indonesian Subtitle"
+            label="Custom Subtitles"
+            default
+            onLoad={(e) => {
+              const trackElem = e.currentTarget
+              if (trackElem.track) {
+                trackElem.track.mode = iosNativeFullscreen
+                  ? "showing"
+                  : "disabled"
+                console.log(
+                  "Native track loaded successfully:",
+                  trackElem.track.cues?.length,
+                  "cues"
+                )
+              }
+            }}
           />
         )}
       </video>
@@ -450,7 +468,7 @@ export function HlsPlayer({
         {/* ── Mobile Vertical Center Quick Skip Controls (Left & Right) ── */}
         <div
           className={`pointer-events-auto transition-opacity duration-300 md:hidden ${
-            mobileSkipVisible ? "opacity-100" : "opacity-0 pointer-events-none"
+            mobileSkipVisible ? "opacity-100" : "pointer-events-none opacity-0"
           }`}
         >
           <button
@@ -459,7 +477,7 @@ export function HlsPlayer({
               e.stopPropagation()
               seek(-10)
             }}
-            className="fixed left-4 top-1/2 z-40 flex h-14 w-14 -translate-y-1/2 items-center justify-center rounded-full border border-white/20 bg-black/40 text-white backdrop-blur-md transition-all active:scale-90"
+            className="fixed top-1/2 left-4 z-40 flex h-14 w-14 -translate-y-1/2 items-center justify-center rounded-full border border-white/20 bg-black/40 text-white backdrop-blur-md transition-all active:scale-90"
             aria-label="Skip backward 10 seconds"
           >
             <span className="material-symbols-outlined !text-[36px]">
@@ -473,7 +491,7 @@ export function HlsPlayer({
               e.stopPropagation()
               seek(10)
             }}
-            className="fixed right-4 top-1/2 z-40 flex h-14 w-14 -translate-y-1/2 items-center justify-center rounded-full border border-white/20 bg-black/40 text-white backdrop-blur-md transition-all active:scale-90"
+            className="fixed top-1/2 right-4 z-40 flex h-14 w-14 -translate-y-1/2 items-center justify-center rounded-full border border-white/20 bg-black/40 text-white backdrop-blur-md transition-all active:scale-90"
             aria-label="Skip forward 10 seconds"
           >
             <span className="material-symbols-outlined !text-[36px]">

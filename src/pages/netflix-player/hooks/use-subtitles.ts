@@ -81,12 +81,19 @@ function parseCues(text: string): ParsedCue[] {
     // Collect text lines after the timing line until next blank line or next timing line
     i = timingIndex + 1
     const textLines: string[] = []
-    while (i < lines.length && lines[i].trim() !== "" && !lines[i].includes("-->")) {
+    while (
+      i < lines.length &&
+      lines[i].trim() !== "" &&
+      !lines[i].includes("-->")
+    ) {
       textLines.push(lines[i])
       i++
     }
 
-    const text = textLines.join("\n").replace(/<[^>]+>/g, "").trim()
+    const text = textLines
+      .join("\n")
+      .replace(/<[^>]+>/g, "")
+      .trim()
     if (text) {
       cues.push({ start, end, text })
     }
@@ -100,8 +107,12 @@ function parseCues(text: string): ParsedCue[] {
  * Handles both comma and dot decimal separators.
  */
 function shiftTimestamps(text: string, offset: number): string {
-  if (offset === 0) return text
-  return text.replace(
+  // Always normalize timestamps (convert commas to dots for WebVTT compatibility)
+  const normalized = text
+    .replace(/(\d{2}:\d{2}:\d{2}),(\d{3})/g, "$1.$2")
+    .replace(/(\d{2}:\d{2}),(\d{3})/g, "$1.$2")
+  if (offset === 0) return normalized
+  return normalized.replace(
     /(\d{1,2}:)?(\d{2}):(\d{2})[.,](\d{3})/g,
     (_match, h, m, s, ms) => {
       const hours = h ? parseFloat(h) : 0
@@ -182,6 +193,12 @@ export function useSubtitles(
 
         setVttUrl(url)
         setParsedCues(parsed)
+        console.log(
+          "Subtitle added to video track:",
+          selectedSub,
+          "Total cues:",
+          parsed.length
+        )
       } catch (err) {
         console.error("Subtitle parse error", err)
         if (!isCancelled) {
