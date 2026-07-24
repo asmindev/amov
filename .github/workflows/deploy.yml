@@ -39,6 +39,7 @@ jobs:
           VITE_MOVIE_API_TOKEN: ${{ secrets.VITE_MOVIE_API_TOKEN }}
           VITE_IMAGE_BASE_URL: ${{ secrets.VITE_IMAGE_BASE_URL || 'https://image.tmdb.org/t/p' }}
           VITE_DECRYPTOR_URL: ${{ secrets.VITE_DECRYPTOR_URL || 'https://apimov.zettdev.my.id' }}
+          VITE_BASE_PATH: ${{ secrets.VITE_BASE_PATH || '/amov/' }}
         run: |
           bun run build
           cp dist/index.html dist/404.html
