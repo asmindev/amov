@@ -1,10 +1,16 @@
 import { useState } from "react"
-import { Button } from "@/components/ui/button"
 import { fetchProviderSubtitlesForMovie } from "./settings-modal/fetch-provider-subtitles.helper"
 import { PlaybackQualityRow } from "./settings-modal/playback-quality-row"
 import { SettingsSectionsDesktop } from "./settings-modal/settings-sections-desktop"
 import { SettingsSectionsMobile } from "./settings-modal/settings-sections-mobile"
 import type { SettingsModalProps } from "./settings-modal/types"
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
+import { Button } from "@/components/ui/button"
 
 export function SettingsModal({
   setOpenMenu,
@@ -18,14 +24,14 @@ export function SettingsModal({
   setSubOffset,
   subSize,
   setSubSize,
-  subBg,
-  setSubBg,
   subFont,
   setSubFont,
   subLh,
   setSubLh,
   subMargin,
   setSubMargin,
+  subBg,
+  setSubBg,
   sources,
   selectedQuality,
   setSelectedQuality,
@@ -68,89 +74,86 @@ export function SettingsModal({
   }
 
   return (
-    <div
-      className="pointer-events-auto absolute inset-0 z-[60] flex items-center justify-center bg-black/40 backdrop-blur-sm"
-      onClick={(e) => {
-        e.stopPropagation()
-        setOpenMenu(null)
-      }}
-    >
-      <div
-        className="flex h-[80vh] w-[90%] max-w-4xl flex-col overflow-hidden rounded-xl border border-border bg-popover/90 p-6 text-popover-foreground shadow-2xl backdrop-blur-xl"
-        onClick={(e) => e.stopPropagation()}
+    <Dialog open onOpenChange={(open) => !open && setOpenMenu(null)}>
+      <DialogContent
+        showCloseButton={false}
+        className="max-w-4xl h-[80vh] p-0 gap-0 overflow-hidden min-w-9/12"
       >
-        <div className="mb-6 flex items-center justify-between border-b border-border pb-4">
-          <h2 className="text-headline-md font-headline-md font-bold text-foreground">
-            Audio, Subtitles & Quality
-          </h2>
-          <Button
+        <DialogHeader className="py-1 px-2 border-b border-border">
+          <div className="flex items-center justify-between">
+            <DialogTitle className="pl-2 text-headline-md font-headline-md font-black text-foreground font-netflix uppercase">
+              Audio, Subtitles & Quality
+            </DialogTitle>
+            <Button
             variant="ghost"
-            size="icon"
-            className="rounded-full text-muted-foreground hover:bg-white/10 hover:text-foreground"
-            onClick={() => setOpenMenu(null)}
-          >
-            <span className="material-symbols-outlined">close</span>
-          </Button>
-        </div>
+              className="rounded-full p-1 text-muted-foreground hover:bg-white/10 hover:text-foreground"
+              onClick={() => setOpenMenu(null)}
+            >
+              <span className="material-symbols-outlined">close</span>
+            </Button>
+          </div>
+        </DialogHeader>
 
-        <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
-          <SettingsSectionsMobile
-            playbackRate={playbackRate}
-            setPlaybackRate={setPlaybackRate}
-            selectedProvider={selectedProvider}
-            setSelectedProvider={setSelectedProvider}
-            isFetchingSubtitles={isFetchingSubtitles}
-            onFetchSubtitles={handleManualOpenSubtitlesFetch}
-            selectedSub={selectedSub}
-            setSelectedSub={setSelectedSub}
-            subtitles={subtitles}
-            subError={subError}
-            subOffset={subOffset}
-            setSubOffset={setSubOffset}
-            subMargin={subMargin}
-            setSubMargin={setSubMargin}
-            subSize={subSize}
-            setSubSize={setSubSize}
-            subFont={subFont}
-            setSubFont={setSubFont}
-            subLh={subLh}
-            setSubLh={setSubLh}
-            subBg={subBg}
-            setSubBg={setSubBg}
+        <div className="flex min-h-0 flex-1 flex-col overflow-hidden p-6">
+          <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
+            <SettingsSectionsMobile
+              playbackRate={playbackRate}
+              setPlaybackRate={setPlaybackRate}
+              selectedProvider={selectedProvider}
+              setSelectedProvider={setSelectedProvider}
+              isFetchingSubtitles={isFetchingSubtitles}
+              onFetchSubtitles={handleManualOpenSubtitlesFetch}
+              selectedSub={selectedSub}
+              setSelectedSub={setSelectedSub}
+              subtitles={subtitles}
+              subError={subError}
+              subOffset={subOffset}
+              setSubOffset={setSubOffset}
+              subMargin={subMargin}
+              setSubMargin={setSubMargin}
+              subSize={subSize}
+              setSubSize={setSubSize}
+              subFont={subFont}
+              setSubFont={setSubFont}
+              subLh={subLh}
+              setSubLh={setSubLh}
+              subBg={subBg}
+              setSubBg={setSubBg}
+            />
+
+            <SettingsSectionsDesktop
+              playbackRate={playbackRate}
+              setPlaybackRate={setPlaybackRate}
+              selectedProvider={selectedProvider}
+              setSelectedProvider={setSelectedProvider}
+              isFetchingSubtitles={isFetchingSubtitles}
+              onFetchSubtitles={handleManualOpenSubtitlesFetch}
+              selectedSub={selectedSub}
+              setSelectedSub={setSelectedSub}
+              subtitles={subtitles}
+              subError={subError}
+              subOffset={subOffset}
+              setSubOffset={setSubOffset}
+              subMargin={subMargin}
+              setSubMargin={setSubMargin}
+              subSize={subSize}
+              setSubSize={setSubSize}
+              subFont={subFont}
+              setSubFont={setSubFont}
+              subLh={subLh}
+              setSubLh={setSubLh}
+              subBg={subBg}
+              setSubBg={setSubBg}
+            />
+          </div>
+
+          <PlaybackQualityRow
+            sources={sources}
+            selectedQuality={selectedQuality}
+            setSelectedQuality={setSelectedQuality}
           />
-
-          <SettingsSectionsDesktop
-            playbackRate={playbackRate}
-            setPlaybackRate={setPlaybackRate}
-            selectedProvider={selectedProvider}
-            setSelectedProvider={setSelectedProvider}
-            isFetchingSubtitles={isFetchingSubtitles}
-            onFetchSubtitles={handleManualOpenSubtitlesFetch}
-            selectedSub={selectedSub}
-            setSelectedSub={setSelectedSub}
-            subtitles={subtitles}
-            subError={subError}
-            subOffset={subOffset}
-            setSubOffset={setSubOffset}
-            subMargin={subMargin}
-            setSubMargin={setSubMargin}
-            subSize={subSize}
-            setSubSize={setSubSize}
-            subFont={subFont}
-            setSubFont={setSubFont}
-            subLh={subLh}
-            setSubLh={setSubLh}
-            subBg={subBg}
-            setSubBg={setSubBg}
-          />
         </div>
-
-        <PlaybackQualityRow
-          sources={sources}
-          selectedQuality={selectedQuality}
-          setSelectedQuality={setSelectedQuality}
-        />
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   )
 }
