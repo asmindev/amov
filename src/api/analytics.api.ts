@@ -13,6 +13,16 @@ export interface AnalyticsEventPayload {
   searchQuery?: string
 }
 
+export interface RecentVisitLog {
+  id: string
+  timestamp: string
+  path: string
+  deviceType: string
+  browser: string
+  country: string
+  ip: string
+}
+
 export interface AdminAnalyticsData {
   totalVisits: number
   totalPlays: number
@@ -40,6 +50,7 @@ export interface AdminAnalyticsData {
     mediaType: string
     timestamp: string
   }>
+  lastVisits: RecentVisitLog[]
 }
 
 function parseBrowserAndDevice() {
@@ -69,6 +80,34 @@ function parseBrowserAndDevice() {
   return { deviceType, browser }
 }
 
+async function getClientIpAndCountry(): Promise<{
+  ip: string
+  country: string
+}> {
+  try {
+    const cached = sessionStorage.getItem("amov_ip_info")
+    if (cached) {
+      return JSON.parse(cached)
+    }
+
+    const res = await fetch("https://ipapi.co/json/", {
+      signal: AbortSignal.timeout(3000),
+    })
+    if (res.ok) {
+      const data = await res.json()
+      const result = {
+        ip: data.ip || "Unknown",
+        country: data.country_name || data.country || "Unknown",
+      }
+      sessionStorage.setItem("amov_ip_info", JSON.stringify(result))
+      return result
+    }
+  } catch {
+    // Fallback if IP API is blocked or times out
+  }
+  return { ip: "Unknown", country: "Unknown" }
+}
+
 export async function recordAnalyticsEvent(payload: AnalyticsEventPayload) {
   const client = supabase
   if (!client) return
@@ -76,6 +115,7 @@ export async function recordAnalyticsEvent(payload: AnalyticsEventPayload) {
   try {
     const { user } = useAuthStore.getState()
     const { deviceType, browser } = parseBrowserAndDevice()
+    const { ip, country } = await getClientIpAndCountry()
 
     await client.from("analytics_events").insert({
       event_type: payload.eventType,
@@ -88,6 +128,8 @@ export async function recordAnalyticsEvent(payload: AnalyticsEventPayload) {
       user_email: user?.email || null,
       device_type: deviceType,
       browser,
+      ip,
+      country,
     })
   } catch {
     // Silent fail for non-blocking analytics
@@ -109,6 +151,7 @@ export async function fetchAdminAnalytics(
       topClicked: [],
       topSearches: [],
       userWatchActivity: [],
+      lastVisits: [],
     }
   }
 
@@ -141,6 +184,7 @@ export async function fetchAdminAnalytics(
       topClicked: [],
       topSearches: [],
       userWatchActivity: [],
+      lastVisits: [],
     }
   }
 
@@ -160,10 +204,22 @@ export async function fetchAdminAnalytics(
   > = {}
   const searchMap: Record<string, number> = {}
   const userWatchActivity: AdminAnalyticsData["userWatchActivity"] = []
+  const lastVisits: RecentVisitLog[] = []
 
   for (const ev of events) {
     if (ev.event_type === "page_view") {
       totalVisits++
+      if (lastVisits.length < 10) {
+        lastVisits.push({
+          id: ev.id,
+          timestamp: ev.created_at,
+          path: ev.path || "/",
+          deviceType: ev.device_type || "desktop",
+          browser: ev.browser || "Other",
+          country: ev.country || "Unknown",
+          ip: ev.ip || "Unknown",
+        })
+      }
     } else if (ev.event_type === "movie_play") {
       totalPlays++
       if (ev.media_id && ev.media_title) {
@@ -254,5 +310,6 @@ export async function fetchAdminAnalytics(
     topClicked,
     topSearches,
     userWatchActivity: userWatchActivity.slice(0, 20),
+    lastVisits,
   }
 }
