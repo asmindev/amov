@@ -49,9 +49,9 @@ function DialogContent({
 }) {
   const portalContainer =
     container ??
-    (typeof document !== "undefined"
-      ? (document.fullscreenElement as HTMLElement | null)
-      : null)
+    (typeof document !== "undefined" && document.fullscreenElement
+      ? (document.fullscreenElement as HTMLElement)
+      : undefined)
 
   return (
     <DialogPortal container={portalContainer}>
