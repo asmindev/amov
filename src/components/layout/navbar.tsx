@@ -14,7 +14,7 @@ export function Navbar() {
   const { pathname } = useLocation()
   const [scrolled, setScrolled] = useState(false)
   const [isSearchOpen, setIsSearchOpen] = useState(false)
-  const { user, signOut, setAuthModalOpen } = useAuthStore()
+  const { user, role, signOut, setAuthModalOpen } = useAuthStore()
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 50)
@@ -117,6 +117,11 @@ export function Navbar() {
             {/* Auth Controls */}
             {user ? (
               <div className="flex items-center gap-2">
+                {role === "admin" && (
+                  <span className="rounded-md bg-red-600/20 px-2 py-0.5 text-[10px] font-black tracking-wider text-red-500 uppercase ring-1 ring-red-500/30">
+                    ADMIN
+                  </span>
+                )}
                 <div
                   title={user.email ?? "User"}
                   className="flex h-8 w-8 items-center justify-center rounded-full bg-red-600/90 text-xs font-black text-white uppercase ring-2 ring-white/10"
