@@ -26,6 +26,8 @@ export default function DiscoverPage() {
     description: query
       ? `Search results for "${query}" on amov.`
       : "Discover movies and TV shows by genre, year, rating, and more.",
+    image:
+      "https://res.cloudinary.com/dph249ste/image/upload/v1784915520/ChatGPT_Image_Jul_25_2026_01_50_53_AM_iqb4vu.png",
   })
 
   const { data: genresData } = useGenres(selectedType === "tv" ? "tv" : "movie")

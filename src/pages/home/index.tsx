@@ -15,6 +15,8 @@ export default function HomePage() {
     title: "Home",
     description:
       "Stream movies and TV shows for free. Discover trending, top-rated, popular, and Netflix content.",
+    image:
+      "https://res.cloudinary.com/dph249ste/image/upload/v1784915520/ChatGPT_Image_Jul_25_2026_01_50_53_AM_iqb4vu.png",
   })
   const trending = useTrendingMovies()
   const topRated = useTopRatedMovies()
