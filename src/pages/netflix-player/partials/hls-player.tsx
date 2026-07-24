@@ -124,7 +124,7 @@ export function HlsPlayer({
   // ── Hooks ──────────────────────────────────────────────────────────────────
   useAutoSelectSubtitle(subtitles, selectedSub, setSelectedSub)
 
-  // ── Auto Provider Failover & Stall Watchdog ──────────────────────────────
+  // ── Auto Provider Failover ──────────────────────────────────────────────
   useEffect(() => {
     if (streamError && providerIndex < allProviders.length - 1) {
       const timer = setTimeout(() => {
@@ -135,39 +135,6 @@ export function HlsPlayer({
       return () => clearTimeout(timer)
     }
   }, [streamError, providerIndex, allProviders.length, onProviderChange])
-
-  const stallTimerRef = useRef<ReturnType<typeof setInterval> | null>(null)
-  const lastTimeRef = useRef<number>(-1)
-  const stallCountRef = useRef<number>(0)
-
-  useEffect(() => {
-    if (stallTimerRef.current) clearInterval(stallTimerRef.current)
-    lastTimeRef.current = -1
-    stallCountRef.current = 0
-
-    stallTimerRef.current = setInterval(() => {
-      const v = videoRef.current
-      if (!v || v.paused || v.ended) return
-      if (v.currentTime === lastTimeRef.current && v.readyState < 3) {
-        stallCountRef.current += 1
-        if (stallCountRef.current >= 4) {
-          if (stallTimerRef.current) clearInterval(stallTimerRef.current)
-          setStreamError({
-            type: "network",
-            message: "Stream stalled",
-            details: "Playback stalled for 4s. Auto-switching provider...",
-          })
-        }
-      } else {
-        lastTimeRef.current = v.currentTime
-        stallCountRef.current = 0
-      }
-    }, 1000)
-
-    return () => {
-      if (stallTimerRef.current) clearInterval(stallTimerRef.current)
-    }
-  }, [sources, selectedQuality, providerIndex])
 
   useHlsLoader({
     videoRef,
