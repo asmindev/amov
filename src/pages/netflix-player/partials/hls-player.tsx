@@ -194,6 +194,9 @@ export function HlsPlayer({
     sources,
     selectedQuality,
     movieId,
+    imdbId,
+    season,
+    episode,
     onError: setStreamError,
     onNetworkError: () => setNetworkErrorCount((c) => c + 1),
   })

@@ -16,6 +16,9 @@ interface UseHlsLoaderOpts {
   sources: StreamSource[]
   selectedQuality: number
   movieId: number
+  imdbId?: string
+  season?: number
+  episode?: number
   onError?: (error: StreamError) => void
   onNetworkError?: () => void
 }
@@ -26,14 +29,29 @@ export function useHlsLoader({
   sources,
   selectedQuality,
   movieId,
+  imdbId,
+  season,
+  episode,
   onError,
   onNetworkError,
 }: UseHlsLoaderOpts) {
   useEffect(() => {
     const video = videoRef.current
     if (!video || sources.length === 0) return
-    const src = sources[selectedQuality]?.url
+    const sourceObj = sources[selectedQuality]
+    const src = sourceObj?.url
     if (!src) return
+
+    const buildProxyUrl = (targetUrl: string) => {
+      let pUrl = `${DECRYPTOR_URL}/proxy?url=${encodeURIComponent(targetUrl)}`
+      if (imdbId) pUrl += `&imdbId=${encodeURIComponent(imdbId)}`
+      if (season) pUrl += `&season=${season}`
+      if (episode) pUrl += `&episode=${episode}`
+      if (sourceObj?.headers) {
+        pUrl += `&headers=${encodeURIComponent(typeof sourceObj.headers === "string" ? sourceObj.headers : JSON.stringify(sourceObj.headers))}`
+      }
+      return pUrl
+    }
 
     const savedTs = getSavedTimestamp(movieId)
 
@@ -67,7 +85,7 @@ export function useHlsLoader({
             currentRemoteBase = url.substring(0, url.lastIndexOf("/") + 1)
           }
 
-          const proxyUrl = `${DECRYPTOR_URL}/proxy?url=${encodeURIComponent(targetUrl)}`
+          const proxyUrl = buildProxyUrl(targetUrl)
           xhr.open("GET", proxyUrl, true)
         },
       })
@@ -125,7 +143,8 @@ export function useHlsLoader({
       hlsRef.current = hls
     } else {
       const proxiedUrl = src.startsWith("http")
-        ? `${DECRYPTOR_URL}/proxy?url=${encodeURIComponent(src)}`
+        ? buildProxyUrl(src)
+        : src
         : src
 
       video.src = proxiedUrl
