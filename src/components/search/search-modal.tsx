@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useNavigate } from "@tanstack/react-router"
 import {
   CommandDialog,
@@ -14,6 +14,7 @@ import { SearchItem } from "./search-item"
 import { useSearch, getSearchHistory, clearSearchHistory } from "./use-search"
 import { useTrendingSearches } from "./use-trending-searches"
 import { History, TrendingUp, Trash2 } from "lucide-react"
+import { recordAnalyticsEvent } from "@/api/analytics.api"
 
 interface SearchModalProps {
   open: boolean
@@ -29,6 +30,15 @@ export function SearchModal({ open, onOpenChange }: SearchModalProps) {
 
   const trending = trendingData?.results ?? []
 
+  useEffect(() => {
+    if (debouncedQuery.trim().length > 2) {
+      void recordAnalyticsEvent({
+        eventType: "search_query",
+        searchQuery: debouncedQuery.trim(),
+      })
+    }
+  }, [debouncedQuery])
+
   const handleOpenChange = (open: boolean) => {
     if (!open) setQuery("")
     onOpenChange(open)
@@ -36,6 +46,10 @@ export function SearchModal({ open, onOpenChange }: SearchModalProps) {
 
   const handleViewAll = () => {
     if (query.trim()) {
+      void recordAnalyticsEvent({
+        eventType: "search_query",
+        searchQuery: query.trim(),
+      })
       navigate({ to: "/discover", search: { query: query.trim() } })
       onOpenChange(false)
     }

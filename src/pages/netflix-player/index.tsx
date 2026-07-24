@@ -1,9 +1,11 @@
+import { useEffect } from "react"
 import { useParams, useSearch, Link } from "@tanstack/react-router"
 import { AlertTriangle, ServerCrash } from "lucide-react"
 import { useMediaDetail } from "@/pages/movie-detail/hooks/use-movie-detail"
 import { useSources } from "./hooks/use-sources"
 import { HlsPlayer } from "./partials/hls-player"
 import { getBackdropUrl as getBdUrl } from "@/helpers/image-url"
+import { recordAnalyticsEvent } from "@/api/analytics.api"
 
 // Safe year extractor — must return "YYYY" or "" (API regex: ^\d{4}$|^$)
 function safeYear(releaseDate: string | null | undefined): string {
@@ -62,6 +64,17 @@ export default function NetflixPlayerPage() {
   const posterUrl = movie?.backdropPath
     ? getBdUrl(movie.backdropPath, "w1280")
     : undefined
+
+  useEffect(() => {
+    if (movie) {
+      void recordAnalyticsEvent({
+        eventType: "movie_play",
+        mediaId: String(movie.id),
+        mediaTitle: movie.title,
+        mediaType,
+      })
+    }
+  }, [movie, mediaType])
 
   // ── Loading state ────────────────────────────────────────────────────────
   if (moviePending) {

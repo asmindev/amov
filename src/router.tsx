@@ -156,6 +156,18 @@ const legacyNetflixPlayerRoute = createRoute({
   ),
 })
 
+const LazyAdmin = React.lazy(() => import("@/pages/admin/index.tsx"))
+
+const adminRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/admin",
+  component: () => (
+    <React.Suspense>
+      <LazyAdmin />
+    </React.Suspense>
+  ),
+})
+
 const routeTree = rootRoute.addChildren([
   homeRoute,
   discoverRoute,
@@ -164,6 +176,7 @@ const routeTree = rootRoute.addChildren([
   watchlistRoute,
   netflixPlayerRoute,
   legacyNetflixPlayerRoute,
+  adminRoute,
 ])
 
 export const router = createRouter({

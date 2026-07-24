@@ -86,6 +86,20 @@ export function Navbar() {
                   </Link>
                 )
               })}
+              {role === "admin" && (
+                <Link
+                  to="/admin"
+                  className={`rounded-lg px-3 py-2 text-sm font-semibold transition-colors ${
+                    pathname.startsWith("/admin")
+                      ? "font-bold text-red-500"
+                      : scrolled || !isTransparentMode
+                        ? "text-red-400/90 hover:text-red-400"
+                        : "text-red-400 hover:text-white"
+                  }`}
+                >
+                  Admin Analytics
+                </Link>
+              )}
             </div>
           </div>
           <div className="flex items-center gap-5">

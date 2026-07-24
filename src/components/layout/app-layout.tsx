@@ -4,11 +4,14 @@ import { Navbar } from "@/components/layout/navbar"
 import { Footer } from "@/components/layout/footer"
 import { AuthModal } from "@/components/auth/auth-modal"
 import { useAuthStore } from "@/stores/auth-store"
+import { useAnalyticsTracker } from "@/hooks/use-analytics-tracker"
 
 export default function AppLayout() {
   const location = useLocation()
   const initAuth = useAuthStore((state) => state.initAuth)
   const isPlayerRoute = location.pathname.includes("/netflix")
+
+  useAnalyticsTracker()
 
   useEffect(() => {
     void initAuth()
