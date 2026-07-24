@@ -131,8 +131,8 @@ export async function recordAnalyticsEvent(payload: AnalyticsEventPayload) {
       ip,
       country,
     })
-  } catch {
-    // Silent fail for non-blocking analytics
+  } catch (err) {
+    console.error("[analytics] failed to record event:", err)
   }
 }
 

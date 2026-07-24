@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "motion/react"
 import { getImageUrl } from "@/helpers/image-url"
 import { formatYear } from "@/helpers/format-date"
 import { getMovieQuality } from "@/helpers/movie-quality"
+import { recordAnalyticsEvent } from "@/api/analytics.api"
 import type { Movie, Genre } from "@/types/movie.types"
 
 type MovieCardProps = {
@@ -50,6 +51,15 @@ export function MovieCard({
   const handleMouseLeave = () => {
     if (hoverTimeout) clearTimeout(hoverTimeout)
     setIsHovered(false)
+  }
+
+  const trackClick = () => {
+    recordAnalyticsEvent({
+      eventType: "movie_click",
+      mediaId: String(movie.id),
+      mediaTitle: movie.title,
+      mediaType: movie.mediaType || "movie",
+    })
   }
 
   // ── Expand Mode (TrendingSection) ──
@@ -141,6 +151,7 @@ export function MovieCard({
                         id: String(movie.id),
                       }}
                       className="flex h-7 w-9 items-center justify-center bg-primary transition-colors hover:bg-primary/90"
+                      onClick={trackClick}
                     >
                       <span className="material-symbols-outlined fill !text-[18px]">
                         play_arrow
@@ -160,6 +171,7 @@ export function MovieCard({
                       id: String(movie.id),
                     }}
                     className="flex h-7 w-9 items-center justify-center border border-white/20 bg-black/50 text-white transition-colors hover:border-white hover:bg-black/80"
+                    onClick={trackClick}
                   >
                     <ChevronDown className="h-4 w-4" />
                   </Link>
@@ -285,6 +297,7 @@ export function MovieCard({
                       id: String(movie.id),
                     }}
                     className="flex h-7 w-9 items-center justify-center bg-primary transition-colors hover:bg-primary/90"
+                    onClick={trackClick}
                   >
                     <span className="material-symbols-outlined fill ml-0.5 !text-[20px]">
                       play_arrow
@@ -304,6 +317,7 @@ export function MovieCard({
                     id: String(movie.id),
                   }}
                   className="flex h-9 w-9 items-center justify-center rounded-full border border-white/20 bg-black/50 text-white transition-colors hover:border-white hover:bg-black/80"
+                  onClick={trackClick}
                 >
                   <ChevronDown className="h-4 w-4" />
                 </Link>
