@@ -22,6 +22,7 @@ export function SettingsSectionsDesktop(props: SettingsSectionsProps) {
           selectedSub={props.selectedSub}
           setSelectedSub={props.setSelectedSub}
           subtitles={props.subtitles}
+          subError={props.subError}
         />
       </div>
 

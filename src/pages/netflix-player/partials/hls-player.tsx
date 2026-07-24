@@ -7,7 +7,7 @@ import {
   type ChangeEvent,
 } from "react"
 import type { StreamSubtitle } from "@/api/decryptor.api"
-import { RefreshCw } from "lucide-react"
+import { RefreshCw, AlertTriangle, WifiOff } from "lucide-react"
 import { AnimatePresence } from "motion/react"
 import { useWatchProgressTracker } from "@/hooks/use-watch-progress"
 import { TopAppBar } from "./player-ui/top-app-bar"
@@ -25,6 +25,7 @@ import { SubtitleOverlay } from "./player-ui/subtitle-overlay"
 import { PausedOverlay } from "./player-ui/paused-overlay"
 import { SkipIndicator } from "./player-ui/skip-indicator"
 import type { HlsPlayerProps } from "../hls-player.types"
+import type { StreamError } from "../hooks/use-hls-loader"
 
 // ─── Main Component ───────────────────────────────────────────────────────────
 
@@ -83,6 +84,8 @@ export function HlsPlayer({
     type: "forward" | "backward"
     id: number
   } | null>(null)
+  const [streamError, setStreamError] = useState<StreamError | null>(null)
+  const [networkErrorCount, setNetworkErrorCount] = useState(0)
 
   useEffect(() => {
     if (!skipIndicator) return
@@ -112,7 +115,7 @@ export function HlsPlayer({
     setSubMargin,
   } = usePlayerSettings()
 
-  const { currentActiveCues, vttUrl } = useSubtitles(
+  const { currentActiveCues, vttUrl, subError } = useSubtitles(
     selectedSub,
     subOffset,
     currentTime
@@ -121,7 +124,15 @@ export function HlsPlayer({
   // ── Hooks ──────────────────────────────────────────────────────────────────
   useAutoSelectSubtitle(subtitles, selectedSub, setSelectedSub)
 
-  useHlsLoader({ videoRef, hlsRef, sources, selectedQuality, movieId })
+  useHlsLoader({
+    videoRef,
+    hlsRef,
+    sources,
+    selectedQuality,
+    movieId,
+    onError: setStreamError,
+    onNetworkError: () => setNetworkErrorCount((c) => c + 1),
+  })
 
   useVideoEvents({
     videoRef,
@@ -143,7 +154,11 @@ export function HlsPlayer({
       if (v) setDuration(v.duration)
     },
     onWaiting: () => setBuffering(true),
-    onPlaying: () => setBuffering(false),
+    onPlaying: () => {
+      setBuffering(false)
+      setStreamError(null)
+      setNetworkErrorCount(0)
+    },
     onVolume: () => {
       const v = videoRef.current
       if (v) {
@@ -151,6 +166,7 @@ export function HlsPlayer({
         setMuted(v.muted)
       }
     },
+    onError: setStreamError,
   })
 
   const { fullscreen, iosNativeFullscreen, toggleFullscreen } = useFullscreen(
@@ -263,6 +279,16 @@ export function HlsPlayer({
   const bufferedPct = duration ? (bufferedEnd / duration) * 100 : 0
   const hoverPct = hoverX !== null ? hoverX * 100 : null
 
+  const handleRetry = useCallback(() => {
+    setStreamError(null)
+    setNetworkErrorCount(0)
+    const v = videoRef.current
+    if (v) {
+      v.currentTime = 0
+      void v.play().catch(() => {})
+    }
+  }, [])
+
   return (
     <div
       ref={containerRef}
@@ -324,9 +350,60 @@ export function HlsPlayer({
       )}
 
       {/* ── Buffering spinner ── */}
-      {buffering && !isFetchingProvider && (
+      {buffering && !isFetchingProvider && !streamError && (
         <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center">
           <div className="h-14 w-14 animate-spin rounded-full border-[3px] border-white/20 border-t-white" />
+        </div>
+      )}
+
+      {/* ── Stream error overlay ── */}
+      {streamError && (
+        <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-black/90 px-6">
+          {streamError.type === "network" ? (
+            <WifiOff className="mb-4 h-12 w-12 text-red-400" />
+          ) : (
+            <AlertTriangle className="mb-4 h-12 w-12 text-red-400" />
+          )}
+          <h3 className="mb-1 text-lg font-bold text-white">
+            {streamError.message}
+          </h3>
+          {streamError.details && (
+            <p className="max-w-sm text-center text-sm text-white/50">
+              {streamError.details}
+            </p>
+          )}
+          {streamError.type === "network" && networkErrorCount > 0 && (
+            <p className="mt-1 text-xs text-white/30">
+              Failed attempts: {networkErrorCount}
+            </p>
+          )}
+          <div className="mt-5 flex gap-3">
+            <button
+              type="button"
+              onClick={handleRetry}
+              className="flex items-center gap-2 rounded-lg bg-white/10 px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-white/20"
+            >
+              <RefreshCw className="h-4 w-4" />
+              Retry
+            </button>
+            {allProviders.length > 1 && (
+              <button
+                type="button"
+                onClick={() => {
+                  setStreamError(null)
+                  setNetworkErrorCount(0)
+                  const nextIdx =
+                    providerIndex < allProviders.length - 1
+                      ? providerIndex + 1
+                      : 0
+                  onProviderChange(nextIdx)
+                }}
+                className="rounded-lg bg-red-600 px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-red-500"
+              >
+                Try another provider
+              </button>
+            )}
+          </div>
         </div>
       )}
 
@@ -410,6 +487,7 @@ export function HlsPlayer({
             selectedSub={selectedSub}
             setSelectedSub={setSelectedSub}
             subtitles={allSubtitles}
+            subError={subError}
             subOffset={subOffset}
             setSubOffset={setSubOffset}
             subSize={subSize}

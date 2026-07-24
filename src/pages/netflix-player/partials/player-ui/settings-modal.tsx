@@ -13,6 +13,7 @@ export function SettingsModal({
   selectedSub,
   setSelectedSub,
   subtitles,
+  subError,
   subOffset,
   setSubOffset,
   subSize,
@@ -103,6 +104,7 @@ export function SettingsModal({
             selectedSub={selectedSub}
             setSelectedSub={setSelectedSub}
             subtitles={subtitles}
+            subError={subError}
             subOffset={subOffset}
             setSubOffset={setSubOffset}
             subMargin={subMargin}
@@ -127,6 +129,7 @@ export function SettingsModal({
             selectedSub={selectedSub}
             setSelectedSub={setSelectedSub}
             subtitles={subtitles}
+            subError={subError}
             subOffset={subOffset}
             setSubOffset={setSubOffset}
             subMargin={subMargin}

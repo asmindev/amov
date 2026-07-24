@@ -19,6 +19,7 @@ export function SubtitlesSettingsSection({
   selectedSub,
   setSelectedSub,
   subtitles,
+  subError,
   showHeading = true,
 }: SubtitlesSettingsSectionProps) {
   const [search, setSearch] = useState("")
@@ -129,7 +130,18 @@ export function SubtitlesSettingsSection({
               }`}
             >
               <span className="truncate capitalize">{sub.language || sub.lang}</span>
-              {isActive && <Check className="h-3.5 w-3.5 shrink-0 text-primary" />}
+              <span className="flex shrink-0 items-center gap-1">
+                {isActive && subError && (
+                  <span className="material-symbols-outlined text-[14px] text-red-400">
+                    close
+                  </span>
+                )}
+                {isActive && !subError && (
+                  <span className="material-symbols-outlined text-[14px] text-green-400">
+                    check
+                  </span>
+                )}
+              </span>
             </button>
           )
         })}

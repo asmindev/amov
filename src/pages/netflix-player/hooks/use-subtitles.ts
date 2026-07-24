@@ -134,6 +134,7 @@ export function useSubtitles(
 ) {
   const [parsedCues, setParsedCues] = useState<ParsedCue[]>([])
   const [vttUrl, setVttUrl] = useState<string | null>(null)
+  const [subError, setSubError] = useState(false)
   const blobUrlRef = useRef<string | null>(null)
 
   useEffect(() => {
@@ -143,9 +144,12 @@ export function useSubtitles(
       if (!selectedSub) {
         setParsedCues([])
         setVttUrl(null)
+        setSubError(false)
         return
       }
+      setSubError(false)
       try {
+        console.log("Fetching subtitle:", selectedSub)
         const res = await fetch(selectedSub)
         if (!res.ok) throw new Error("fetch sub error")
         let text = await res.text()
@@ -181,6 +185,7 @@ export function useSubtitles(
       } catch (err) {
         console.error("Subtitle parse error", err)
         if (!isCancelled) {
+          setSubError(true)
           setParsedCues([])
           setVttUrl(null)
         }
@@ -202,5 +207,5 @@ export function useSubtitles(
     (c) => currentTime >= c.start && currentTime <= c.end
   )
 
-  return { currentActiveCues, vttUrl }
+  return { currentActiveCues, vttUrl, subError }
 }

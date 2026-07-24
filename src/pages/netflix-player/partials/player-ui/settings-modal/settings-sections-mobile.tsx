@@ -31,6 +31,7 @@ export function SettingsSectionsMobile(props: SettingsSectionsProps) {
           selectedSub={props.selectedSub}
           setSelectedSub={props.setSelectedSub}
           subtitles={props.subtitles}
+          subError={props.subError}
           showHeading={false}
         />
       </TabsContent>

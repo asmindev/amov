@@ -8,6 +8,7 @@ export interface SettingsModalProps {
   selectedSub: string | null
   setSelectedSub: (val: string | null) => void
   subtitles: StreamSubtitle[]
+  subError: boolean
   subOffset: number
   setSubOffset: Dispatch<SetStateAction<number>>
   subSize: number
@@ -45,6 +46,7 @@ export interface SubtitlesSettingsSectionProps {
   selectedSub: string | null
   setSelectedSub: (val: string | null) => void
   subtitles: StreamSubtitle[]
+  subError: boolean
   showHeading?: boolean
 }
 
