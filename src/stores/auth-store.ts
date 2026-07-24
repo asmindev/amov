@@ -39,21 +39,41 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   setAuthMode: (mode) => set({ authMode: mode }),
 
   initAuth: async () => {
-    if (!supabase) {
+    const client = supabase
+    if (!client) {
       set({ isLoading: false })
       return
     }
 
     try {
-      const { data } = await supabase.auth.getSession()
+      const { data, error } = await client.auth.getUser()
+
+      if (error || !data.user) {
+        await client.auth.signOut()
+        set({ user: null, session: null, isLoading: false })
+        return
+      }
+
+      const { data: sessionData } = await client.auth.getSession()
       set({
-        session: data.session,
-        user: data.session?.user ?? null,
+        session: sessionData.session,
+        user: data.user,
         isLoading: false,
       })
 
-      supabase.auth.onAuthStateChange((_event, session) => {
-        set({ session, user: session?.user ?? null, isLoading: false })
+      client.auth.onAuthStateChange(async (event, session) => {
+        if (event === "SIGNED_OUT" || !session) {
+          set({ session: null, user: null, isLoading: false })
+        } else {
+          const { data: userData, error: userError } =
+            await client.auth.getUser()
+          if (userError || !userData.user) {
+            await client.auth.signOut()
+            set({ session: null, user: null, isLoading: false })
+          } else {
+            set({ session, user: userData.user, isLoading: false })
+          }
+        }
       })
     } catch {
       set({ isLoading: false })
@@ -67,18 +87,30 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       email,
       password,
     })
+    if (error) {
+      set({ isLoading: false })
+      return { error: new Error(error.message) }
+    }
     set({ isLoading: false, session: data.session, user: data.user })
-    if (!error) get().setAuthModalOpen(false)
-    return { error: error ? new Error(error.message) : null }
+    get().setAuthModalOpen(false)
+    return { error: null }
   },
 
   signUpWithEmail: async (email, password) => {
     if (!supabase) return { error: new Error("Supabase is not configured") }
     set({ isLoading: true })
     const { data, error } = await supabase.auth.signUp({ email, password })
-    set({ isLoading: false, session: data.session, user: data.user })
-    if (!error && data.session) get().setAuthModalOpen(false)
-    return { error: error ? new Error(error.message) : null }
+    if (error) {
+      set({ isLoading: false })
+      return { error: new Error(error.message) }
+    }
+    if (data.session) {
+      set({ isLoading: false, session: data.session, user: data.user })
+      get().setAuthModalOpen(false)
+    } else {
+      set({ isLoading: false })
+    }
+    return { error: null }
   },
 
   signOut: async () => {
