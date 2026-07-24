@@ -1,4 +1,13 @@
-import { Globe } from "lucide-react"
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableHead,
+  TableRow,
+  TableCell,
+} from "@/components/ui/table"
 import type { AdminAnalyticsData } from "../types/admin.types"
 
 interface VisitorLogsTableProps {
@@ -7,76 +16,74 @@ interface VisitorLogsTableProps {
 
 export function VisitorLogsTable({ data }: VisitorLogsTableProps) {
   return (
-    <div className="mt-6 rounded-xl border border-white/10 bg-neutral-900/50 p-6 backdrop-blur-xl">
-      <h2 className="flex items-center gap-2 font-heading text-lg font-bold text-white">
-        <Globe className="h-5 w-5 text-blue-400" />
-        Last 10 Recent Visitor Logs
-      </h2>
-      <p className="mt-1 text-xs text-neutral-400">
-        Live visitor breakdown: Route/Page, Device, Browser, IP Address &
-        Country
-      </p>
+    <Card className="mt-6">
+      <CardHeader>
+        <div className="flex items-center gap-2">
+          <span className="material-symbols-outlined text-blue-400">
+            public
+          </span>
+          <CardTitle>Last 10 Recent Visitor Logs</CardTitle>
+        </div>
+        <CardDescription>
+          Live visitor breakdown: Route/Page, Device, Browser, IP Address &
+          Country
+        </CardDescription>
+      </CardHeader>
 
-      <div className="mt-4 overflow-x-auto">
-        <table className="w-full text-left text-xs">
-          <thead className="border-b border-white/10 text-neutral-400">
-            <tr>
-              <th className="px-3 py-2 font-semibold">Time</th>
-              <th className="px-3 py-2 font-semibold">Route / Page</th>
-              <th className="px-3 py-2 font-semibold">Device</th>
-              <th className="px-3 py-2 font-semibold">Browser</th>
-              <th className="px-3 py-2 font-semibold">Country</th>
-              <th className="px-3 py-2 font-semibold">IP Address</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-white/5 text-neutral-300">
+      <CardContent>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Time</TableHead>
+              <TableHead>Route / Page</TableHead>
+              <TableHead>Device</TableHead>
+              <TableHead>Browser</TableHead>
+              <TableHead>Country</TableHead>
+              <TableHead>IP Address</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
             {data && data.lastVisits.length > 0 ? (
               data.lastVisits.map((visit) => (
-                <tr
-                  key={visit.id}
-                  className="transition-colors hover:bg-white/5"
-                >
-                  <td className="px-3 py-2.5 text-neutral-400">
+                <TableRow key={visit.id}>
+                  <TableCell className="text-neutral-400">
                     {new Date(visit.timestamp).toLocaleTimeString("id-ID", {
                       hour: "2-digit",
                       minute: "2-digit",
                       second: "2-digit",
                     })}
-                  </td>
-                  <td className="px-3 py-2.5 font-mono text-xs font-semibold text-red-400">
+                  </TableCell>
+                  <TableCell className="font-mono text-xs font-semibold text-red-400">
                     {visit.path}
-                  </td>
-                  <td className="px-3 py-2.5">
-                    <span className="rounded bg-white/10 px-2 py-0.5 text-[10px] font-bold text-white uppercase">
+                  </TableCell>
+                  <TableCell>
+                    <Badge className="uppercase">
                       {visit.deviceType}
-                    </span>
-                  </td>
-                  <td className="px-3 py-2.5">
-                    <span className="rounded bg-blue-500/10 px-2 py-0.5 text-[10px] font-bold text-blue-400 uppercase">
+                    </Badge>
+                  </TableCell>
+                  <TableCell>
+                    <Badge className="bg-blue-500/10 font-bold text-blue-400 uppercase">
                       {visit.browser}
-                    </span>
-                  </td>
-                  <td className="px-3 py-2.5 font-medium text-neutral-200">
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="font-medium text-neutral-200">
                     {visit.country}
-                  </td>
-                  <td className="px-3 py-2.5 font-mono text-xs text-neutral-400">
+                  </TableCell>
+                  <TableCell className="font-mono text-xs text-neutral-400">
                     {visit.ip}
-                  </td>
-                </tr>
+                  </TableCell>
+                </TableRow>
               ))
             ) : (
-              <tr>
-                <td
-                  colSpan={6}
-                  className="py-6 text-center text-neutral-500"
-                >
+              <TableRow>
+                <TableCell colSpan={6} className="py-6 text-center text-neutral-500">
                   No visitor logs recorded yet.
-                </td>
-              </tr>
+                </TableCell>
+              </TableRow>
             )}
-          </tbody>
-        </table>
-      </div>
-    </div>
+          </TableBody>
+        </Table>
+      </CardContent>
+    </Card>
   )
 }

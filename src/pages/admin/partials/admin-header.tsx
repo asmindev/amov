@@ -1,4 +1,6 @@
-import { RefreshCw } from "lucide-react"
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
 import type { AdminPeriod } from "../types/admin.types"
 
 interface AdminHeaderProps {
@@ -21,9 +23,9 @@ export function AdminHeader({
           <h1 className="font-heading text-2xl font-bold tracking-tight text-white md:text-3xl">
             Admin Analytics Dashboard
           </h1>
-          <span className="rounded-md bg-red-600/20 px-2 py-0.5 text-[10px] font-black tracking-wider text-red-500 uppercase ring-1 ring-red-500/30">
+          <Badge variant="destructive" className="text-[10px] font-black tracking-wider uppercase">
             ADMIN
-          </span>
+          </Badge>
         </div>
         <p className="mt-1 text-xs text-neutral-400">
           Real-time traffic, media consumption stats, and logged-in user watch
@@ -32,39 +34,27 @@ export function AdminHeader({
       </div>
 
       <div className="flex items-center gap-3">
-        <div className="flex rounded-lg bg-neutral-900/90 p-1 ring-1 ring-white/10">
-          {(
-            [
-              { id: "today", label: "Today" },
-              { id: "week", label: "This Week" },
-              { id: "month", label: "This Month" },
-            ] as const
-          ).map((item) => (
-            <button
-              key={item.id}
-              type="button"
-              onClick={() => onPeriodChange(item.id)}
-              className={`rounded-md px-3 py-1.5 text-xs font-semibold transition-all ${
-                period === item.id
-                  ? "bg-red-600 text-white shadow-md"
-                  : "text-neutral-400 hover:text-white"
-              }`}
-            >
-              {item.label}
-            </button>
-          ))}
-        </div>
+        <Tabs value={period} onValueChange={onPeriodChange}>
+          <TabsList className="bg-neutral-900/90 ring-1 ring-white/10">
+            <TabsTrigger value="today">Today</TabsTrigger>
+            <TabsTrigger value="week">This Week</TabsTrigger>
+            <TabsTrigger value="month">This Month</TabsTrigger>
+          </TabsList>
+        </Tabs>
 
-        <button
-          type="button"
+        <Button
+          variant="outline"
+          size="icon"
           onClick={onRefresh}
           disabled={isFetching}
-          className="flex h-9 w-9 items-center justify-center rounded-lg border border-white/10 bg-neutral-900 text-neutral-300 transition-colors hover:border-white/20 hover:text-white"
+          className="shrink-0"
         >
-          <RefreshCw
-            className={`h-4 w-4 ${isFetching ? "animate-spin text-red-500" : ""}`}
-          />
-        </button>
+          <span
+            className={`material-symbols-outlined text-[18px] ${isFetching ? "animate-spin text-red-500" : ""}`}
+          >
+            refresh
+          </span>
+        </Button>
       </div>
     </div>
   )
