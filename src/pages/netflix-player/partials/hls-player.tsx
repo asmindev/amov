@@ -306,8 +306,12 @@ export function HlsPlayer({
         crossOrigin="anonymous"
         playsInline
         onClick={() => {
-          togglePlay()
-          showUI()
+          if (!uiVisible) {
+            showUI()
+          } else {
+            togglePlay()
+            showUI()
+          }
         }}
       >
         {vttUrl && (
