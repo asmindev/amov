@@ -125,24 +125,40 @@ export function HlsPlayer({
   // ── Hooks ──────────────────────────────────────────────────────────────────
   useAutoSelectSubtitle(subtitles, selectedSub, setSelectedSub)
 
-  const hasRefetchedRef = useRef(false)
+  const failedQualitiesRef = useRef<Set<number>>(new Set())
 
   useEffect(() => {
     hasRefetchedRef.current = false
+    failedQualitiesRef.current.clear()
   }, [providerIndex])
 
-  // ── Auto Provider Failover & Signed URL Refresh (t=) ────────────────────
+  // ── Auto Failover: Try next CDN mirror/quality -> Refetch -> Next Provider ────
   useEffect(() => {
     if (streamError) {
+      failedQualitiesRef.current.add(selectedQuality)
+
+      // 1. Try next available CDN mirror/quality source in current provider
+      const nextQual = sources.findIndex((_, idx) => !failedQualitiesRef.current.has(idx))
+      if (nextQual !== -1 && nextQual < sources.length) {
+        console.warn(`Source ${selectedQuality} failed. Auto-switching to CDN mirror ${nextQual}...`)
+        setStreamError(null)
+        setNetworkErrorCount(0)
+        setSelectedQuality(nextQual)
+        return
+      }
+
+      // 2. Refetch fresh signed URLs for current provider if not done yet
       if (!hasRefetchedRef.current && onRefetchCurrentProvider) {
-        console.warn("Stream error on provider", provider, ". Auto-refreshing signed URL (t=)...")
+        console.warn("All CDN mirrors failed for provider", provider, ". Auto-refreshing signed URLs...")
         hasRefetchedRef.current = true
+        failedQualitiesRef.current.clear()
         setStreamError(null)
         setNetworkErrorCount(0)
         void onRefetchCurrentProvider()
         return
       }
 
+      // 3. Fallback to next provider
       if (providerIndex < allProviders.length - 1) {
         const timer = setTimeout(() => {
           setStreamError(null)
@@ -152,7 +168,7 @@ export function HlsPlayer({
         return () => clearTimeout(timer)
       }
     }
-  }, [streamError, providerIndex, allProviders.length, provider, onProviderChange, onRefetchCurrentProvider])
+  }, [streamError, selectedQuality, sources, providerIndex, allProviders.length, provider, onProviderChange, onRefetchCurrentProvider])
 
   useHlsLoader({
     videoRef,
