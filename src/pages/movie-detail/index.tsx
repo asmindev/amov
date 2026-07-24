@@ -8,6 +8,8 @@ import {
 import { HOVER_VIDEO_DELAY } from "@/lib/config"
 import { Skeleton } from "@/components/ui/skeleton"
 import { getWatchProgress } from "@/hooks/use-watch-progress"
+import { usePageMeta } from "@/hooks/use-page-meta"
+import { getImageUrl } from "@/helpers/image-url"
 
 // Import modular partial components
 import { MoviePlayer } from "./partials/movie-player"
@@ -33,6 +35,16 @@ export default function MovieDetailPage() {
   const { data: movie, isPending, isError } = useMediaDetail(mediaType, id)
   const { data: similar } = useSimilarMedia(mediaType, id)
   const { data: videos } = useMediaVideos(mediaType, id)
+
+  usePageMeta({
+    title: movie?.title || "Loading...",
+    description: movie?.overview || undefined,
+    image: movie?.backdropPath
+      ? getImageUrl(movie.backdropPath, "w780")
+      : movie?.posterPath
+        ? getImageUrl(movie.posterPath, "w500")
+        : undefined,
+  })
 
   const [showVideo, setShowVideo] = useState(false)
   const [muted, setMuted] = useState(true)

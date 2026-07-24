@@ -8,8 +8,14 @@ import {
   HeroBannerSkeleton,
   TrendingSectionSkeleton,
 } from "./partials/skeletons"
+import { usePageMeta } from "@/hooks/use-page-meta"
 
 export default function HomePage() {
+  usePageMeta({
+    title: "Home",
+    description:
+      "Stream movies and TV shows for free. Discover trending, top-rated, popular, and Netflix content.",
+  })
   const trending = useTrendingMovies()
   const topRated = useTopRatedMovies()
   const popular = usePopularMovies()

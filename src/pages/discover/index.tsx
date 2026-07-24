@@ -6,6 +6,7 @@ import { useDiscover } from "./hooks/use-discover"
 import { useGenres } from "@/hooks/use-genres"
 import { DiscoverFilters } from "./components/discover-filters"
 import { DiscoverResults } from "./components/discover-results"
+import { usePageMeta } from "@/hooks/use-page-meta"
 
 export default function DiscoverPage() {
   const {
@@ -19,6 +20,13 @@ export default function DiscoverPage() {
   } = useSearch({ from: "/discover" })
   const navigate = useNavigate({ from: "/discover" })
   const [localQuery, setLocalQuery] = useState(query)
+
+  usePageMeta({
+    title: query ? `Search: ${query}` : "Discover",
+    description: query
+      ? `Search results for "${query}" on amov.`
+      : "Discover movies and TV shows by genre, year, rating, and more.",
+  })
 
   const { data: genresData } = useGenres(selectedType === "tv" ? "tv" : "movie")
   const genres = genresData?.genres ?? []
