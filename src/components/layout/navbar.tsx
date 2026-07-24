@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import { Link, useLocation } from "@tanstack/react-router"
 import { SearchModal } from "@/components/search/search-modal"
 import { Search, Globe } from "lucide-react"
+import { useAuthStore } from "@/stores/auth-store"
 
 const navLinks = [
   { to: "/", label: "Home" },
@@ -13,6 +14,7 @@ export function Navbar() {
   const { pathname } = useLocation()
   const [scrolled, setScrolled] = useState(false)
   const [isSearchOpen, setIsSearchOpen] = useState(false)
+  const { user, signOut, setAuthModalOpen } = useAuthStore()
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 50)
@@ -111,6 +113,37 @@ export function Navbar() {
             >
               <Search className="h-5 w-5" />
             </button>
+
+            {/* Auth Controls */}
+            {user ? (
+              <div className="flex items-center gap-2">
+                <div
+                  title={user.email ?? "User"}
+                  className="flex h-8 w-8 items-center justify-center rounded-full bg-red-600/90 text-xs font-black text-white uppercase ring-2 ring-white/10"
+                >
+                  {user.email?.[0] ?? "U"}
+                </div>
+                <button
+                  type="button"
+                  onClick={() => void signOut()}
+                  className={`text-xs font-semibold transition-colors ${
+                    scrolled || !isTransparentMode
+                      ? "text-muted-foreground hover:text-foreground"
+                      : "text-white/70 hover:text-white"
+                  }`}
+                >
+                  Sign Out
+                </button>
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setAuthModalOpen(true, "signin")}
+                className="rounded-lg bg-red-600 px-3 py-1.5 text-xs font-bold text-white transition-all hover:bg-red-500 active:scale-95"
+              >
+                Sign In
+              </button>
+            )}
           </div>
         </div>
       </nav>
