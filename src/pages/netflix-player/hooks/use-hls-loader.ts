@@ -145,7 +145,6 @@ export function useHlsLoader({
       const proxiedUrl = src.startsWith("http")
         ? buildProxyUrl(src)
         : src
-        : src
 
       video.src = proxiedUrl
 
