@@ -57,7 +57,11 @@ export function EpisodesSection({ tvId, seasons = [] }: EpisodesSectionProps) {
           className="rounded-none border border-white/20 bg-black/80 px-4 py-2.5 text-sm font-semibold text-white focus:border-white focus:outline-none"
         >
           {validSeasons.map((s) => (
-            <option key={s.id} value={s.seasonNumber} className="bg-neutral-900 text-white">
+            <option
+              key={s.id}
+              value={s.seasonNumber}
+              className="bg-neutral-900 text-white"
+            >
               {s.name || `Season ${s.seasonNumber}`} ({s.episodeCount} Episodes)
             </option>
           ))}
@@ -72,7 +76,7 @@ export function EpisodesSection({ tvId, seasons = [] }: EpisodesSectionProps) {
           ))}
         </div>
       ) : (
-        <div className="max-h-72 overflow-y-auto divide-y divide-white/10 rounded-none border border-white/10 bg-white/5 backdrop-blur-sm shadow-inner">
+        <div className="max-h-72 divide-y divide-white/10 overflow-y-auto rounded-none border border-white/10 bg-white/5 shadow-inner backdrop-blur-sm">
           {seasonDetail?.episodes.map((ep) => (
             <div
               key={ep.id}

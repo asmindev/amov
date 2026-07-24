@@ -68,7 +68,8 @@ export interface CustomizationSettingsSectionProps {
 }
 
 export interface SettingsSectionsProps
-  extends AudioSettingsSectionProps,
+  extends
+    AudioSettingsSectionProps,
     SubtitlesSettingsSectionProps,
     CustomizationSettingsSectionProps {}
 

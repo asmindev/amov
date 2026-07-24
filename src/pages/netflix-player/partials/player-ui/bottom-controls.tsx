@@ -30,7 +30,9 @@ export interface BottomControlsProps {
   toggleMute: () => void
   handleVolumeChange: (e: ChangeEvent<HTMLInputElement>) => void
   openMenu: string | null
-  setOpenMenu: Dispatch<SetStateAction<"settings" | "provider" | "episodes" | null>>
+  setOpenMenu: Dispatch<
+    SetStateAction<"settings" | "provider" | "episodes" | null>
+  >
   selectedSub: string | null
   fullscreen: boolean
   toggleFullscreen: () => void

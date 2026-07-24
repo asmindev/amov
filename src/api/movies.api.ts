@@ -161,4 +161,3 @@ export async function getDiscoverMovies(page = 1, filters?: DiscoverFilters) {
   const res = await apiClient.get<unknown>(discoverEndpoint, params)
   return MovieListSchema.parse(res)
 }
-

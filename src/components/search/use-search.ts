@@ -17,7 +17,10 @@ export function getSearchHistory(): string[] {
 export function addSearchHistory(query: string) {
   const history = getSearchHistory().filter((h) => h !== query)
   history.unshift(query)
-  localStorage.setItem(HISTORY_KEY, JSON.stringify(history.slice(0, MAX_HISTORY)))
+  localStorage.setItem(
+    HISTORY_KEY,
+    JSON.stringify(history.slice(0, MAX_HISTORY))
+  )
 }
 
 export function clearSearchHistory() {

@@ -98,9 +98,7 @@ export function MovieHero({
             {(movie.voteAverage * 10).toFixed(0)}% Match
           </span>
         )}
-        <span className="text-gray-300">
-          {formatYear(movie.releaseDate)}
-        </span>
+        <span className="text-gray-300">{formatYear(movie.releaseDate)}</span>
         <span className="rounded-none border border-white/20 bg-white/5 px-1.5 py-0.5 text-[10px] font-extrabold tracking-wider text-white uppercase">
           {getMaturityRating(movie.genres, movie.voteAverage)}
         </span>

@@ -167,14 +167,19 @@ export const MovieDetailSchema = TmdbMovieDetailSchema.transform((m) => {
     logos[0]
 
   // Pick backdrop with highest resolution or fallback to default backdrop_path
-  const bestBackdrop = backdrops.length > 0
-    ? [...backdrops].sort((a, b) => (b.width || 0) - (a.width || 0))[0]?.file_path
-    : null
+  const bestBackdrop =
+    backdrops.length > 0
+      ? [...backdrops].sort((a, b) => (b.width || 0) - (a.width || 0))[0]
+          ?.file_path
+      : null
 
   const backdropPath = bestBackdrop ?? m.backdrop_path ?? null
 
   const runtime =
-    m.runtime ?? (m.episode_run_time && m.episode_run_time.length > 0 ? m.episode_run_time[0] : null)
+    m.runtime ??
+    (m.episode_run_time && m.episode_run_time.length > 0
+      ? m.episode_run_time[0]
+      : null)
 
   return {
     id: m.id,

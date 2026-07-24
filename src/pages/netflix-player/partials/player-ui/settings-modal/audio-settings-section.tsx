@@ -26,7 +26,9 @@ export function AudioSettingsSection({
             <span className="text-foreground group-hover:text-white">
               English [Original]
             </span>
-            <span className="material-symbols-outlined text-primary">check</span>
+            <span className="material-symbols-outlined text-primary">
+              check
+            </span>
           </Button>
         </div>
 

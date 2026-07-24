@@ -40,7 +40,7 @@ export function Footer() {
     <footer className="relative z-10 overflow-hidden border-t border-white/10 bg-black text-white selection:bg-primary selection:text-white">
       {/* Background Ambient Glow Effects */}
       <div className="pointer-events-none absolute -top-40 left-1/2 h-[400px] w-[800px] -translate-x-1/2 rounded-full bg-primary/10 blur-[140px]" />
-      <div className="pointer-events-none absolute -bottom-20 right-0 h-[300px] w-[500px] rounded-full bg-red-600/5 blur-[120px]" />
+      <div className="pointer-events-none absolute right-0 -bottom-20 h-[300px] w-[500px] rounded-full bg-red-600/5 blur-[120px]" />
 
       <div className="relative mx-auto max-w-[1400px] px-6 pt-20 pb-12 md:px-16">
         {/* Top Header Bar with Live Indicator & Action */}
@@ -65,23 +65,37 @@ export function Footer() {
 
               {/* Kinetic Infinite Marquee Bar */}
               <div className="relative flex w-full max-w-2xl overflow-hidden rounded-none border border-white/10 bg-white/[0.03] py-2.5 backdrop-blur-md">
-                <div className="animate-marquee flex shrink-0 whitespace-nowrap text-xs font-mono tracking-widest text-white/70 uppercase">
-                  <span className="mx-4 text-primary">★ NEXT-GEN STREAMING</span>
+                <div className="animate-marquee flex shrink-0 font-mono text-xs tracking-widest whitespace-nowrap text-white/70 uppercase">
+                  <span className="mx-4 text-primary">
+                    ★ NEXT-GEN STREAMING
+                  </span>
                   <span className="mx-4">4K ULTRA HD CONTENT</span>
-                  <span className="mx-4 text-primary">★ UNLIMITED MOVIES & SHOWS</span>
+                  <span className="mx-4 text-primary">
+                    ★ UNLIMITED MOVIES & SHOWS
+                  </span>
                   <span className="mx-4">TMDB METADATA POWERED</span>
                 </div>
-                <div className="animate-marquee flex shrink-0 whitespace-nowrap text-xs font-mono tracking-widest text-white/70 uppercase" aria-hidden="true">
-                  <span className="mx-4 text-primary">★ NEXT-GEN STREAMING</span>
+                <div
+                  className="animate-marquee flex shrink-0 font-mono text-xs tracking-widest whitespace-nowrap text-white/70 uppercase"
+                  aria-hidden="true"
+                >
+                  <span className="mx-4 text-primary">
+                    ★ NEXT-GEN STREAMING
+                  </span>
                   <span className="mx-4">4K ULTRA HD CONTENT</span>
-                  <span className="mx-4 text-primary">★ UNLIMITED MOVIES & SHOWS</span>
+                  <span className="mx-4 text-primary">
+                    ★ UNLIMITED MOVIES & SHOWS
+                  </span>
                   <span className="mx-4">TMDB METADATA POWERED</span>
                 </div>
               </div>
             </div>
 
             <h3 className="max-w-2xl font-heading text-4xl font-black tracking-tight text-white md:text-6xl">
-              Elevating the <span className="bg-linear-to-r from-red-500 via-primary to-rose-400 bg-clip-text text-transparent">Cinematic Experience.</span>
+              Elevating the{" "}
+              <span className="bg-linear-to-r from-red-500 via-primary to-rose-400 bg-clip-text text-transparent">
+                Cinematic Experience.
+              </span>
             </h3>
           </div>
 
@@ -101,7 +115,7 @@ export function Footer() {
             <p className="text-xs font-semibold tracking-widest text-white/40 uppercase">
               Explore
             </p>
-            <ul className="space-y-3 font-medium text-sm">
+            <ul className="space-y-3 text-sm font-medium">
               <li>
                 <Link
                   to="/"
@@ -138,7 +152,7 @@ export function Footer() {
             <p className="text-xs font-semibold tracking-widest text-white/40 uppercase">
               Data & API
             </p>
-            <ul className="space-y-3 font-medium text-sm">
+            <ul className="space-y-3 text-sm font-medium">
               <li>
                 <a
                   href="https://www.themoviedb.org/"
@@ -170,16 +184,22 @@ export function Footer() {
               Architecture
             </p>
             <div className="flex flex-wrap gap-2">
-              {["React 19", "Vite", "TanStack Router", "Tailwind CSS", "TypeScript", "Zod", "Framer Motion"].map(
-                (tech) => (
-                  <span
-                    key={tech}
-                    className="rounded-none border border-white/10 bg-white/5 px-2.5 py-1 font-mono text-[11px] text-white/80"
-                  >
-                    {tech}
-                  </span>
-                )
-              )}
+              {[
+                "React 19",
+                "Vite",
+                "TanStack Router",
+                "Tailwind CSS",
+                "TypeScript",
+                "Zod",
+                "Framer Motion",
+              ].map((tech) => (
+                <span
+                  key={tech}
+                  className="rounded-none border border-white/10 bg-white/5 px-2.5 py-1 font-mono text-[11px] text-white/80"
+                >
+                  {tech}
+                </span>
+              ))}
             </div>
           </div>
 
@@ -196,7 +216,8 @@ export function Footer() {
                 </span>
               </div>
               <p className="text-xs leading-relaxed text-white/60">
-                This platform utilizes the TMDB API for media information and metadata but is not endorsed or certified by TMDB.
+                This platform utilizes the TMDB API for media information and
+                metadata but is not endorsed or certified by TMDB.
               </p>
             </div>
           </div>
@@ -209,7 +230,7 @@ export function Footer() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8 }}
-            className="text-center font-heading text-[15vw] font-black leading-none tracking-tighter text-transparent bg-linear-to-b from-white/20 via-white/10 to-transparent bg-clip-text"
+            className="bg-linear-to-b from-white/20 via-white/10 to-transparent bg-clip-text text-center font-heading text-[15vw] leading-none font-black tracking-tighter text-transparent"
           >
             AMOV
           </motion.h1>
@@ -219,13 +240,18 @@ export function Footer() {
         <div className="flex flex-col items-center justify-between gap-4 border-t border-white/10 pt-8 text-xs text-white/40 sm:flex-row">
           <div className="flex items-center gap-2">
             <Globe2 className="h-4 w-4" />
-            <span>&copy; {new Date().getFullYear()} AMOV Studio. All rights reserved.</span>
+            <span>
+              &copy; {new Date().getFullYear()} AMOV Studio. All rights
+              reserved.
+            </span>
           </div>
 
           <div className="flex items-center gap-6 font-mono text-[11px]">
-            <span className="hover:text-white/80 transition-colors">DESIGNED FOR CINEMAPHILES</span>
+            <span className="transition-colors hover:text-white/80">
+              DESIGNED FOR CINEMAPHILES
+            </span>
             <span>•</span>
-            <span className="text-primary font-bold">V2.4 ULTRA</span>
+            <span className="font-bold text-primary">V2.4 ULTRA</span>
           </div>
         </div>
       </div>

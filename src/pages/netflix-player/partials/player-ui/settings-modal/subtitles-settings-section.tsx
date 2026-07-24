@@ -45,7 +45,9 @@ export function SubtitlesSettingsSection({
       <div className="mb-3 flex gap-2">
         <Select
           value={selectedProvider}
-          onValueChange={(value) => setSelectedProvider(value ?? "opensubtitles")}
+          onValueChange={(value) =>
+            setSelectedProvider(value ?? "opensubtitles")
+          }
         >
           <SelectTrigger className="h-8 flex-1 border-border bg-white/5 text-xs">
             <SelectValue placeholder="Pilih Sumber" />
@@ -79,17 +81,17 @@ export function SubtitlesSettingsSection({
 
       {/* Search */}
       <div className="relative mb-2">
-        <Search className="pointer-events-none absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
+        <Search className="pointer-events-none absolute top-1/2 left-2.5 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
         <input
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Search language..."
-          className="h-8 w-full rounded-md border border-border bg-white/5 pl-8 pr-7 text-xs text-foreground placeholder:text-muted-foreground outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20"
+          className="h-8 w-full rounded-md border border-border bg-white/5 pr-7 pl-8 text-xs text-foreground outline-none placeholder:text-muted-foreground focus:border-primary/50 focus:ring-1 focus:ring-primary/20"
         />
         {search && (
           <button
             onClick={() => setSearch("")}
-            className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+            className="absolute top-1/2 right-2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
           >
             <X className="h-3.5 w-3.5" />
           </button>
@@ -129,7 +131,9 @@ export function SubtitlesSettingsSection({
                   : "text-muted-foreground hover:bg-white/5 hover:text-foreground"
               }`}
             >
-              <span className="truncate capitalize">{sub.language || sub.lang}</span>
+              <span className="truncate capitalize">
+                {sub.language || sub.lang}
+              </span>
               <span className="flex shrink-0 items-center gap-1">
                 {isActive && subError && (
                   <span className="material-symbols-outlined text-[14px] text-red-400">

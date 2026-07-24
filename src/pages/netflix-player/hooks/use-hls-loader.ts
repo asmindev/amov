@@ -95,7 +95,8 @@ export function useHlsLoader({
               onError?.({
                 type: "media",
                 message: "Playback error",
-                details: data.details ?? "The media format could not be decoded.",
+                details:
+                  data.details ?? "The media format could not be decoded.",
               })
               hls.destroy()
               break

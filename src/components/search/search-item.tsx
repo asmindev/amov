@@ -48,7 +48,7 @@ export function SearchItem({
           </span>
           {showType && (
             <span
-              className={`shrink-0 rounded px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider ${
+              className={`shrink-0 rounded px-1.5 py-0.5 text-[10px] font-semibold tracking-wider uppercase ${
                 item.mediaType === "movie"
                   ? "bg-primary/15 text-primary"
                   : "bg-emerald-500/15 text-emerald-400"
@@ -70,20 +70,22 @@ export function SearchItem({
       </div>
 
       <div className="flex shrink-0 items-center gap-1 opacity-0 transition-all duration-200 group-aria-selected:opacity-100">
-        <button type="button"
-        onClick={onSelect}
-         className="flex h-7 w-9 items-center justify-center bg-primary transition-colors hover:bg-primary/90">
+        <button
+          type="button"
+          onClick={onSelect}
+          className="flex h-7 w-9 items-center justify-center bg-primary transition-colors hover:bg-primary/90"
+        >
           <span className="material-symbols-outlined fill !text-[18px]">
             play_arrow
           </span>
         </button>
-        <button type="button" className="flex h-7 w-9 items-center justify-center border border-white/20 bg-black/50 text-white transition-colors hover:border-white hover:bg-black/80">
-          <span className="material-symbols-outlined !text-[16px]">
-            add
-          </span>
+        <button
+          type="button"
+          className="flex h-7 w-9 items-center justify-center border border-white/20 bg-black/50 text-white transition-colors hover:border-white hover:bg-black/80"
+        >
+          <span className="material-symbols-outlined !text-[16px]">add</span>
         </button>
       </div>
-
     </CommandItem>
   )
 }

@@ -11,11 +11,7 @@ import {
 } from "@/components/ui/command"
 import { SearchResults } from "./search-results"
 import { SearchItem } from "./search-item"
-import {
-  useSearch,
-  getSearchHistory,
-  clearSearchHistory,
-} from "./use-search"
+import { useSearch, getSearchHistory, clearSearchHistory } from "./use-search"
 import { useTrendingSearches } from "./use-trending-searches"
 import { History, TrendingUp, Trash2 } from "lucide-react"
 
@@ -49,12 +45,11 @@ export function SearchModal({ open, onOpenChange }: SearchModalProps) {
     <CommandDialog
       open={open}
       onOpenChange={handleOpenChange}
-      className="sm:max-w-2xl top-[12%]"
-
+      className="top-[12%] sm:max-w-2xl"
     >
       <Command
         shouldFilter={false}
-        className="rounded-xl [&_[data-slot=input-group]]:h-14! [&_[data-slot=input-group-addon]]:pl-2 [&_[data-slot=command-input-wrapper]:focus-within_[data-slot=input-group-addon]>svg]:!text-destructive [&_[data-slot=command-input-wrapper]:focus-within_[data-slot=input-group-addon]>svg]:[stroke-width:2.5]"
+        className="rounded-xl [&_[data-slot=command-input-wrapper]:focus-within_[data-slot=input-group-addon]>svg]:[stroke-width:2.5] [&_[data-slot=command-input-wrapper]:focus-within_[data-slot=input-group-addon]>svg]:!text-destructive [&_[data-slot=input-group-addon]]:pl-2 [&_[data-slot=input-group]]:h-14!"
       >
         <CommandInput
           value={query}
@@ -118,7 +113,7 @@ function SearchLoadingState() {
       {Array.from({ length: 5 }).map((_, index) => (
         <div
           key={index}
-          className="flex items-center gap-3 rounded-lg px-2 py-3 animate-pulse"
+          className="flex animate-pulse items-center gap-3 rounded-lg px-2 py-3"
         >
           <div className="h-12 w-8 shrink-0 rounded-md bg-white/10" />
           <div className="min-w-0 flex-1 space-y-2">
@@ -131,11 +126,7 @@ function SearchLoadingState() {
   )
 }
 
-function SearchHistory({
-  onSelect,
-}: {
-  onSelect: (query: string) => void
-}) {
+function SearchHistory({ onSelect }: { onSelect: (query: string) => void }) {
   const [history, setHistory] = useState<string[]>(getSearchHistory)
 
   if (history.length === 0) return null

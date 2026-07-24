@@ -6,14 +6,20 @@ import type { SettingsSectionsProps } from "./types"
 
 export function SettingsSectionsMobile(props: SettingsSectionsProps) {
   return (
-    <Tabs defaultValue="audio" className="flex h-full min-h-0 flex-col md:hidden">
+    <Tabs
+      defaultValue="audio"
+      className="flex h-full min-h-0 flex-col md:hidden"
+    >
       <TabsList className="mb-4 grid w-full grid-cols-3 bg-white/5">
         <TabsTrigger value="audio">Audio</TabsTrigger>
         <TabsTrigger value="subtitles">Subtitles</TabsTrigger>
         <TabsTrigger value="customization">Customize</TabsTrigger>
       </TabsList>
 
-      <TabsContent value="audio" className="mt-0 flex-1 min-h-0 overflow-hidden">
+      <TabsContent
+        value="audio"
+        className="mt-0 min-h-0 flex-1 overflow-hidden"
+      >
         <AudioSettingsSection
           playbackRate={props.playbackRate}
           setPlaybackRate={props.setPlaybackRate}
@@ -22,7 +28,10 @@ export function SettingsSectionsMobile(props: SettingsSectionsProps) {
         />
       </TabsContent>
 
-      <TabsContent value="subtitles" className="mt-0 flex-1 min-h-0 overflow-hidden">
+      <TabsContent
+        value="subtitles"
+        className="mt-0 min-h-0 flex-1 overflow-hidden"
+      >
         <SubtitlesSettingsSection
           selectedProvider={props.selectedProvider}
           setSelectedProvider={props.setSelectedProvider}
@@ -36,7 +45,10 @@ export function SettingsSectionsMobile(props: SettingsSectionsProps) {
         />
       </TabsContent>
 
-      <TabsContent value="customization" className="mt-0 flex-1 min-h-0 overflow-hidden">
+      <TabsContent
+        value="customization"
+        className="mt-0 min-h-0 flex-1 overflow-hidden"
+      >
         <CustomizationSettingsSection
           subOffset={props.subOffset}
           setSubOffset={props.setSubOffset}
