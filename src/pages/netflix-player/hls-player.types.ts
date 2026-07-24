@@ -14,6 +14,7 @@ export interface HlsPlayerProps {
   providerIndex: number
   allProviders: typeof DECRYPTOR_PROVIDERS
   onProviderChange: (index: number) => void
+  onRefetchCurrentProvider?: () => void
   isFetchingProvider: boolean
   imdbId?: string
   movieOverview?: string

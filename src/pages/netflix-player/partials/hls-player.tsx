@@ -40,6 +40,7 @@ export function HlsPlayer({
   providerIndex,
   allProviders,
   onProviderChange,
+  onRefetchCurrentProvider,
   isFetchingProvider,
   imdbId,
   movieOverview,
@@ -124,17 +125,34 @@ export function HlsPlayer({
   // ── Hooks ──────────────────────────────────────────────────────────────────
   useAutoSelectSubtitle(subtitles, selectedSub, setSelectedSub)
 
-  // ── Auto Provider Failover ──────────────────────────────────────────────
+  const hasRefetchedRef = useRef(false)
+
   useEffect(() => {
-    if (streamError && providerIndex < allProviders.length - 1) {
-      const timer = setTimeout(() => {
+    hasRefetchedRef.current = false
+  }, [providerIndex])
+
+  // ── Auto Provider Failover & Signed URL Refresh (t=) ────────────────────
+  useEffect(() => {
+    if (streamError) {
+      if (!hasRefetchedRef.current && onRefetchCurrentProvider) {
+        console.warn("Stream error on provider", provider, ". Auto-refreshing signed URL (t=)...")
+        hasRefetchedRef.current = true
         setStreamError(null)
         setNetworkErrorCount(0)
-        onProviderChange(providerIndex + 1)
-      }, 300)
-      return () => clearTimeout(timer)
+        void onRefetchCurrentProvider()
+        return
+      }
+
+      if (providerIndex < allProviders.length - 1) {
+        const timer = setTimeout(() => {
+          setStreamError(null)
+          setNetworkErrorCount(0)
+          onProviderChange(providerIndex + 1)
+        }, 300)
+        return () => clearTimeout(timer)
+      }
     }
-  }, [streamError, providerIndex, allProviders.length, onProviderChange])
+  }, [streamError, providerIndex, allProviders.length, provider, onProviderChange, onRefetchCurrentProvider])
 
   useHlsLoader({
     videoRef,

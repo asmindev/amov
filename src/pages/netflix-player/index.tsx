@@ -39,6 +39,7 @@ export default function NetflixPlayerPage() {
     providerIndex,
     setProviderIndex,
     allProviders,
+    refetch,
   } = useSources(
     movie
       ? {
@@ -135,6 +136,7 @@ export default function NetflixPlayerPage() {
           providerIndex={providerIndex}
           allProviders={allProviders}
           onProviderChange={setProviderIndex}
+          onRefetchCurrentProvider={refetch}
           isFetchingProvider={sourcesPending}
           imdbId={movie?.imdbId ?? undefined}
           movieOverview={movie.overview}
