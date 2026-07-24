@@ -120,7 +120,7 @@ export function MovieCard({
                   alt={movie.title}
                   className="h-full w-full object-cover opacity-80"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-card to-transparent" />
+                <div className="absolute inset-0 bg-linear-to-t from-card to-transparent" />
                 {logoPath && (
                   <img
                     src={getImageUrl(logoPath, "w500")}
@@ -257,7 +257,7 @@ export function MovieCard({
                 alt={movie.title}
                 className="h-full w-full object-cover opacity-80"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-card to-transparent" />
+              <div className="absolute inset-0 bg-linear-to-t from-card to-transparent" />
             </div>
 
             {/* Details */}

@@ -138,7 +138,7 @@ export default function MovieDetailPage() {
         />
 
         {/* Content Details Below Fold */}
-        <div className="w-full bg-gradient-to-b from-transparent to-background pt-8 pb-32">
+        <div className="w-full bg-linear-to-b from-transparent to-background pt-8 pb-32">
           <div className="mx-auto max-w-[1400px] space-y-20 px-6 md:px-16">
             {/* Overview & Info Section */}
             <DetailsSection movie={movie} />

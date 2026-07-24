@@ -37,7 +37,7 @@ export function PausedOverlay({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.4 }}
-            className="pointer-events-none absolute inset-0 z-20 flex items-end bg-gradient-to-r from-black/85 via-black/40 to-transparent p-8 pb-28 text-white md:p-16 md:pb-36"
+            className="pointer-events-none absolute inset-0 z-20 flex items-end bg-linear-to-r from-black/85 via-black/40 to-transparent p-8 pb-28 text-white md:p-16 md:pb-36"
           >
             <motion.div
               initial={{ x: -20, opacity: 0 }}

@@ -81,7 +81,7 @@ export function Footer() {
             </div>
 
             <h3 className="max-w-2xl font-heading text-4xl font-black tracking-tight text-white md:text-6xl">
-              Elevating the <span className="bg-gradient-to-r from-red-500 via-primary to-rose-400 bg-clip-text text-transparent">Cinematic Experience.</span>
+              Elevating the <span className="bg-linear-to-r from-red-500 via-primary to-rose-400 bg-clip-text text-transparent">Cinematic Experience.</span>
             </h3>
           </div>
 
@@ -209,7 +209,7 @@ export function Footer() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8 }}
-            className="text-center font-heading text-[15vw] font-black leading-none tracking-tighter text-transparent bg-gradient-to-b from-white/20 via-white/10 to-transparent bg-clip-text"
+            className="text-center font-heading text-[15vw] font-black leading-none tracking-tighter text-transparent bg-linear-to-b from-white/20 via-white/10 to-transparent bg-clip-text"
           >
             AMOV
           </motion.h1>

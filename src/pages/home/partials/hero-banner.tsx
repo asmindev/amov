@@ -120,8 +120,8 @@ export function HeroBanner({ movies }: HeroBannerProps) {
           }`}
         />
       ))}
-      <div className="pointer-events-none absolute inset-0 z-[2] bg-gradient-to-t from-background via-background/40 to-transparent" />
-      <div className="pointer-events-none absolute inset-0 z-[2] bg-gradient-to-r from-background via-background/20 to-transparent" />
+      <div className="pointer-events-none absolute inset-0 z-[2] bg-linear-to-t from-background via-background/40 to-transparent" />
+      <div className="pointer-events-none absolute inset-0 z-[2] bg-linear-to-r from-background via-background/20 to-transparent" />
 
       {video && (
         <iframe

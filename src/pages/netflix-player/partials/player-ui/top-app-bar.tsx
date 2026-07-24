@@ -28,7 +28,7 @@ export function TopAppBar({
   setOpenMenu,
 }: TopAppBarProps) {
   return (
-    <div className="pointer-events-none fixed top-0 z-40 flex w-full items-center justify-between bg-gradient-to-b from-black/80 to-transparent px-edge-margin-mobile py-4 md:px-edge-margin-desktop">
+    <div className="pointer-events-none fixed top-0 z-40 flex w-full items-center justify-between bg-linear-to-b from-black/80 to-transparent px-edge-margin-mobile py-4 md:px-edge-margin-desktop">
       <div className="flex items-center gap-2 md:gap-4">
         <Link
           to="/$type/$id"

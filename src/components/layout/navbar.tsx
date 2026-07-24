@@ -50,7 +50,7 @@ export function Navbar() {
         className={`fixed top-0 z-50 w-full transition-colors duration-300 ${
           scrolled || !isTransparentMode
             ? "border-b border-white/5 bg-background/95 backdrop-blur-md"
-            : "bg-gradient-to-b from-black/60 to-transparent"
+            : "bg-linear-to-b from-black/60 to-transparent"
         }`}
       >
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6 md:px-16">

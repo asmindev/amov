@@ -66,7 +66,7 @@ export function BottomControls({
 }: BottomControlsProps) {
   return (
     <div
-      className="pointer-events-auto fixed bottom-0 left-0 z-50 flex w-full flex-col gap-4 bg-gradient-to-t from-black/90 via-black/60 to-transparent px-edge-margin-mobile pt-6 pb-4 backdrop-blur-md md:px-edge-margin-desktop"
+      className="pointer-events-auto fixed bottom-0 left-0 z-50 flex w-full flex-col gap-4 bg-linear-to-t from-black/90 via-black/60 to-transparent px-edge-margin-mobile pt-6 pb-4 backdrop-blur-md md:px-edge-margin-desktop"
       onClick={(e) => e.stopPropagation()}
     >
       {/* Progress Bar */}

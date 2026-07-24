@@ -66,11 +66,11 @@ export function EpisodesDrawer({
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: 50 }}
       transition={{ duration: 0.25, ease: "easeOut" }}
-      className="fixed right-0 bottom-0 left-0 z-[70] w-full"
+      className="fixed right-0 bottom-0 left-0 z-70 w-full"
       onClick={(e) => e.stopPropagation()}
     >
       <div
-      className="pointer-events-auto flex w-full flex-col border-t border-white/15 bg-gradient-to-t from-black via-black/20 to-black/5 p-4 text-white shadow-2xl backdrop-blur-xl md:px-8 md:pt-5 md:pb-20"
+      className="pointer-events-auto flex w-full flex-col border-t border-white/15 bg-linear-to-t from-black via-black/20 to-black/20 p-4 text-white shadow-2xl backdrop-blur-xl md:px-8 md:pt-5 md:pb-20"
 
       >
 
@@ -129,8 +129,8 @@ export function EpisodesDrawer({
         </div>
       ) : (
         <div className="relative">
-          <div className="pointer-events-none absolute inset-y-2 left-0 z-10 w-14 bg-gradient-to-r from-black via-black/70 to-transparent" />
-          <div className="pointer-events-none absolute inset-y-2 right-0 z-10 w-14 bg-gradient-to-l from-black via-black/70 to-transparent" />
+          <div className="pointer-events-none absolute inset-y-2 left-0 z-10 w-14 bg-linear-to-r from-black via-black/70 to-transparent" />
+          <div className="pointer-events-none absolute inset-y-2 right-0 z-10 w-14 bg-linear-to-l from-black via-black/70 to-transparent" />
 
           <button
             type="button"
