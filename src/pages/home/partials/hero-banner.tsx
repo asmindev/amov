@@ -106,7 +106,7 @@ export function HeroBanner({ movies }: HeroBannerProps) {
 
   return (
     <div
-      className="relative h-[614px] w-full overflow-hidden md:h-[870px]"
+      className="relative h-[90vh] w-full overflow-hidden md:h-[870px]"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
@@ -211,7 +211,7 @@ export function HeroBanner({ movies }: HeroBannerProps) {
         </div>
 
         <div
-          className="flex items-center justify-center gap-1.5 pb-4"
+          className="hidden items-center justify-center gap-1.5 pb-4 md:flex"
           role="tablist"
           aria-label="Movie slides"
         >
@@ -253,7 +253,7 @@ export function HeroBanner({ movies }: HeroBannerProps) {
         </div>
       </div>
 
-      <div className="absolute right-4 bottom-4 z-20 flex items-center gap-2">
+      <div className="absolute right-4 bottom-4 z-20 hidden items-center gap-2 md:flex">
         <button
           onClick={() =>
             goTo(currentIndex - 1 < 0 ? visibleCount - 1 : currentIndex - 1)
