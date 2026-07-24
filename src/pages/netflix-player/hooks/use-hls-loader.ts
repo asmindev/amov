@@ -4,12 +4,20 @@ import type { StreamSource } from "@/api/decryptor.api"
 import { DECRYPTOR_URL } from "@/lib/config"
 import { getSavedTimestamp } from "../helpers/get-saved-timestamp"
 
+export interface StreamError {
+  type: "network" | "media" | "source" | "unknown"
+  message: string
+  details?: string
+}
+
 interface UseHlsLoaderOpts {
   videoRef: RefObject<HTMLVideoElement | null>
   hlsRef: RefObject<Hls | null>
   sources: StreamSource[]
   selectedQuality: number
   movieId: number
+  onError?: (error: StreamError) => void
+  onNetworkError?: () => void
 }
 
 export function useHlsLoader({
@@ -18,6 +26,8 @@ export function useHlsLoader({
   sources,
   selectedQuality,
   movieId,
+  onError,
+  onNetworkError,
 }: UseHlsLoaderOpts) {
   useEffect(() => {
     const video = videoRef.current
@@ -61,6 +71,51 @@ export function useHlsLoader({
           xhr.open("GET", proxyUrl, true)
         },
       })
+
+      let networkErrorCount = 0
+      const MAX_NETWORK_ERRORS = 3
+
+      hls.on(Hls.Events.ERROR, (_event, data) => {
+        if (data.fatal) {
+          switch (data.type) {
+            case Hls.ErrorTypes.NETWORK_ERROR:
+              networkErrorCount++
+              if (networkErrorCount >= MAX_NETWORK_ERRORS) {
+                onError?.({
+                  type: "network",
+                  message: "Stream unreachable",
+                  details: `CDN returned errors after ${MAX_NETWORK_ERRORS} attempts. The source may be offline.`,
+                })
+                hls.destroy()
+              } else {
+                hls.startLoad()
+              }
+              break
+            case Hls.ErrorTypes.MEDIA_ERROR:
+              onError?.({
+                type: "media",
+                message: "Playback error",
+                details: data.details ?? "The media format could not be decoded.",
+              })
+              hls.destroy()
+              break
+            default:
+              onError?.({
+                type: "unknown",
+                message: "Stream error",
+                details: data.details,
+              })
+              hls.destroy()
+              break
+          }
+        } else if (
+          data.type === Hls.ErrorTypes.NETWORK_ERROR &&
+          data.details === Hls.ErrorDetails.FRAG_LOAD_ERROR
+        ) {
+          onNetworkError?.()
+        }
+      })
+
       hls.loadSource(src)
       hls.attachMedia(video)
       hls.on(Hls.Events.MANIFEST_PARSED, () => {
