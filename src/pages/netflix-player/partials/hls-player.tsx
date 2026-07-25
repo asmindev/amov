@@ -59,6 +59,7 @@ export function HlsPlayer({
   const hideTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const progressBarRef = useRef<HTMLDivElement>(null)
   const rafRef = useRef<number>(0)
+  const pauseDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const bufferingDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   // ── State ──────────────────────────────────────────────────────────────────
@@ -225,14 +226,28 @@ export function HlsPlayer({
     videoRef,
     onPlay: () => {
       setPlaying(true)
+      setUiVisible(true)
+      if (hideTimerRef.current) clearTimeout(hideTimerRef.current)
+      hideTimerRef.current = setTimeout(() => {
+        if (
+          videoRef.current &&
+          !videoRef.current.paused &&
+          !openMenuRef.current
+        ) {
+          setUiVisible(false)
+        }
+      }, 3500)
     },
     onPause: () => {
-      const v = videoRef.current
-      if (v && v.paused && !v.seeking) {
-        setPlaying(false)
-        setUiVisible(true)
-        if (hideTimerRef.current) clearTimeout(hideTimerRef.current)
-      }
+      if (pauseDebounceRef.current) clearTimeout(pauseDebounceRef.current)
+      pauseDebounceRef.current = setTimeout(() => {
+        const v = videoRef.current
+        if (v && v.paused && !v.seeking) {
+          setPlaying(false)
+          setUiVisible(true)
+          if (hideTimerRef.current) clearTimeout(hideTimerRef.current)
+        }
+      }, 150)
     },
     onTimeUpdate: () => {
       if (rafRef.current) return
@@ -302,6 +317,7 @@ export function HlsPlayer({
   useEffect(() => {
     return () => {
       if (rafRef.current) cancelAnimationFrame(rafRef.current)
+      if (pauseDebounceRef.current) clearTimeout(pauseDebounceRef.current)
       if (bufferingDebounceRef.current) clearTimeout(bufferingDebounceRef.current)
       if (hideTimerRef.current) clearTimeout(hideTimerRef.current)
       if (mobileSkipTimerRef.current) clearTimeout(mobileSkipTimerRef.current)
@@ -597,10 +613,10 @@ export function HlsPlayer({
               e.stopPropagation()
               seek(-10)
             }}
-            className="fixed top-1/2 left-4 z-40 flex h-14 w-14 -translate-y-1/2 items-center justify-center rounded-full border border-white/20 bg-black/40 text-white backdrop-blur-md transition-all active:scale-90"
+            className="fixed top-1/2 left-4 z-40 flex p-2 -translate-y-1/2 items-center justify-center rounded-full border border-white/20 text-white backdrop-blur-sm transition-all active:scale-90"
             aria-label="Skip backward 10 seconds"
           >
-            <span className="material-symbols-outlined !text-[36px]">
+            <span className="material-symbols-outlined text-[36px]">
               replay_10
             </span>
           </button>
@@ -611,10 +627,10 @@ export function HlsPlayer({
               e.stopPropagation()
               seek(10)
             }}
-            className="fixed top-1/2 right-4 z-40 flex h-14 w-14 -translate-y-1/2 items-center justify-center rounded-full border border-white/20 bg-black/40 text-white backdrop-blur-md transition-all active:scale-90"
+            className="fixed top-1/2 right-4 z-40 flex p-2 -translate-y-1/2 items-center justify-center rounded-full border border-white/20 text-white backdrop-blur-sm transition-all active:scale-90"
             aria-label="Skip forward 10 seconds"
           >
-            <span className="material-symbols-outlined !text-[36px]">
+            <span className="material-symbols-outlined text-[36px]">
               forward_10
             </span>
           </button>
