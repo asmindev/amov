@@ -124,7 +124,11 @@ export async function getDiscoverMovies(page = 1, filters?: DiscoverFilters) {
       page: String(page),
       include_adult: "false",
     })
-    return MovieListSchema.parse(res)
+    const raw = res as { results: Array<{ media_type: string }> }
+    raw.results = raw.results.filter(
+      (r) => r.media_type === "movie" || r.media_type === "tv"
+    )
+    return MovieListSchema.parse(raw)
   }
 
   // Discover (no query)
