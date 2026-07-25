@@ -25,7 +25,7 @@ export function DiscoverResults({
   const movieDetails = useMovieDetails(
     movies.map((m) => ({ id: m.id, mediaType: m.mediaType }))
   )
-  isError && console.error("Failed to load movies:", isError)
+  if (isError) console.error("Failed to load movies:", isError)
 
   return (
     <div className="space-y-6">
