@@ -59,7 +59,6 @@ export function HlsPlayer({
   const hideTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const progressBarRef = useRef<HTMLDivElement>(null)
   const rafRef = useRef<number>(0)
-  const pauseDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const bufferingDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   // ── State ──────────────────────────────────────────────────────────────────
@@ -225,19 +224,15 @@ export function HlsPlayer({
   useVideoEvents({
     videoRef,
     onPlay: () => {
-      if (pauseDebounceRef.current) clearTimeout(pauseDebounceRef.current)
       setPlaying(true)
     },
     onPause: () => {
-      if (pauseDebounceRef.current) clearTimeout(pauseDebounceRef.current)
-      pauseDebounceRef.current = setTimeout(() => {
-        const v = videoRef.current
-        if (v && v.paused && !v.seeking) {
-          setPlaying(false)
-          setUiVisible(true)
-          if (hideTimerRef.current) clearTimeout(hideTimerRef.current)
-        }
-      }, 500)
+      const v = videoRef.current
+      if (v && v.paused && !v.seeking) {
+        setPlaying(false)
+        setUiVisible(true)
+        if (hideTimerRef.current) clearTimeout(hideTimerRef.current)
+      }
     },
     onTimeUpdate: () => {
       if (rafRef.current) return
@@ -307,7 +302,6 @@ export function HlsPlayer({
   useEffect(() => {
     return () => {
       if (rafRef.current) cancelAnimationFrame(rafRef.current)
-      if (pauseDebounceRef.current) clearTimeout(pauseDebounceRef.current)
       if (bufferingDebounceRef.current) clearTimeout(bufferingDebounceRef.current)
       if (hideTimerRef.current) clearTimeout(hideTimerRef.current)
       if (mobileSkipTimerRef.current) clearTimeout(mobileSkipTimerRef.current)
