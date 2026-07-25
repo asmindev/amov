@@ -13,8 +13,9 @@ import { SearchResults } from "./search-results"
 import { SearchItem } from "./search-item"
 import { useSearch, getSearchHistory, clearSearchHistory } from "./use-search"
 import { useTrendingSearches } from "./use-trending-searches"
-import { History, TrendingUp, Trash2 } from "lucide-react"
+import { History, TrendingUp, Trash2, Search, ArrowRight } from "lucide-react"
 import { recordAnalyticsEvent } from "@/api/analytics.api"
+import { addSearchHistory } from "./use-search"
 
 interface SearchModalProps {
   open: boolean
@@ -105,15 +106,41 @@ export function SearchModal({ open, onOpenChange }: SearchModalProps) {
 
               <SearchHistory onSelect={(h) => setQuery(h)} />
             </>
-          ) : debouncedQuery.length === 0 ? null : isFetching ? (
-            <SearchLoadingState />
-          ) : (
-            <SearchResults
-              results={results}
-              query={debouncedQuery}
-              onClose={() => onOpenChange(false)}
-              onViewAll={handleViewAll}
-            />
+          ) : debouncedQuery.length === 0 ? null : (
+            <>
+              <CommandItem
+                value={`discover-${debouncedQuery}`}
+                className="group flex items-center gap-3 rounded-lg border-b border-border/50 px-3 py-3 aria-selected:bg-primary/10"
+                onSelect={() => {
+                  addSearchHistory(debouncedQuery)
+                  handleViewAll()
+                }}
+              >
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10">
+                  <Search className="h-4 w-4 text-primary" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <span className="text-sm text-muted-foreground">
+                    Search for{" "}
+                    <span className="font-medium text-foreground">
+                      "{debouncedQuery}"
+                    </span>{" "}
+                    in Discover
+                  </span>
+                </div>
+                <ArrowRight className="h-4 w-4 shrink-0 text-muted-foreground transition-transform group-aria-selected:translate-x-0.5 group-aria-selected:text-primary" />
+              </CommandItem>
+
+              {isFetching ? (
+                <SearchLoadingState />
+              ) : (
+                <SearchResults
+                  results={results}
+                  query={debouncedQuery}
+                  onClose={() => onOpenChange(false)}
+                />
+              )}
+            </>
           )}
         </CommandList>
       </Command>
