@@ -119,11 +119,21 @@ export async function getDiscoverMovies(page = 1, filters?: DiscoverFilters) {
           ? endpoints.search.movies
           : endpoints.search.multi
 
-    const res = await apiClient.get<unknown>(searchEndpoint, {
+    const searchParams: Record<string, string> = {
       query: filters.query!,
       page: String(page),
       include_adult: "false",
-    })
+    }
+
+    if (filters?.year) {
+      if (filters?.type === "tv") {
+        searchParams.first_air_date_year = filters.year
+      } else if (filters?.type === "movie") {
+        searchParams.primary_release_year = filters.year
+      }
+    }
+
+    const res = await apiClient.get<unknown>(searchEndpoint, searchParams)
     const raw = res as { results: Array<{ media_type: string }> }
     raw.results = raw.results.filter(
       (r) => r.media_type === "movie" || r.media_type === "tv"
