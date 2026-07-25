@@ -89,10 +89,9 @@ export function EpisodesSection({ tvId, seasons = [] }: EpisodesSectionProps) {
 
               {/* Thumbnail & Play Overlay */}
               <Link
-                to="/$type/$id"
+                to="/$type/$id/netflix"
                 params={{ type: "tv", id: tvId }}
                 search={{
-                  play: true,
                   season: ep.season_number,
                   episode: ep.episode_number,
                 }}
