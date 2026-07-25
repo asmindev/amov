@@ -1,3 +1,4 @@
+import { memo } from "react"
 import { motion, AnimatePresence } from "motion/react"
 import { getMovieQuality } from "@/helpers/movie-quality"
 
@@ -14,7 +15,7 @@ export interface PausedOverlayProps {
   logoPath?: string | null
 }
 
-export function PausedOverlay({
+export const PausedOverlay = memo(function PausedOverlay({
   playing,
   buffering,
   isFetchingProvider,
@@ -83,4 +84,4 @@ export function PausedOverlay({
         )}
     </AnimatePresence>
   )
-}
+})

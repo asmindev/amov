@@ -1,3 +1,4 @@
+import { memo } from "react"
 import type { ParsedCue } from "../../hooks/use-subtitles"
 
 interface SubtitleOverlayProps {
@@ -10,7 +11,7 @@ interface SubtitleOverlayProps {
   subBg: string
 }
 
-export function SubtitleOverlay({
+export const SubtitleOverlay = memo(function SubtitleOverlay({
   currentActiveCues,
   uiVisible,
   subMargin,
@@ -51,4 +52,4 @@ export function SubtitleOverlay({
       ))}
     </div>
   )
-}
+})

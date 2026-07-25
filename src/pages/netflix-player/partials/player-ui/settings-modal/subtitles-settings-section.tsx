@@ -39,9 +39,9 @@ export function SubtitlesSettingsSection({
     })
   }
 
-  const totalWyzieSubtitles = wyzieGroups.reduce(
-    (acc, g) => acc + g.subtitles.length,
-    0
+  const totalWyzieSubtitles = useMemo(
+    () => wyzieGroups.reduce((acc, g) => acc + g.subtitles.length, 0),
+    [wyzieGroups]
   )
 
   const hasProviderSubtitles = providerSubtitles.length > 0

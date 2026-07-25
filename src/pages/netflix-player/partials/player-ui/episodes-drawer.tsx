@@ -1,4 +1,4 @@
-import { useRef, useState } from "react"
+import { useRef, useState, useMemo } from "react"
 import { motion } from "motion/react"
 import { X, Check } from "lucide-react"
 import { useTvSeasonEpisodes } from "@/pages/movie-detail/hooks/use-movie-detail"
@@ -29,7 +29,10 @@ export function EpisodesDrawer({
 }: EpisodesDrawerProps) {
   const navigate = useNavigate()
   const carouselRef = useRef<HTMLDivElement>(null)
-  const validSeasons = seasons.filter((s) => s.episodeCount > 0)
+  const validSeasons = useMemo(
+    () => seasons.filter((s) => s.episodeCount > 0),
+    [seasons]
+  )
 
   const [selectedSeason, setSelectedSeason] = useState<number>(
     currentSeason || (validSeasons[0]?.seasonNumber ?? 1)

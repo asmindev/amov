@@ -7,6 +7,10 @@ export interface ParsedCue {
 }
 
 const TIMESTAMP_RE = /(\d{1,2}:)?(\d{2}):(\d{2})[.,](\d{3})/
+const HTML_TAG_RE = /<[^>]+>/g
+const COMMA_DOT_RE = /(\d{2}:\d{2}:\d{2}),(\d{3})/g
+const COMMA_MMSS_RE = /(\d{2}:\d{2}),(\d{3})/g
+const TIMESTAMP_SHIFT_RE = /(\d{1,2}:)?(\d{2}):(\d{2})[.,](\d{3})/g
 
 function parseTimestamp(ts: string): number {
   const clean = ts.trim().replace(",", ".")
@@ -92,7 +96,7 @@ function parseCues(text: string): ParsedCue[] {
 
     const text = textLines
       .join("\n")
-      .replace(/<[^>]+>/g, "")
+      .replace(HTML_TAG_RE, "")
       .trim()
     if (text) {
       cues.push({ start, end, text })
@@ -109,11 +113,11 @@ function parseCues(text: string): ParsedCue[] {
 function shiftTimestamps(text: string, offset: number): string {
   // Always normalize timestamps (convert commas to dots for WebVTT compatibility)
   const normalized = text
-    .replace(/(\d{2}:\d{2}:\d{2}),(\d{3})/g, "$1.$2")
-    .replace(/(\d{2}:\d{2}),(\d{3})/g, "$1.$2")
+    .replace(COMMA_DOT_RE, "$1.$2")
+    .replace(COMMA_MMSS_RE, "$1.$2")
   if (offset === 0) return normalized
   return normalized.replace(
-    /(\d{1,2}:)?(\d{2}):(\d{2})[.,](\d{3})/g,
+    TIMESTAMP_SHIFT_RE,
     (_match, h, m, s, ms) => {
       const hours = h ? parseFloat(h) : 0
       const mins = parseInt(m)
@@ -160,7 +164,6 @@ export function useSubtitles(
       }
       setSubError(false)
       try {
-        console.log("Fetching subtitle:", selectedSub)
         const res = await fetch(selectedSub)
         if (!res.ok) throw new Error("fetch sub error")
         let text = await res.text()
@@ -193,12 +196,6 @@ export function useSubtitles(
 
         setVttUrl(url)
         setParsedCues(parsed)
-        console.log(
-          "Subtitle added to video track:",
-          selectedSub,
-          "Total cues:",
-          parsed.length
-        )
       } catch (err) {
         console.error("Subtitle parse error", err)
         if (!isCancelled) {

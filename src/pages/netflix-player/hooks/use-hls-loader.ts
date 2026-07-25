@@ -15,6 +15,7 @@ interface UseHlsLoaderOpts {
   hlsRef: RefObject<Hls | null>
   sources: StreamSource[]
   selectedQuality: number
+  retryKey: number
   movieId: number
   imdbId?: string
   season?: number
@@ -28,6 +29,7 @@ export function useHlsLoader({
   hlsRef,
   sources,
   selectedQuality,
+  retryKey,
   movieId,
   imdbId,
   season,
@@ -166,5 +168,5 @@ export function useHlsLoader({
       hlsRef.current?.destroy()
       hlsRef.current = null
     }
-  }, [sources, selectedQuality, movieId]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [sources, selectedQuality, retryKey, movieId]) // eslint-disable-line react-hooks/exhaustive-deps
 }

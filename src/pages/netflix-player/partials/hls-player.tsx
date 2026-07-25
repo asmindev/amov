@@ -90,6 +90,7 @@ export function HlsPlayer({
   } | null>(null)
   const [streamError, setStreamError] = useState<StreamError | null>(null)
   const [networkErrorCount, setNetworkErrorCount] = useState(0)
+  const [retryKey, setRetryKey] = useState(0)
 
   // ── Wyzie Subtitles ─────────────────────────────────────────────────────────
   const [wyzieGroups, setWyzieGroups] = useState<WyzieSubtitleGroup[]>([])
@@ -155,6 +156,9 @@ export function HlsPlayer({
   useEffect(() => {
     hasRefetchedRef.current = false
     failedQualitiesRef.current.clear()
+    // Reset quality index when provider changes — necessary to avoid out-of-bounds access
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setSelectedQuality(0)
   }, [providerIndex])
 
   // ── Auto Failover: Try next CDN mirror/quality -> Refetch -> Next Provider ────
@@ -167,9 +171,6 @@ export function HlsPlayer({
         (_, idx) => !failedQualitiesRef.current.has(idx)
       )
       if (nextQual !== -1 && nextQual < sources.length) {
-        console.warn(
-          `Source ${selectedQuality} failed. Auto-switching to CDN mirror ${nextQual}...`
-        )
         setStreamError(null)
         setNetworkErrorCount(0)
         setSelectedQuality(nextQual)
@@ -178,11 +179,6 @@ export function HlsPlayer({
 
       // 2. Refetch fresh signed URLs for current provider if not done yet
       if (!hasRefetchedRef.current && onRefetchCurrentProvider) {
-        console.warn(
-          "All CDN mirrors failed for provider",
-          provider,
-          ". Auto-refreshing signed URLs..."
-        )
         hasRefetchedRef.current = true
         failedQualitiesRef.current.clear()
         setStreamError(null)
@@ -217,6 +213,7 @@ export function HlsPlayer({
     hlsRef,
     sources,
     selectedQuality,
+    retryKey,
     movieId,
     imdbId,
     season,
@@ -304,7 +301,7 @@ export function HlsPlayer({
   }, [iosNativeFullscreen, vttUrl])
 
   // Track progress → localStorage
-  useWatchProgressTracker("movie", movieId, true)
+  useWatchProgressTracker(mediaType, movieId, true)
 
   // ── Cleanup RAF on unmount ────────────────────────────────────────────────
   useEffect(() => {
@@ -312,6 +309,8 @@ export function HlsPlayer({
       if (rafRef.current) cancelAnimationFrame(rafRef.current)
       if (pauseDebounceRef.current) clearTimeout(pauseDebounceRef.current)
       if (bufferingDebounceRef.current) clearTimeout(bufferingDebounceRef.current)
+      if (hideTimerRef.current) clearTimeout(hideTimerRef.current)
+      if (mobileSkipTimerRef.current) clearTimeout(mobileSkipTimerRef.current)
     }
   }, [])
 
@@ -367,7 +366,7 @@ export function HlsPlayer({
     }
   }, [playbackRate])
 
-  const togglePlay = () => {
+  const togglePlay = useCallback(() => {
     const v = videoRef.current
     if (!v) return
     if (v.paused) {
@@ -375,37 +374,46 @@ export function HlsPlayer({
     } else {
       v.pause()
     }
-  }
+  }, [])
 
-  const handleProgressClick = (e: MouseEvent<HTMLDivElement>) => {
-    const bar = progressBarRef.current
-    const v = videoRef.current
-    if (!bar || !v || !duration) return
-    const { left, width } = bar.getBoundingClientRect()
-    v.currentTime =
-      Math.max(0, Math.min(1, (e.clientX - left) / width)) * duration
-  }
+  const handleProgressClick = useCallback(
+    (e: MouseEvent<HTMLDivElement>) => {
+      const bar = progressBarRef.current
+      const v = videoRef.current
+      if (!bar || !v || !duration) return
+      const { left, width } = bar.getBoundingClientRect()
+      v.currentTime =
+        Math.max(0, Math.min(1, (e.clientX - left) / width)) * duration
+    },
+    [duration]
+  )
 
-  const handleProgressHover = (e: MouseEvent<HTMLDivElement>) => {
-    const bar = progressBarRef.current
-    if (!bar) return
-    const { left, width } = bar.getBoundingClientRect()
-    setHoverX(Math.max(0, Math.min(1, (e.clientX - left) / width)))
-  }
+  const handleProgressHover = useCallback(
+    (e: MouseEvent<HTMLDivElement>) => {
+      const bar = progressBarRef.current
+      if (!bar) return
+      const { left, width } = bar.getBoundingClientRect()
+      setHoverX(Math.max(0, Math.min(1, (e.clientX - left) / width)))
+    },
+    []
+  )
 
-  const handleVolumeChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const v = videoRef.current
-    if (!v) return
-    const val = parseFloat(e.target.value)
-    v.volume = val
-    v.muted = val === 0
-  }
+  const handleVolumeChange = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      const v = videoRef.current
+      if (!v) return
+      const val = parseFloat(e.target.value)
+      v.volume = val
+      v.muted = val === 0
+    },
+    []
+  )
 
-  const toggleMute = () => {
+  const toggleMute = useCallback(() => {
     const v = videoRef.current
     if (!v) return
     v.muted = !v.muted
-  }
+  }, [])
 
   const progressPct = duration ? (currentTime / duration) * 100 : 0
   const bufferedPct = duration ? (bufferedEnd / duration) * 100 : 0
@@ -414,11 +422,7 @@ export function HlsPlayer({
   const handleRetry = useCallback(() => {
     setStreamError(null)
     setNetworkErrorCount(0)
-    const v = videoRef.current
-    if (v) {
-      v.currentTime = 0
-      void v.play().catch(() => {})
-    }
+    setRetryKey((k) => k + 1)
   }, [])
 
   return (
@@ -452,18 +456,12 @@ export function HlsPlayer({
             src={vttUrl}
             srcLang="id"
             label="Custom Subtitles"
-            default
             onLoad={(e) => {
               const trackElem = e.currentTarget
               if (trackElem.track) {
                 trackElem.track.mode = iosNativeFullscreen
                   ? "showing"
                   : "disabled"
-                console.log(
-                  "Native track loaded successfully:",
-                  trackElem.track.cues?.length,
-                  "cues"
-                )
               }
             }}
           />

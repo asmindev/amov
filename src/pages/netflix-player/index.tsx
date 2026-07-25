@@ -124,10 +124,10 @@ export default function NetflixPlayerPage() {
           </button>
           <Link
             to="/$type/$id"
-            params={{ type: "movie", id }}
+            params={{ type: mediaType, id }}
             className="rounded-lg bg-red-600 px-5 py-2 text-sm font-semibold text-white transition-colors hover:bg-red-500"
           >
-            Back to movie
+            Back to detail
           </Link>
         </div>
       </div>

@@ -1,3 +1,4 @@
+import { memo } from "react"
 import { Link } from "@tanstack/react-router"
 import type { Dispatch, SetStateAction } from "react"
 import { Button } from "@/components/ui/button"
@@ -16,7 +17,7 @@ export interface TopAppBarProps {
   >
 }
 
-export function TopAppBar({
+export const TopAppBar = memo(function TopAppBar({
   mediaType,
   movieId,
   movieTitle,
@@ -101,4 +102,4 @@ export function TopAppBar({
       </div>
     </div>
   )
-}
+})
