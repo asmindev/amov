@@ -123,8 +123,8 @@ export default function NetflixPlayerPage() {
             Retry from Yoru
           </button>
           <Link
-            to="/movie/$id"
-            params={{ id }}
+            to="/$type/$id"
+            params={{ type: "movie", id }}
             className="rounded-lg bg-red-600 px-5 py-2 text-sm font-semibold text-white transition-colors hover:bg-red-500"
           >
             Back to movie

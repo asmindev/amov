@@ -95,25 +95,6 @@ const mediaDetailRoute = createRoute({
   ),
 })
 
-const movieDetailAliasRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: "/movie/$id",
-  validateSearch: (
-    search: Record<string, unknown>
-  ): { play?: boolean; season?: number; episode?: number } => {
-    return {
-      play: search.play === "true" || search.play === true,
-      season: search.season ? Number(search.season) : undefined,
-      episode: search.episode ? Number(search.episode) : undefined,
-    }
-  },
-  component: () => (
-    <React.Suspense>
-      <LazyMovieDetail />
-    </React.Suspense>
-  ),
-})
-
 const watchlistRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/watchlist",
@@ -172,7 +153,6 @@ const routeTree = rootRoute.addChildren([
   homeRoute,
   discoverRoute,
   mediaDetailRoute,
-  movieDetailAliasRoute,
   watchlistRoute,
   netflixPlayerRoute,
   legacyNetflixPlayerRoute,
