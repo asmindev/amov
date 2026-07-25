@@ -22,7 +22,10 @@ export function DiscoverResults({
   isFetchingNextPage,
   lastElementRef,
 }: DiscoverResultsProps) {
-  const movieDetails = useMovieDetails(movies.map((m) => m.id))
+  const movieDetails = useMovieDetails(
+    movies.map((m) => ({ id: m.id, mediaType: m.mediaType }))
+  )
+  isError && console.error("Failed to load movies:", isError)
 
   return (
     <div className="space-y-6">

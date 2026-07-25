@@ -19,7 +19,9 @@ export function TrendingSection({
 }: TrendingSectionProps) {
   const wrapperRef = useRef<HTMLDivElement>(null)
 
-  const movieDetails = useMovieDetails(movies.map((m) => m.id))
+  const movieDetails = useMovieDetails(
+    movies.map((m) => ({ id: m.id, mediaType: m.mediaType }))
+  )
 
   const scroll = (direction: "left" | "right") => {
     if (!wrapperRef.current) return

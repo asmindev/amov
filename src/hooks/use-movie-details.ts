@@ -1,13 +1,18 @@
 import { useQueries } from "@tanstack/react-query"
-import { getMovieById } from "@/api/movies.api"
+import { getMediaDetail } from "@/api/movies.api"
 import { queryKeys } from "@/lib/query-keys"
 
-export function useMovieDetails(movieIds: number[]) {
+interface MediaItem {
+  id: number
+  mediaType?: "movie" | "tv"
+}
+
+export function useMovieDetails(items: MediaItem[]) {
   const results = useQueries({
-    queries: movieIds.map((id) => ({
+    queries: items.map(({ id, mediaType = "movie" }) => ({
       queryKey: queryKeys.movies.detail(String(id)),
-      queryFn: () => getMovieById(String(id)),
-      enabled: movieIds.length > 0,
+      queryFn: () => getMediaDetail(mediaType, String(id)),
+      enabled: items.length > 0,
     })),
   })
 
