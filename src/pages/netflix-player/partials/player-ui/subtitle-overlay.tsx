@@ -23,7 +23,7 @@ export function SubtitleOverlay({
 
   return (
     <div
-      className={`pointer-events-none absolute inset-x-0 z-50 flex flex-col items-center transition-all duration-300 ease-out ${
+      className={`pointer-events-none absolute inset-x-0 z-[99999] flex flex-col items-center transition-all duration-300 ease-out ${
         uiVisible
           ? "translate-y-[-130px] md:translate-y-[-140px]"
           : "translate-y-0"
