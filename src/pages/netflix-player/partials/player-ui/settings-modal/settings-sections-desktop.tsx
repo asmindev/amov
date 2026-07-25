@@ -5,28 +5,28 @@ import type { SettingsSectionsProps } from "./types"
 
 export function SettingsSectionsDesktop(props: SettingsSectionsProps) {
   return (
-    <div className="hidden h-full min-h-0 flex-1 gap-8 overflow-hidden md:flex">
-      <div className="flex min-h-0 flex-1 flex-col overflow-hidden border-r border-border pr-4">
+    <div className="hidden min-h-0 flex-1 gap-3 overflow-hidden md:flex">
+      <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden rounded-lg bg-white/[0.03] p-4">
         <AudioSettingsSection
           playbackRate={props.playbackRate}
           setPlaybackRate={props.setPlaybackRate}
+          scrollClassName="settings-scroll flex-1 space-y-5 overflow-y-auto pr-1"
         />
       </div>
 
-      <div className="flex min-h-0 flex-1 flex-col overflow-hidden border-r border-border pr-4">
+      <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden rounded-lg bg-white/[0.03] p-4">
         <SubtitlesSettingsSection
-          selectedProvider={props.selectedProvider}
-          setSelectedProvider={props.setSelectedProvider}
-          isFetchingSubtitles={props.isFetchingSubtitles}
-          onFetchSubtitles={props.onFetchSubtitles}
+          providerSubtitles={props.providerSubtitles}
+          isFetchingWyzie={props.isFetchingWyzie}
+          onFetchWyzie={props.onFetchWyzie}
           selectedSub={props.selectedSub}
           setSelectedSub={props.setSelectedSub}
-          subtitles={props.subtitles}
+          wyzieGroups={props.wyzieGroups}
           subError={props.subError}
         />
       </div>
 
-      <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
+      <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden rounded-lg bg-white/[0.03] p-4">
         <CustomizationSettingsSection
           subOffset={props.subOffset}
           setSubOffset={props.setSubOffset}
@@ -40,6 +40,7 @@ export function SettingsSectionsDesktop(props: SettingsSectionsProps) {
           setSubLh={props.setSubLh}
           subBg={props.subBg}
           setSubBg={props.setSubBg}
+          scrollClassName="settings-scroll flex-1 space-y-5 overflow-y-auto pr-1"
         />
       </div>
     </div>

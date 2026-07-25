@@ -33,13 +33,12 @@ export function SettingsSectionsMobile(props: SettingsSectionsProps) {
         className="mt-0 min-h-0 flex-1 overflow-hidden"
       >
         <SubtitlesSettingsSection
-          selectedProvider={props.selectedProvider}
-          setSelectedProvider={props.setSelectedProvider}
-          isFetchingSubtitles={props.isFetchingSubtitles}
-          onFetchSubtitles={props.onFetchSubtitles}
+          providerSubtitles={props.providerSubtitles}
+          isFetchingWyzie={props.isFetchingWyzie}
+          onFetchWyzie={props.onFetchWyzie}
           selectedSub={props.selectedSub}
           setSelectedSub={props.setSelectedSub}
-          subtitles={props.subtitles}
+          wyzieGroups={props.wyzieGroups}
           subError={props.subError}
           showHeading={false}
         />

@@ -6,7 +6,8 @@ import {
   type MouseEvent,
   type ChangeEvent,
 } from "react"
-import type { StreamSubtitle } from "@/api/decryptor.api"
+import type { WyzieSubtitleGroup } from "@/api/decryptor.api"
+import { fetchWyzieSubtitles } from "@/api/decryptor.api"
 import { RefreshCw, AlertTriangle, WifiOff } from "lucide-react"
 import { AnimatePresence } from "motion/react"
 import { useWatchProgressTracker } from "@/hooks/use-watch-progress"
@@ -69,7 +70,6 @@ export function HlsPlayer({
   const [mobileSkipVisible, setMobileSkipVisible] = useState(true)
   const mobileSkipTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const [selectedQuality, setSelectedQuality] = useState(0)
-  const [localSubtitles, setLocalSubtitles] = useState<StreamSubtitle[]>([])
   const [selectedSub, setSelectedSub] = useState<string | null>(null)
   const [openMenu, setOpenMenu] = useState<
     "settings" | "provider" | "episodes" | null
@@ -88,6 +88,29 @@ export function HlsPlayer({
   const [streamError, setStreamError] = useState<StreamError | null>(null)
   const [networkErrorCount, setNetworkErrorCount] = useState(0)
 
+  // ── Wyzie Subtitles ─────────────────────────────────────────────────────────
+  const [wyzieGroups, setWyzieGroups] = useState<WyzieSubtitleGroup[]>([])
+  const [isFetchingWyzie, setIsFetchingWyzie] = useState(false)
+
+  const handleFetchWyzie = useCallback(async () => {
+    if (isFetchingWyzie) return
+    setIsFetchingWyzie(true)
+    try {
+      const groups = await fetchWyzieSubtitles({
+        tmdbId: String(movieId),
+        imdbId: imdbId || undefined,
+        mediaType,
+        season: mediaType === "tv" ? season : undefined,
+        episode: mediaType === "tv" ? episode : undefined,
+      })
+      setWyzieGroups(groups)
+    } catch (err) {
+      console.error("Failed to fetch Wyzie subtitles:", err)
+    } finally {
+      setIsFetchingWyzie(false)
+    }
+  }, [movieId, imdbId, mediaType, season, episode, isFetchingWyzie])
+
   useEffect(() => {
     if (!skipIndicator) return
     const t = setTimeout(() => {
@@ -95,8 +118,6 @@ export function HlsPlayer({
     }, 600)
     return () => clearTimeout(t)
   }, [skipIndicator])
-
-  const allSubtitles = [...subtitles, ...localSubtitles]
 
   // ── Customization ──────────────────────────────────────────────────────────
   const {
@@ -575,7 +596,10 @@ export function HlsPlayer({
             setPlaybackRate={setPlaybackRate}
             selectedSub={selectedSub}
             setSelectedSub={setSelectedSub}
-            subtitles={allSubtitles}
+            providerSubtitles={subtitles}
+            wyzieGroups={wyzieGroups}
+            isFetchingWyzie={isFetchingWyzie}
+            onFetchWyzie={handleFetchWyzie}
             subError={subError}
             subOffset={subOffset}
             setSubOffset={setSubOffset}
@@ -589,16 +613,6 @@ export function HlsPlayer({
             setSubLh={setSubLh}
             subMargin={subMargin}
             setSubMargin={setSubMargin}
-            sources={sources}
-            selectedQuality={selectedQuality}
-            setSelectedQuality={setSelectedQuality}
-            imdbId={imdbId}
-            movieId={movieId}
-            movieTitle={movieTitle}
-            movieYear={movieYear}
-            onAddLocalSubtitles={(subs) =>
-              setLocalSubtitles((prev) => [...prev, ...subs])
-            }
           />
         )}
 
@@ -642,6 +656,9 @@ export function HlsPlayer({
           fullscreen={fullscreen}
           toggleFullscreen={toggleFullscreen}
           mediaType={mediaType}
+          sources={sources}
+          selectedQuality={selectedQuality}
+          setSelectedQuality={setSelectedQuality}
         />
       </div>
     </div>

@@ -1,6 +1,3 @@
-import { useState } from "react"
-import { fetchProviderSubtitlesForMovie } from "./settings-modal/fetch-provider-subtitles.helper"
-import { PlaybackQualityRow } from "./settings-modal/playback-quality-row"
 import { SettingsSectionsDesktop } from "./settings-modal/settings-sections-desktop"
 import { SettingsSectionsMobile } from "./settings-modal/settings-sections-mobile"
 import type { SettingsModalProps } from "./settings-modal/types"
@@ -18,7 +15,10 @@ export function SettingsModal({
   setPlaybackRate,
   selectedSub,
   setSelectedSub,
-  subtitles,
+  providerSubtitles,
+  wyzieGroups,
+  isFetchingWyzie,
+  onFetchWyzie,
   subError,
   subOffset,
   setSubOffset,
@@ -32,56 +32,16 @@ export function SettingsModal({
   setSubMargin,
   subBg,
   setSubBg,
-  sources,
-  selectedQuality,
-  setSelectedQuality,
-  imdbId,
-  movieId,
-  movieTitle,
-  movieYear,
-  onAddLocalSubtitles,
 }: SettingsModalProps) {
-  const [isFetchingSubtitles, setIsFetchingSubtitles] = useState(false)
-  const [selectedProvider, setSelectedProvider] =
-    useState<string>("opensubtitles")
-
-  const handleManualOpenSubtitlesFetch = async () => {
-    try {
-      setIsFetchingSubtitles(true)
-      const subs = await fetchProviderSubtitlesForMovie({
-        provider: selectedProvider,
-        imdbId,
-        movieId,
-        movieTitle,
-        movieYear,
-      })
-
-      if (subs.length === 0) {
-        alert(
-          `Tidak ada subtitle tambahan yang ditemukan di ${selectedProvider.toUpperCase()}.`
-        )
-      } else {
-        onAddLocalSubtitles?.(subs)
-      }
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : String(err)
-      alert(
-        msg || `Gagal mengambil subtitle dari ${selectedProvider.toUpperCase()}`
-      )
-    } finally {
-      setIsFetchingSubtitles(false)
-    }
-  }
-
   return (
     <Dialog open onOpenChange={(open) => !open && setOpenMenu(null)}>
       <DialogContent
         showCloseButton={false}
-        className="h-[80vh] max-w-4xl min-w-9/12 gap-0 overflow-hidden p-0"
+        className="min-w-6xl h-[80vh] overflow-hidden"
       >
         <DialogHeader className="border-b border-border px-2 py-1">
           <div className="flex items-center justify-between">
-            <DialogTitle className="text-headline-md pl-2 font-headline-md font-netflix font-black text-foreground uppercase">
+            <DialogTitle className="text-headline-md pl-2 font-netflix font-black text-foreground uppercase">
               Audio, Subtitles & Quality
             </DialogTitle>
             <Button
@@ -99,13 +59,12 @@ export function SettingsModal({
             <SettingsSectionsMobile
               playbackRate={playbackRate}
               setPlaybackRate={setPlaybackRate}
-              selectedProvider={selectedProvider}
-              setSelectedProvider={setSelectedProvider}
-              isFetchingSubtitles={isFetchingSubtitles}
-              onFetchSubtitles={handleManualOpenSubtitlesFetch}
+              providerSubtitles={providerSubtitles}
+              isFetchingWyzie={isFetchingWyzie}
+              onFetchWyzie={onFetchWyzie}
               selectedSub={selectedSub}
               setSelectedSub={setSelectedSub}
-              subtitles={subtitles}
+              wyzieGroups={wyzieGroups}
               subError={subError}
               subOffset={subOffset}
               setSubOffset={setSubOffset}
@@ -124,13 +83,12 @@ export function SettingsModal({
             <SettingsSectionsDesktop
               playbackRate={playbackRate}
               setPlaybackRate={setPlaybackRate}
-              selectedProvider={selectedProvider}
-              setSelectedProvider={setSelectedProvider}
-              isFetchingSubtitles={isFetchingSubtitles}
-              onFetchSubtitles={handleManualOpenSubtitlesFetch}
+              providerSubtitles={providerSubtitles}
+              isFetchingWyzie={isFetchingWyzie}
+              onFetchWyzie={onFetchWyzie}
               selectedSub={selectedSub}
               setSelectedSub={setSelectedSub}
-              subtitles={subtitles}
+              wyzieGroups={wyzieGroups}
               subError={subError}
               subOffset={subOffset}
               setSubOffset={setSubOffset}
@@ -146,12 +104,6 @@ export function SettingsModal({
               setSubBg={setSubBg}
             />
           </div>
-
-          <PlaybackQualityRow
-            sources={sources}
-            selectedQuality={selectedQuality}
-            setSelectedQuality={setSelectedQuality}
-          />
         </div>
       </DialogContent>
     </Dialog>

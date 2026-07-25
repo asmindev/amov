@@ -1,4 +1,4 @@
-import type { StreamSource, StreamSubtitle } from "@/api/decryptor.api"
+import type { StreamSubtitle, WyzieSubtitleGroup } from "@/api/decryptor.api"
 import type { Dispatch, SetStateAction } from "react"
 
 export interface SettingsModalProps {
@@ -7,7 +7,10 @@ export interface SettingsModalProps {
   setPlaybackRate: (val: number) => void
   selectedSub: string | null
   setSelectedSub: (val: string | null) => void
-  subtitles: StreamSubtitle[]
+  providerSubtitles: StreamSubtitle[]
+  wyzieGroups: WyzieSubtitleGroup[]
+  isFetchingWyzie: boolean
+  onFetchWyzie: () => void
   subError: boolean
   subOffset: number
   setSubOffset: Dispatch<SetStateAction<number>>
@@ -21,14 +24,6 @@ export interface SettingsModalProps {
   setSubLh: (val: number) => void
   subMargin: number
   setSubMargin: (val: number) => void
-  sources: StreamSource[]
-  selectedQuality: number
-  setSelectedQuality: (q: number) => void
-  imdbId?: string
-  movieId: number
-  movieTitle: string
-  movieYear: string
-  onAddLocalSubtitles?: (subs: StreamSubtitle[]) => void
 }
 
 export interface AudioSettingsSectionProps {
@@ -39,13 +34,12 @@ export interface AudioSettingsSectionProps {
 }
 
 export interface SubtitlesSettingsSectionProps {
-  selectedProvider: string
-  setSelectedProvider: (val: string) => void
-  isFetchingSubtitles: boolean
-  onFetchSubtitles: () => void
+  providerSubtitles: StreamSubtitle[]
+  isFetchingWyzie: boolean
+  onFetchWyzie: () => void
   selectedSub: string | null
   setSelectedSub: (val: string | null) => void
-  subtitles: StreamSubtitle[]
+  wyzieGroups: WyzieSubtitleGroup[]
   subError: boolean
   showHeading?: boolean
 }
@@ -72,9 +66,3 @@ export interface SettingsSectionsProps
     AudioSettingsSectionProps,
     SubtitlesSettingsSectionProps,
     CustomizationSettingsSectionProps {}
-
-export interface PlaybackQualityRowProps {
-  sources: StreamSource[]
-  selectedQuality: number
-  setSelectedQuality: (q: number) => void
-}

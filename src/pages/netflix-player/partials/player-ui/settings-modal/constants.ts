@@ -1,14 +1,5 @@
 export const PLAYBACK_RATES = [0.5, 0.75, 1, 1.25, 1.5, 2] as const
 
-export const SUBTITLE_PROVIDERS = [
-  { value: "opensubtitles", label: "OpenSubtitles" },
-  { value: "moviebox", label: "Moviebox" },
-  { value: "yoru", label: "Yoru" },
-  { value: "neon", label: "Neon" },
-  { value: "cypher", label: "Cypher" },
-  { value: "breach", label: "Breach" },
-] as const
-
 export const SUBTITLE_FONT_OPTIONS = [
   {
     label: "Netflix",

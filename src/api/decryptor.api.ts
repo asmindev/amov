@@ -200,62 +200,61 @@ export async function fetchDecryptedSources(
   }
 }
 
-export async function fetchProviderSubtitles(
-  provider: string,
-  params: Omit<FetchSourcesParams, "provider">
-): Promise<StreamSubtitle[]> {
-  if (provider.toLowerCase() === "moviebox") {
-    const mbQs = new URLSearchParams({
-      ...(params.imdbId ? { imdbId: params.imdbId } : {}),
-      ...(params.season !== undefined
-        ? { seasonId: String(params.season) }
-        : {}),
-      ...(params.episode !== undefined
-        ? { episodeId: String(params.episode) }
-        : {}),
-    })
+// ── Wyzie Subtitles ──────────────────────────────────────────────────────────
 
-    const res = await fetch(
-      `${DECRYPTOR_URL}/moviebox/sources?${mbQs.toString()}`
-    )
-    if (!res.ok) {
-      throw new Error("Gagal mengambil subtitle dari Moviebox")
-    }
-    const json = (await res.json()) as UnifiedMediaResponse
-    return json.subtitles ?? []
-  }
+export interface WyzieSubtitle {
+  id: string
+  url: string
+  flagUrl: string
+  format: string
+  encoding: string
+  display: string
+  language: string
+  media: string
+  isHearingImpaired: boolean
+  source: string
+  release: string
+  releases: string[]
+  fileName: string
+  downloadCount: number
+  origin: string
+  ai: boolean
+}
 
-  const qs = new URLSearchParams({
-    tmdbId: params.tmdbId,
-    mediaType: params.mediaType,
-    title: params.title,
-    ...(params.year ? { year: params.year } : {}),
-    ...(params.imdbId ? { imdbId: params.imdbId } : {}),
-  })
+export interface WyzieSubtitleGroup {
+  language: string
+  display: string
+  flagUrl: string
+  subtitles: WyzieSubtitle[]
+}
 
-  const res = await fetch(
-    `${DECRYPTOR_URL}/subtitles/${provider.toLowerCase()}?${qs.toString()}`
-  )
+export interface FetchWyzieParams {
+  tmdbId?: string
+  imdbId?: string
+  mediaType?: "movie" | "tv"
+  season?: number
+  episode?: number
+  language?: string
+}
+
+export async function fetchWyzieSubtitles(
+  params: FetchWyzieParams
+): Promise<WyzieSubtitleGroup[]> {
+  const qs = new URLSearchParams()
+
+  if (params.tmdbId) qs.set("tmdbId", params.tmdbId)
+  if (params.imdbId) qs.set("imdbId", params.imdbId)
+  if (params.language) qs.set("language", params.language)
+  if (params.season !== undefined) qs.set("season", String(params.season))
+  if (params.episode !== undefined) qs.set("episode", String(params.episode))
+
+  const res = await fetch(`${DECRYPTOR_URL}/wyzie?${qs.toString()}`)
 
   if (!res.ok) {
     const body = (await res.json().catch(() => ({}))) as { detail?: string }
-    throw new Error(body.detail ?? `Gagal mengambil subtitle dari ${provider}`)
+    throw new Error(body.detail ?? `Wyzie HTTP ${res.status}`)
   }
 
-  const json = (await res.json()) as { subtitles: StreamSubtitle[] }
-  return json.subtitles
-}
-
-export async function fetchOpenSubtitles(
-  imdbId: string
-): Promise<StreamSubtitle[]> {
-  const qs = new URLSearchParams({ imdbId })
-  const res = await fetch(`${DECRYPTOR_URL}/opensubtitles?${qs.toString()}`)
-
-  if (!res.ok) {
-    throw new Error("Gagal mengambil external subtitles dari OpenSubtitles")
-  }
-
-  const json = (await res.json()) as StreamSubtitle[]
-  return json
+  const data = (await res.json()) as WyzieSubtitleGroup[]
+  return data
 }
