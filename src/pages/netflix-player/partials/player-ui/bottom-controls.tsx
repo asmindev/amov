@@ -5,9 +5,11 @@ import type {
   ChangeEvent,
   RefObject,
 } from "react"
+import type { StreamSource } from "@/api/decryptor.api"
 import { fmtTime } from "@/helpers/time"
 import { Button } from "@/components/ui/button"
 import { Slider } from "@/components/ui/slider"
+import { QualityPopover } from "./quality-popover"
 
 export interface BottomControlsProps {
   progressBarRef: RefObject<HTMLDivElement | null>
@@ -37,6 +39,9 @@ export interface BottomControlsProps {
   fullscreen: boolean
   toggleFullscreen: () => void
   mediaType?: "movie" | "tv"
+  sources: StreamSource[]
+  selectedQuality: number
+  setSelectedQuality: (q: number) => void
 }
 
 export function BottomControls({
@@ -65,6 +70,9 @@ export function BottomControls({
   fullscreen,
   toggleFullscreen,
   mediaType = "movie",
+  sources,
+  selectedQuality,
+  setSelectedQuality,
 }: BottomControlsProps) {
   return (
     <div
@@ -253,6 +261,12 @@ export function BottomControls({
               )}
             </Button>
           )}
+
+          <QualityPopover
+            sources={sources}
+            selectedQuality={selectedQuality}
+            setSelectedQuality={setSelectedQuality}
+          />
 
           <Button
             variant="ghost"
