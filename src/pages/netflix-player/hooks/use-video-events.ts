@@ -1,4 +1,4 @@
-import { useEffect, type RefObject } from "react"
+import { useEffect, useRef, type RefObject } from "react"
 import type { StreamError } from "./use-hls-loader"
 
 interface UseVideoEventsOpts {
@@ -31,36 +31,64 @@ export function useVideoEvents({
   onVolume,
   onError,
 }: UseVideoEventsOpts) {
+  const onPlayRef = useRef(onPlay)
+  const onPauseRef = useRef(onPause)
+  const onTimeUpdateRef = useRef(onTimeUpdate)
+  const onDurationRef = useRef(onDuration)
+  const onWaitingRef = useRef(onWaiting)
+  const onPlayingRef = useRef(onPlaying)
+  const onVolumeRef = useRef(onVolume)
+  const onErrorRef = useRef(onError)
+
+  // Sync refs inside effect (not during render)
+  useEffect(() => {
+    onPlayRef.current = onPlay
+    onPauseRef.current = onPause
+    onTimeUpdateRef.current = onTimeUpdate
+    onDurationRef.current = onDuration
+    onWaitingRef.current = onWaiting
+    onPlayingRef.current = onPlaying
+    onVolumeRef.current = onVolume
+    onErrorRef.current = onError
+  })
+
   useEffect(() => {
     const v = videoRef.current
     if (!v) return
 
+    const handlePlay = () => onPlayRef.current()
+    const handlePause = () => onPauseRef.current()
+    const handleTimeUpdate = () => onTimeUpdateRef.current()
+    const handleDuration = () => onDurationRef.current()
+    const handleWaiting = () => onWaitingRef.current()
+    const handlePlaying = () => onPlayingRef.current()
+    const handleVolume = () => onVolumeRef.current()
     const handleError = () => {
       const code = v.error?.code ?? 0
-      onError?.({
+      onErrorRef.current?.({
         type: code === 2 ? "network" : "media",
         message: MEDIA_ERROR_MESSAGES[code] ?? "Video playback failed",
         details: v.error?.message ?? undefined,
       })
     }
 
-    v.addEventListener("play", onPlay)
-    v.addEventListener("pause", onPause)
-    v.addEventListener("timeupdate", onTimeUpdate)
-    v.addEventListener("durationchange", onDuration)
-    v.addEventListener("waiting", onWaiting)
-    v.addEventListener("playing", onPlaying)
-    v.addEventListener("volumechange", onVolume)
+    v.addEventListener("play", handlePlay)
+    v.addEventListener("pause", handlePause)
+    v.addEventListener("timeupdate", handleTimeUpdate)
+    v.addEventListener("durationchange", handleDuration)
+    v.addEventListener("waiting", handleWaiting)
+    v.addEventListener("playing", handlePlaying)
+    v.addEventListener("volumechange", handleVolume)
     v.addEventListener("error", handleError)
     return () => {
-      v.removeEventListener("play", onPlay)
-      v.removeEventListener("pause", onPause)
-      v.removeEventListener("timeupdate", onTimeUpdate)
-      v.removeEventListener("durationchange", onDuration)
-      v.removeEventListener("waiting", onWaiting)
-      v.removeEventListener("playing", onPlaying)
-      v.removeEventListener("volumechange", onVolume)
+      v.removeEventListener("play", handlePlay)
+      v.removeEventListener("pause", handlePause)
+      v.removeEventListener("timeupdate", handleTimeUpdate)
+      v.removeEventListener("durationchange", handleDuration)
+      v.removeEventListener("waiting", handleWaiting)
+      v.removeEventListener("playing", handlePlaying)
+      v.removeEventListener("volumechange", handleVolume)
       v.removeEventListener("error", handleError)
     }
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [videoRef])
 }

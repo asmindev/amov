@@ -1,4 +1,3 @@
-import { memo } from "react"
 import type {
   Dispatch,
   SetStateAction,
@@ -45,7 +44,7 @@ export interface BottomControlsProps {
   setSelectedQuality: (q: number) => void
 }
 
-export const BottomControls = memo(function BottomControls({
+export function BottomControls({
   progressBarRef,
   currentTime,
   duration,
@@ -312,4 +311,4 @@ export const BottomControls = memo(function BottomControls({
       </div>
     </div>
   )
-})
+}
