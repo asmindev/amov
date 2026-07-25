@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect, useRef, useMemo } from "react"
 
 export interface ParsedCue {
   start: number
@@ -220,9 +220,24 @@ export function useSubtitles(
     }
   }, [selectedSub, subOffset])
 
-  const currentActiveCues = parsedCues.filter(
-    (c) => currentTime >= c.start && currentTime <= c.end
-  )
+  const currentActiveCues = useMemo(() => {
+    if (parsedCues.length === 0) return []
+    // Binary search for first cue whose end >= currentTime
+    let lo = 0
+    let hi = parsedCues.length
+    while (lo < hi) {
+      const mid = (lo + hi) >> 1
+      if (parsedCues[mid].end < currentTime) lo = mid + 1
+      else hi = mid
+    }
+    const result: ParsedCue[] = []
+    for (let i = lo; i < parsedCues.length; i++) {
+      const c = parsedCues[i]
+      if (c.start > currentTime) break
+      if (currentTime >= c.start && currentTime <= c.end) result.push(c)
+    }
+    return result
+  }, [parsedCues, currentTime])
 
   return { currentActiveCues, vttUrl, subError }
 }

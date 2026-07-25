@@ -58,6 +58,9 @@ export function HlsPlayer({
   const containerRef = useRef<HTMLDivElement>(null)
   const hideTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const progressBarRef = useRef<HTMLDivElement>(null)
+  const rafRef = useRef<number>(0)
+  const pauseDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const bufferingDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   // ── State ──────────────────────────────────────────────────────────────────
   const [playing, setPlaying] = useState(false)
@@ -224,25 +227,53 @@ export function HlsPlayer({
 
   useVideoEvents({
     videoRef,
-    onPlay: () => setPlaying(true),
+    onPlay: () => {
+      if (pauseDebounceRef.current) clearTimeout(pauseDebounceRef.current)
+      setPlaying(true)
+    },
     onPause: () => {
-      setPlaying(false)
-      setUiVisible(true)
-      if (hideTimerRef.current) clearTimeout(hideTimerRef.current)
+      if (pauseDebounceRef.current) clearTimeout(pauseDebounceRef.current)
+      pauseDebounceRef.current = setTimeout(() => {
+        const v = videoRef.current
+        if (v && v.paused && !v.seeking) {
+          setPlaying(false)
+          setUiVisible(true)
+          if (hideTimerRef.current) clearTimeout(hideTimerRef.current)
+        }
+      }, 500)
     },
     onTimeUpdate: () => {
-      const v = videoRef.current
-      if (!v) return
-      setCurrentTime(v.currentTime)
-      if (v.buffered.length > 0)
-        setBufferedEnd(v.buffered.end(v.buffered.length - 1))
+      if (rafRef.current) return
+      rafRef.current = requestAnimationFrame(() => {
+        rafRef.current = 0
+        const v = videoRef.current
+        if (!v) return
+        const t = v.currentTime
+        setCurrentTime((prev) => {
+          if (Math.abs(t - prev) < 0.1) return prev
+          return t
+        })
+        if (v.buffered.length > 0) {
+          const b = v.buffered.end(v.buffered.length - 1)
+          setBufferedEnd((prev) => {
+            if (Math.abs(b - prev) < 0.5) return prev
+            return b
+          })
+        }
+      })
     },
     onDuration: () => {
       const v = videoRef.current
       if (v) setDuration(v.duration)
     },
-    onWaiting: () => setBuffering(true),
+    onWaiting: () => {
+      if (bufferingDebounceRef.current) clearTimeout(bufferingDebounceRef.current)
+      bufferingDebounceRef.current = setTimeout(() => {
+        setBuffering(true)
+      }, 200)
+    },
     onPlaying: () => {
+      if (bufferingDebounceRef.current) clearTimeout(bufferingDebounceRef.current)
       setBuffering(false)
       setStreamError(null)
       setNetworkErrorCount(0)
@@ -274,6 +305,15 @@ export function HlsPlayer({
 
   // Track progress → localStorage
   useWatchProgressTracker("movie", movieId, true)
+
+  // ── Cleanup RAF on unmount ────────────────────────────────────────────────
+  useEffect(() => {
+    return () => {
+      if (rafRef.current) cancelAnimationFrame(rafRef.current)
+      if (pauseDebounceRef.current) clearTimeout(pauseDebounceRef.current)
+      if (bufferingDebounceRef.current) clearTimeout(bufferingDebounceRef.current)
+    }
+  }, [])
 
   // ── UI hide/show ──────────────────────────────────────────────────────────
   const showUI = useCallback(() => {
