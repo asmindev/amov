@@ -53,12 +53,10 @@ interface MovieHeroProps {
 
 export function MovieHero({
   movie,
-  trailer,
   showVideo,
   muted,
   toggleMute,
   savedProgress,
-  setShowVideo,
 }: MovieHeroProps) {
   const mediaType = movie.mediaType || "movie"
 
