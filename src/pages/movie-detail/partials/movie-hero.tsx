@@ -153,9 +153,8 @@ export function MovieHero({
 
       <div className="mt-2 flex flex-wrap items-center gap-4">
         <Link
-          to="/$type/$id"
+          to="/$type/$id/netflix"
           params={{ type: mediaType, id: movie.id.toString() }}
-          search={{ play: true }}
           className="flex items-center gap-1.5 rounded-none bg-white px-5 py-3 text-sm font-bold text-black shadow-lg transition-all hover:scale-105 hover:bg-gray-200 active:scale-95 md:gap-2 md:px-8 md:py-3.5 md:text-base"
         >
           <span className="material-symbols-outlined fill !text-[20px] md:!text-[24px]">
@@ -164,16 +163,18 @@ export function MovieHero({
           {savedProgress && savedProgress.timestamp > 30 ? "Resume" : "Play"}
         </Link>
 
+{/* 
         <Link
-          to="/$type/$id/netflix"
+          to="/$type/$id"
           params={{ type: mediaType, id: movie.id.toString() }}
+          search={{ play: true }}
           className="flex items-center gap-1.5 rounded-none bg-white/15 px-5 py-3 text-sm font-bold text-white backdrop-blur-md transition-all hover:scale-105 hover:bg-white/25 active:scale-95 md:gap-2 md:px-8 md:py-3.5 md:text-base"
         >
           <span className="material-symbols-outlined !text-[20px] md:!text-[24px]">
             live_tv
           </span>
-          Custom Player
-        </Link>
+          Embed Player
+        </Link> */}
 
         {trailer && !showVideo && (
           <button
