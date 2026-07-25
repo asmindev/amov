@@ -139,12 +139,11 @@ export function BottomControls({
           <Button
             variant="ghost"
             size="icon"
-            className="group/btn relative h-12 w-12 scale-95 rounded-full text-on-surface hover:bg-white/10 hover:text-white focus:outline-none active:scale-90"
+            className="group/btn relative max-md:h-10 max-md:w-10 h-12 w-12 scale-95 rounded-full text-on-surface hover:bg-white/10 hover:text-white focus:outline-none active:scale-90"
             onClick={togglePlay}
           >
             <span
-              className={`material-symbols-outlined ${playing ? "" : "fill"}`}
-              style={{ fontSize: "46px" }}
+              className={`material-symbols-outlined text-2xl md:text-5xl! ${playing ? "" : "fill"}`}
             >
               {playing ? "pause" : "play_arrow"}
             </span>
@@ -160,7 +159,7 @@ export function BottomControls({
             onClick={() => seek(-10)}
           >
             <span
-              className="material-symbols-outlined"
+              className="material-symbols-outlined text-2xl md:text-4xl!"
               style={{ fontSize: "36px" }}
             >
               replay_10
@@ -177,7 +176,7 @@ export function BottomControls({
             onClick={() => seek(10)}
           >
             <span
-              className="material-symbols-outlined"
+              className="material-symbols-outlined text-2xl md:text-4xl!"
               style={{ fontSize: "36px" }}
             >
               forward_10
@@ -196,12 +195,11 @@ export function BottomControls({
             <Button
               variant="ghost"
               size="icon"
-              className="h-10 w-10 scale-95 rounded-full text-on-surface-variant hover:bg-white/10 hover:text-white active:scale-90"
+              className="max-md:h-9 max-md:w-9 h-10 w-10 scale-95 rounded-full text-on-surface-variant hover:bg-white/10 hover:text-white active:scale-90"
               onClick={toggleMute}
             >
               <span
-                className="material-symbols-outlined"
-                style={{ fontSize: "36px" }}
+                className="material-symbols-outlined text-2xl md:text-4xl!"
               >
                 {muted || volume === 0
                   ? "volume_off"
@@ -237,7 +235,7 @@ export function BottomControls({
             <Button
               variant="ghost"
               size="icon"
-              className={`group/btn relative flex h-10 w-10 scale-95 flex-col items-center justify-center rounded-full transition-all duration-200 hover:bg-white/10 active:scale-90 ${
+              className={`group/btn relative flex max-md:h-9 max-md:w-9 h-10 w-10 scale-95 flex-col items-center justify-center rounded-full transition-all duration-200 hover:bg-white/10 active:scale-90 ${
                 openMenu === "episodes"
                   ? "text-primary"
                   : "text-secondary hover:text-white"
@@ -248,8 +246,7 @@ export function BottomControls({
               }}
             >
               <span
-                className="material-symbols-outlined"
-                style={{ fontSize: "32px" }}
+                className="material-symbols-outlined text-2xl md:text-4xl!"
               >
                 video_library
               </span>
@@ -271,15 +268,14 @@ export function BottomControls({
           <Button
             variant="ghost"
             size="icon"
-            className={`group/btn relative flex h-10 w-10 scale-95 flex-col items-center justify-center rounded-full transition-all duration-200 hover:bg-white/10 active:scale-90 ${openMenu === "settings" || selectedSub ? "text-on-surface" : "text-secondary hover:text-white"}`}
+            className={`group/btn relative flex max-md:h-9 max-md:w-9 h-10 w-10 scale-95 flex-col items-center justify-center rounded-full transition-all duration-200 hover:bg-white/10 active:scale-90 ${openMenu === "settings" || selectedSub ? "text-on-surface" : "text-secondary hover:text-white"}`}
             onClick={(e) => {
               e.stopPropagation()
               setOpenMenu(openMenu === "settings" ? null : "settings")
             }}
           >
             <span
-              className="material-symbols-outlined"
-              style={{ fontSize: "36px" }}
+              className="material-symbols-outlined text-2xl md:text-4xl!"
             >
               settings
             </span>
@@ -294,12 +290,11 @@ export function BottomControls({
           <Button
             variant="ghost"
             size="icon"
-            className="group/btn relative ml-4 flex h-10 w-10 scale-95 flex-col items-center justify-center rounded-full text-secondary transition-all duration-200 hover:bg-white/10 hover:text-white active:scale-90"
+            className="group/btn relative max-md:ml-0 ml-4 max-md:h-9 max-md:w-9 h-10 w-10 scale-95 flex flex-col items-center justify-center rounded-full text-secondary transition-all duration-200 hover:bg-white/10 hover:text-white active:scale-90"
             onClick={toggleFullscreen}
           >
             <span
-              className="material-symbols-outlined"
-              style={{ fontSize: "36px" }}
+              className="material-symbols-outlined text-2xl md:text-4xl!"
             >
               {fullscreen ? "fullscreen_exit" : "fullscreen"}
             </span>

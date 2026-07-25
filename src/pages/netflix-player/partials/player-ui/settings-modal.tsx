@@ -37,12 +37,12 @@ export function SettingsModal({
     <Dialog open onOpenChange={(open) => !open && setOpenMenu(null)}>
       <DialogContent
         showCloseButton={false}
-        className="min-w-6xl h-[80vh] overflow-hidden"
+        className="md:min-w-6xl md:h-[80vh] overflow-hidden"
       >
-        <DialogHeader className="border-b border-border px-2 py-1">
+        <DialogHeader className="h-fit border-b border-border px-2 py-1">
           <div className="flex items-center justify-between">
             <DialogTitle className="text-headline-md pl-2 font-netflix font-black text-foreground uppercase">
-              Audio, Subtitles & Quality
+              Audio & Subtitles
             </DialogTitle>
             <Button
               variant="ghost"
@@ -54,7 +54,7 @@ export function SettingsModal({
           </div>
         </DialogHeader>
 
-        <div className="flex min-h-0 flex-1 flex-col overflow-hidden p-6">
+        <div className="flex min-h-0 flex-1 flex-col overflow-hidden p-2 md:p-6">
           <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
             <SettingsSectionsMobile
               playbackRate={playbackRate}

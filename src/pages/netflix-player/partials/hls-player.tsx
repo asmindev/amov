@@ -226,7 +226,6 @@ export function HlsPlayer({
     videoRef,
     onPlay: () => {
       setPlaying(true)
-      setUiVisible(true)
       if (hideTimerRef.current) clearTimeout(hideTimerRef.current)
       hideTimerRef.current = setTimeout(() => {
         if (
@@ -493,7 +492,7 @@ export function HlsPlayer({
 
       {/* ── Fetching overlay ── */}
       {isFetchingProvider && (
-        <div className="absolute inset-0 z-40 flex flex-col items-center justify-center bg-black/90">
+        <div className="absolute inset-0 z-40 flex flex-col items-center justify-center bg-black/60">
           <RefreshCw className="mb-4 h-10 w-10 animate-spin text-white opacity-80" />
           <p className="text-base font-medium text-white opacity-80">
             Connecting via{" "}

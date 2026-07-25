@@ -155,9 +155,9 @@ export function MovieHero({
         <Link
           to="/$type/$id/netflix"
           params={{ type: mediaType, id: movie.id.toString() }}
-          className="flex items-center gap-1.5 rounded-none bg-white px-5 py-3 text-sm font-bold text-black shadow-lg transition-all hover:scale-105 hover:bg-gray-200 active:scale-95 md:gap-2 md:px-8 md:py-3.5 md:text-base"
+          className="flex items-center gap-1.5 rounded-none bg-primary px-5 py-3 text-sm font-bold text-white shadow-lg transition-all hover:scale-105 hover:bg-gray-200 active:scale-95 md:gap-2 md:px-8 md:py-3.5 md:text-base"
         >
-          <span className="material-symbols-outlined fill !text-[20px] md:!text-[24px]">
+          <span className="material-symbols-outlined fill text-xl md:text-2xl!">
             play_arrow
           </span>
           {savedProgress && savedProgress.timestamp > 30 ? "Resume" : "Play"}

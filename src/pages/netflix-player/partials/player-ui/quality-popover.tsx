@@ -24,13 +24,12 @@ export function QualityPopover({
           <Button
             variant="ghost"
             size="icon"
-            className="group/btn relative flex h-10 w-10 scale-95 flex-col items-center justify-center rounded-full transition-all duration-200 hover:bg-white/10 active:scale-90 text-secondary hover:text-white"
+            className="group/btn relative flex max-md:h-9 max-md:w-9 h-10 w-10 scale-95 flex-col items-center justify-center rounded-full transition-all duration-200 hover:bg-white/10 active:scale-90 text-secondary hover:text-white"
           />
         }
       >
         <span
-          className="material-symbols-outlined"
-          style={{ fontSize: "36px" }}
+          className="material-symbols-outlined text-2xl md:text-4xl!"
         >
           high_quality
         </span>
@@ -70,7 +69,7 @@ export function QualityPopover({
                 <span className="ml-2 text-xs text-secondary">Best</span>
               )}
               {i === selectedQuality && (
-                <span className="material-symbols-outlined ml-2 !text-[18px]">
+                <span className="material-symbols-outlined ml-2 text-[18px]!">
                   check
                 </span>
               )}

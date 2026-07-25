@@ -168,7 +168,7 @@ export default function NetflixPlayerPage() {
             <img
               src={posterUrl}
               alt={movie.title}
-              className="absolute inset-0 h-full w-full object-cover opacity-10"
+              className="absolute inset-0 h-full w-full object-cover opacity-40"
             />
           )}
           <div className="relative z-10 text-center">

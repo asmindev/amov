@@ -2,6 +2,19 @@ import { memo } from "react"
 import { Link } from "@tanstack/react-router"
 import type { Dispatch, SetStateAction } from "react"
 import { Button } from "@/components/ui/button"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuPortal,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
 
 export interface TopAppBarProps {
   mediaType: "movie" | "tv"
@@ -34,70 +47,85 @@ export const TopAppBar = memo(function TopAppBar({
         <Link
           to="/$type/$id"
           params={{ type: mediaType, id: movieId.toString() }}
-          className="pointer-events-auto flex h-12 w-12 items-center justify-center text-white/80 transition-all hover:scale-110 hover:text-white"
+          className="pointer-events-auto flex max-md:h-10 max-md:w-10 h-12 w-12 items-center justify-center text-white/80 transition-all hover:scale-110 hover:text-white"
           onClick={(e) => e.stopPropagation()}
         >
           <span
-            className="material-symbols-outlined leading-none"
-            style={{ fontSize: "36px", fontVariationSettings: "'wght' 700" }}
+            className="material-symbols-outlined max-md:text-[24px] text-[36px] leading-none"
+            style={{ fontVariationSettings: "'wght' 700" }}
           >
             arrow_back
           </span>
         </Link>
-        <h1 className="max-w-xs truncate text-xl leading-none font-bold tracking-wide text-white sm:max-w-md md:max-w-xl md:text-2xl lg:max-w-3xl">
+        <h1 className="max-w-5/12 truncate text-lg leading-none font-bold tracking-wide text-white sm:max-w-md md:max-w-xl md:text-2xl lg:max-w-3xl">
           {movieTitle}
         </h1>
       </div>
 
       <div className="pointer-events-auto flex items-center gap-control-gap">
         <div className="group/server relative">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="flex h-12 w-12 scale-95 flex-col items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-white/10 hover:text-white active:scale-90"
-            onClick={(e) => {
-              e.stopPropagation()
-              setOpenMenu(openMenu === "provider" ? null : "provider")
-            }}
-          >
-            <span
-              className="material-symbols-outlined"
-              data-icon="dns"
-              style={{ fontSize: "28px" }}
-            >
-              dns
-            </span>
-            <span className="text-label-sm pointer-events-none absolute -bottom-8 rounded bg-popover px-2 py-1 font-label-sm whitespace-nowrap text-popover-foreground opacity-0 transition-opacity group-hover/server:opacity-100">
-              Server: {provider}
-            </span>
-          </Button>
-          {openMenu === "provider" && (
-            <div className="absolute top-full right-0 z-50 mt-4 min-w-[200px] overflow-hidden rounded-xl border border-border bg-popover/90 text-popover-foreground shadow-2xl backdrop-blur-xl">
-              {allProviders.map((p, i) => (
-                <Button
-                  key={p}
-                  variant="ghost"
-                  className={`h-auto w-full justify-between rounded-none px-5 py-3 font-body-md text-sm ${
-                    i === providerIndex
-                      ? "bg-white/5 font-bold text-white hover:bg-white/10"
-                      : "text-muted-foreground hover:bg-white/5 hover:text-white"
-                  }`}
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    onProviderChange(i)
-                    setOpenMenu(null)
-                  }}
-                >
-                  {p}
-                  {i === providerIndex && (
-                    <span className="material-symbols-outlined text-lg text-primary">
-                      check
-                    </span>
-                  )}
-                </Button>
-              ))}
-            </div>
-          )}
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger>
+                <span>
+                  <DropdownMenu
+                    open={openMenu === "provider"}
+                    onOpenChange={(open) => setOpenMenu(open ? "provider" : null)}
+                  >
+                    <DropdownMenuTrigger
+                      render={
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="flex max-md:h-10 max-md:w-10 h-12 w-12 scale-95 flex-col items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-white/10 hover:text-white active:scale-90"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <span
+                            className="material-symbols-outlined text-2xl md:text-4xl!"
+                            data-icon="dns"
+                          >
+                            dns
+                          </span>
+                        </Button>
+                      }
+                    />
+                    <DropdownMenuPortal>
+              <DropdownMenuContent
+                align="end"
+                side="bottom"
+                sideOffset={8}
+                className="z-1000 w-[min(220px,calc(100vw-2rem))] max-w-[calc(100vw-2rem)] overflow-hidden rounded-xl border border-border/60 bg-popover/95 p-1 text-popover-foreground shadow-2xl backdrop-blur-xl"
+              >
+                {allProviders.map((p, i) => (
+                  <DropdownMenuItem
+                    key={p}
+                    className={`flex cursor-pointer items-center justify-between rounded-lg px-4 py-3 text-sm ${
+                      i === providerIndex
+                        ? "bg-white/5 font-bold text-white focus:bg-white/10"
+                        : "text-muted-foreground hover:bg-white/5 hover:text-white focus:bg-white/5 focus:text-white"
+                    }`}
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      onProviderChange(i)
+                      setOpenMenu(null)
+                    }}
+                  >
+                    <span>{p}</span>
+                    {i === providerIndex && (
+                      <span className="material-symbols-outlined text-lg text-primary">
+                        check
+                      </span>
+                    )}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenuPortal>
+          </DropdownMenu>
+        </span>
+      </TooltipTrigger>
+      <TooltipContent>Server: {provider}</TooltipContent>
+    </Tooltip>
+  </TooltipProvider>
         </div>
       </div>
     </div>

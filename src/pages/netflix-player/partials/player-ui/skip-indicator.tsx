@@ -19,12 +19,9 @@ export function SkipIndicator({ skipIndicator }: SkipIndicatorProps) {
           transition={{ duration: 0.3, ease: "easeOut" }}
           className="pointer-events-none absolute inset-0 z-50 flex items-center justify-center"
         >
-          <div className="flex flex-col items-center gap-2 rounded-full bg-black/60 px-6 py-5 text-white backdrop-blur-md">
-            <span className="material-symbols-outlined animate-pulse !text-[48px]">
-              {skipIndicator.type === "forward" ? "forward_10" : "replay_10"}
-            </span>
+          <div className="flex flex-col items-center gap-2 rounded-full px-6 py-5 text-white backdrop-blur-xs border border-white/20 bg-black/10">
             <span className="text-sm font-bold tracking-wider uppercase">
-              {skipIndicator.type === "forward" ? "+10s" : "-10s"}
+              {skipIndicator.type === "forward" ? "+10 s" : "-10 s"}
             </span>
           </div>
         </motion.div>
