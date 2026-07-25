@@ -6,6 +6,7 @@ import { formatYear } from "@/helpers/format-date"
 import { getMovieQuality } from "@/helpers/movie-quality"
 import { getMaturityRating } from "@/helpers/maturity-rating"
 import { clearWatchProgress } from "@/hooks/use-watch-progress"
+import { Button } from "@/components/ui/button"
 
 function formatRuntime(minutes: number | null): string {
   if (!minutes) return "N/A"
@@ -176,7 +177,7 @@ export function MovieHero({
           Embed Player
         </Link> */}
 
-        {trailer && !showVideo && (
+        {/* {trailer && !showVideo && (
           <button
             onClick={() => setShowVideo(true)}
             className="flex items-center gap-2 rounded-none bg-white/15 px-8 py-3.5 text-base font-bold text-white backdrop-blur-md transition-all hover:scale-105 hover:bg-white/25 active:scale-95"
@@ -186,7 +187,16 @@ export function MovieHero({
             </span>
             Trailer
           </button>
-        )}
+        )} */}
+        {/* button watchlist */}
+        <Button variant="outline" 
+          className="flex items-center gap-1.5 rounded-none bg-primary px-5 py-3 text-sm font-bold text-white shadow-lg transition-all hover:scale-105 hover:bg-gray-200 active:scale-95 md:gap-2 md:px-8 md:py-3.5 md:text-base"
+        >
+          <span className="material-symbols-outlined fill text-xl md:text-2xl!">
+            add
+          </span>
+          Watchlist
+        </Button>
       </div>
     </motion.div>
   )
