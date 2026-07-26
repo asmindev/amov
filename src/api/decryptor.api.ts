@@ -67,6 +67,9 @@ export async function fetchDecryptedSources(
     if (params.imdbId && params.imdbId.startsWith("tt")) {
       const mbQs = new URLSearchParams({
         imdbId: params.imdbId,
+        originalTitle: params.title,
+        mediaType: params.mediaType,
+        ...(params.year ? { year: params.year } : {}),
         ...(params.season !== undefined
           ? { seasonId: String(params.season) }
           : {}),
