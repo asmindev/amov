@@ -30,7 +30,7 @@ function getStorageKey(type: string, id: string | number): string {
   return `${type}_${id}`
 }
 
-function loadAllProgress(): Record<string, WatchProgress> {
+export function loadAllProgress(): Record<string, WatchProgress> {
   try {
     const raw = localStorage.getItem(STORAGE_KEY)
     return raw ? (JSON.parse(raw) as Record<string, WatchProgress>) : {}

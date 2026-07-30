@@ -3,6 +3,12 @@ import { Link, useLocation } from "@tanstack/react-router"
 import { SearchModal } from "@/components/search/search-modal"
 import { Search, Globe } from "lucide-react"
 import { useAuthStore } from "@/stores/auth-store"
+import { loadAllProgress } from "@/hooks/use-watch-progress"
+import {
+  fetchWatchHistory,
+  upsertWatchHistory,
+  mergeWatchHistory,
+} from "@/api/watch-history.api"
 
 const navLinks = [
   { to: "/", label: "Home" },
@@ -14,7 +20,25 @@ export function Navbar() {
   const { pathname } = useLocation()
   const [scrolled, setScrolled] = useState(false)
   const [isSearchOpen, setIsSearchOpen] = useState(false)
-  const { user, role, signOut, setAuthModalOpen } = useAuthStore()
+  const { user, role, signOut, setAuthModalOpen, syncEnabled, setSyncEnabled } =
+    useAuthStore()
+  const [syncing, setSyncing] = useState(false)
+
+  const handleSyncToCloud = async () => {
+    if (syncing || !user) return
+    setSyncing(true)
+    try {
+      const localEntries = Object.values(loadAllProgress())
+      const cloudEntries = await fetchWatchHistory(user.id)
+      const merged = mergeWatchHistory(localEntries, cloudEntries)
+      const ok = await upsertWatchHistory(user.id, merged)
+      if (ok) {
+        setSyncEnabled(true)
+      }
+    } finally {
+      setSyncing(false)
+    }
+  }
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 50)
@@ -142,6 +166,20 @@ export function Navbar() {
                 >
                   {user.email?.[0] ?? "U"}
                 </div>
+                <button
+                  type="button"
+                  onClick={handleSyncToCloud}
+                  disabled={syncing}
+                  className={`text-xs font-semibold transition-colors ${
+                    syncEnabled
+                      ? "text-green-400"
+                      : scrolled || !isTransparentMode
+                        ? "text-muted-foreground hover:text-foreground"
+                        : "text-white/70 hover:text-white"
+                  }`}
+                >
+                  {syncing ? "Syncing..." : syncEnabled ? "Synced ✓" : "Sync to Cloud"}
+                </button>
                 <button
                   type="button"
                   onClick={() => void signOut()}
