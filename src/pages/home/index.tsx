@@ -34,9 +34,9 @@ export default function HomePage() {
         <HeroBanner movies={movies} />
       ) : null}
 
-      <ContinueWatchingSection />
-
       <div className="mx-auto mt-6 w-full space-y-8 lg:w-11/12">
+        <ContinueWatchingSection />
+
         {trending.isPending ? (
           <TrendingSectionSkeleton />
         ) : trending.data ? (

@@ -39,7 +39,7 @@ export function loadAllProgress(): Record<string, WatchProgress> {
   }
 }
 
-function saveAllProgress(data: Record<string, WatchProgress>) {
+export function saveAllProgress(data: Record<string, WatchProgress>) {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data))
   } catch {
