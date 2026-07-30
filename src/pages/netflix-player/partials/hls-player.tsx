@@ -337,6 +337,10 @@ export function HlsPlayer({
     movieId,
     duration,
     playing,
+    title: movieTitle,
+    posterPath: backdropPath ?? null,
+    backdropPath: backdropPath ?? null,
+  })
 
   // ── Cleanup RAF on unmount ────────────────────────────────────────────────
   useEffect(() => {
