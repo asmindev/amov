@@ -28,6 +28,7 @@ import { PausedOverlay } from "./player-ui/paused-overlay"
 import { SkipIndicator } from "./player-ui/skip-indicator"
 import type { HlsPlayerProps } from "../hls-player.types"
 import type { StreamError } from "../hooks/use-hls-loader"
+import { getWatchProgress } from "@/hooks/use-watch-progress"
 
 // ─── Main Component ───────────────────────────────────────────────────────────
 
@@ -63,10 +64,13 @@ export function HlsPlayer({
   const pauseDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const bufferingDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
-  // ── State ──────────────────────────────────────────────────────────────────
+  // ── State (seed currentTime/duration from localStorage for instant visual feedback) ──
+  const savedProgress = getWatchProgress(mediaType, movieId)
   const [playing, setPlaying] = useState(false)
-  const [currentTime, setCurrentTime] = useState(0)
-  const [duration, setDuration] = useState(0)
+  const [currentTime, setCurrentTime] = useState(
+    savedProgress?.timestamp ?? 0
+  )
+  const [duration, setDuration] = useState(savedProgress?.duration ?? 0)
   const [bufferedEnd, setBufferedEnd] = useState(0)
   const [volume, setVolume] = useState(1)
   const [muted, setMuted] = useState(false)
