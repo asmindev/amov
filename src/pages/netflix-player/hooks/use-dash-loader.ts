@@ -7,6 +7,7 @@ import type { StreamError } from "./use-hls-loader"
 
 interface UseDashLoaderOpts {
   videoRef: RefObject<HTMLVideoElement | null>
+  mediaType: "movie" | "tv"
   sources: StreamSource[]
   selectedQuality: number
   retryKey: number
@@ -19,6 +20,7 @@ interface UseDashLoaderOpts {
 
 export function useDashLoader({
   videoRef,
+  mediaType,
   sources,
   selectedQuality,
   retryKey,
@@ -49,7 +51,7 @@ export function useDashLoader({
       return pUrl
     }
 
-    const savedTs = getSavedTimestamp(movieId)
+    const savedTs = getSavedTimestamp(mediaType, movieId)
     const proxiedUrl = buildProxyUrl(src)
 
     const player = dashjs.MediaPlayer().create()

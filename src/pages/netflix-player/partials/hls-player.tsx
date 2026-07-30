@@ -10,7 +10,6 @@ import type { WyzieSubtitleGroup } from "@/api/decryptor.api"
 import { fetchWyzieSubtitles } from "@/api/decryptor.api"
 import { RefreshCw, AlertTriangle, WifiOff } from "lucide-react"
 import { AnimatePresence } from "motion/react"
-import { useWatchProgressTracker } from "@/hooks/use-watch-progress"
 import { TopAppBar } from "./player-ui/top-app-bar"
 import { BottomControls } from "./player-ui/bottom-controls"
 import { SettingsModal } from "./player-ui/settings-modal"
@@ -23,6 +22,7 @@ import { useFullscreen } from "../hooks/use-fullscreen"
 import { useKeyboardControls } from "../hooks/use-keyboard-controls"
 import { useHlsLoader } from "../hooks/use-hls-loader"
 import { useDashLoader } from "../hooks/use-dash-loader"
+import { useProgressPersistence } from "../hooks/use-progress-persistence"
 import { SubtitleOverlay } from "./player-ui/subtitle-overlay"
 import { PausedOverlay } from "./player-ui/paused-overlay"
 import { SkipIndicator } from "./player-ui/skip-indicator"
@@ -212,6 +212,7 @@ export function HlsPlayer({
   useHlsLoader({
     videoRef,
     hlsRef,
+    mediaType,
     sources,
     selectedQuality,
     retryKey,
@@ -225,6 +226,7 @@ export function HlsPlayer({
 
   useDashLoader({
     videoRef,
+    mediaType,
     sources,
     selectedQuality,
     retryKey,
@@ -322,8 +324,14 @@ export function HlsPlayer({
     }
   }, [iosNativeFullscreen, vttUrl])
 
-  // Track progress → localStorage
-  useWatchProgressTracker(mediaType, movieId, true)
+  // Track progress → localStorage (native video, not iframe)
+  useProgressPersistence({
+    videoRef,
+    mediaType,
+    movieId,
+    duration,
+    playing,
+  })
 
   // ── Cleanup RAF on unmount ────────────────────────────────────────────────
   useEffect(() => {

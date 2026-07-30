@@ -13,6 +13,7 @@ export interface StreamError {
 interface UseHlsLoaderOpts {
   videoRef: RefObject<HTMLVideoElement | null>
   hlsRef: RefObject<Hls | null>
+  mediaType: "movie" | "tv"
   sources: StreamSource[]
   selectedQuality: number
   retryKey: number
@@ -27,6 +28,7 @@ interface UseHlsLoaderOpts {
 export function useHlsLoader({
   videoRef,
   hlsRef,
+  mediaType,
   sources,
   selectedQuality,
   retryKey,
@@ -55,7 +57,7 @@ export function useHlsLoader({
       return pUrl
     }
 
-    const savedTs = getSavedTimestamp(movieId)
+    const savedTs = getSavedTimestamp(mediaType, movieId)
 
     hlsRef.current?.destroy()
     hlsRef.current = null
