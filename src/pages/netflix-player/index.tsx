@@ -4,6 +4,7 @@ import { AlertTriangle, ServerCrash } from "lucide-react"
 import { useMediaDetail } from "@/pages/movie-detail/hooks/use-movie-detail"
 import { useSources } from "./hooks/use-sources"
 import { HlsPlayer } from "./partials/hls-player"
+import { MoviePendingSkeleton, SourceLoadingOverlay } from "./partials/loading-animations"
 import { getBackdropUrl as getBdUrl } from "@/helpers/image-url"
 import { recordAnalyticsEvent } from "@/api/analytics.api"
 
@@ -78,14 +79,7 @@ export default function NetflixPlayerPage() {
 
   // ── Loading state ────────────────────────────────────────────────────────
   if (moviePending) {
-    return (
-      <div className="fixed inset-0 flex items-center justify-center bg-black">
-        <div className="text-center">
-          <div className="mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-4 border-white/20 border-t-red-500" />
-          <p className="text-sm text-white/60">Loading media details…</p>
-        </div>
-      </div>
-    )
+    return <MoviePendingSkeleton />
   }
 
   if (movieError || !movie) {
@@ -162,24 +156,11 @@ export default function NetflixPlayerPage() {
           seasons={movie.seasons}
         />
       ) : (
-        /* Fetching sources loading state */
-        <div className="flex h-full w-full flex-col items-center justify-center">
-          {posterUrl && (
-            <img
-              src={posterUrl}
-              alt={movie.title}
-              className="absolute inset-0 h-full w-full object-cover opacity-40"
-            />
-          )}
-          <div className="relative z-10 text-center">
-            <div className="mx-auto mb-5 h-14 w-14 animate-spin rounded-full border-4 border-white/20 border-t-red-500" />
-            <p className="text-lg font-bold text-white">{movie.title}</p>
-            <p className="mt-1 text-sm text-white/50">
-              Connecting via{" "}
-              <span className="font-semibold text-red-400">{provider}</span>…
-            </p>
-          </div>
-        </div>
+        <SourceLoadingOverlay
+          posterUrl={posterUrl}
+          title={movie.title}
+          provider={provider}
+        />
       )}
     </div>
   )

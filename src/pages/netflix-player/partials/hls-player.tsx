@@ -23,6 +23,7 @@ import { useKeyboardControls } from "../hooks/use-keyboard-controls"
 import { useHlsLoader } from "../hooks/use-hls-loader"
 import { useDashLoader } from "../hooks/use-dash-loader"
 import { useProgressPersistence } from "../hooks/use-progress-persistence"
+import { ProviderConnectingOverlay, BufferingPulse } from "./loading-animations"
 import { SubtitleOverlay } from "./player-ui/subtitle-overlay"
 import { PausedOverlay } from "./player-ui/paused-overlay"
 import { SkipIndicator } from "./player-ui/skip-indicator"
@@ -550,25 +551,16 @@ export function HlsPlayer({
 
       {/* ── Fetching overlay ── */}
       {isFetchingProvider && (
-        <div className="absolute inset-0 z-40 flex flex-col items-center justify-center bg-black/60">
-          <RefreshCw className="mb-4 h-10 w-10 animate-spin text-white opacity-80" />
-          <p className="text-base font-medium text-white opacity-80">
-            Connecting via{" "}
-            <span className="font-bold text-[#E50914]">{provider}</span>…
-          </p>
-          {providerIndex > 0 && (
-            <p className="mt-1 text-sm text-white/40">
-              Fallback {providerIndex + 1} / {allProviders.length}
-            </p>
-          )}
-        </div>
+        <ProviderConnectingOverlay
+          provider={provider}
+          providerIndex={providerIndex}
+          allProviders={allProviders}
+        />
       )}
 
-      {/* ── Buffering spinner ── */}
+      {/* ── Buffering pulse overlay ── */}
       {buffering && !isFetchingProvider && !streamError && (
-        <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center">
-          <div className="h-14 w-14 animate-spin rounded-full border-[3px] border-white/20 border-t-white" />
-        </div>
+        <BufferingPulse />
       )}
 
       {/* ── Stream error overlay ── */}
