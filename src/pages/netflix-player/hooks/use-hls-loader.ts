@@ -60,7 +60,7 @@ export function useHlsLoader({
     hlsRef.current?.destroy()
     hlsRef.current = null
 
-    const isHls = src.includes(".m3u8") || src.includes("/hls/")
+    const isHls = src.includes(".m3u8")
     if (Hls.isSupported() && isHls) {
       let currentRemoteBase = ""
       if (src.startsWith("http://") || src.startsWith("https://")) {
@@ -76,19 +76,28 @@ export function useHlsLoader({
         startPosition: savedTs > 30 ? savedTs : -1,
         xhrSetup: (xhr, url) => {
           let targetUrl = url
-          const localHost = window.location.host
-          const isLocal =
-            url.includes(localHost) ||
-            url.includes("/api/decryptor") ||
-            (!url.startsWith("http://") && !url.startsWith("https://"))
 
-          if (isLocal && currentRemoteBase) {
-            const relativePath = url
-              .replace(/^https?:\/\/[^/]+/, "")
-              .replace(/^\/api\/decryptor\//, "")
-              .replace(/^\//, "")
-            targetUrl = new URL(relativePath, currentRemoteBase).toString()
-          } else if (!isLocal) {
+          // If currentRemoteBase is known and the URL points to our host
+          // but not the CDN, it's a domain-relative path (e.g. /seg/001.ts)
+          // that got resolved against the proxy response URL instead of the CDN.
+          if (currentRemoteBase) {
+            try {
+              const cdnHost = new URL(currentRemoteBase).host
+              const isCdnUrl = url.includes(cdnHost)
+              const isLocalhost = url.startsWith("http://localhost") || url.startsWith("https://localhost")
+              if (!isCdnUrl && (isLocalhost || url.includes(window.location.host))) {
+                const protocolIdx = url.indexOf("://") + 3
+                const path = url.substring(url.indexOf("/", protocolIdx))
+                targetUrl = new URL(path, currentRemoteBase).toString()
+              } else if (!isCdnUrl && !isLocalhost && !url.startsWith("http")) {
+                targetUrl = new URL(url, currentRemoteBase).toString()
+              } else if (isCdnUrl) {
+                currentRemoteBase = url.substring(0, url.lastIndexOf("/") + 1)
+              }
+            } catch {
+              // fall through with targetUrl = url
+            }
+          } else if (url.startsWith("http")) {
             currentRemoteBase = url.substring(0, url.lastIndexOf("/") + 1)
           }
 

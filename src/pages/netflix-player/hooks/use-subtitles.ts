@@ -210,6 +210,9 @@ export function useSubtitles(
 
     return () => {
       isCancelled = true
+      // Clear vttUrl state BEFORE revoking so the last render sees null, not a dead URL
+      setVttUrl(null)
+      setParsedCues([])
       if (blobUrlRef.current) {
         URL.revokeObjectURL(blobUrlRef.current)
         blobUrlRef.current = null

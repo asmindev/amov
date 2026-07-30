@@ -88,8 +88,11 @@ export async function fetchDecryptedSources(
 
     // Fallback: search Moviebox catalog by title if imdbId is missing or yielded no sources
     if (!mbJson || !mbJson.sources || mbJson.sources.length === 0) {
+      if (!params.title || !params.title.trim()) {
+        throw new Error("Moviebox: no IMDB ID and no title to search")
+      }
       const searchRes = await fetch(
-        `${DECRYPTOR_URL}/moviebox/search?q=${encodeURIComponent(params.title)}`
+        `${DECRYPTOR_URL}/moviebox/search?q=${encodeURIComponent(params.title.trim())}`
       )
       if (!searchRes.ok) {
         throw new Error(`Moviebox search failed for "${params.title}"`)

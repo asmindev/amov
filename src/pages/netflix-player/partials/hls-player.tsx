@@ -22,6 +22,7 @@ import { useVideoEvents } from "../hooks/use-video-events"
 import { useFullscreen } from "../hooks/use-fullscreen"
 import { useKeyboardControls } from "../hooks/use-keyboard-controls"
 import { useHlsLoader } from "../hooks/use-hls-loader"
+import { useDashLoader } from "../hooks/use-dash-loader"
 import { SubtitleOverlay } from "./player-ui/subtitle-overlay"
 import { PausedOverlay } from "./player-ui/paused-overlay"
 import { SkipIndicator } from "./player-ui/skip-indicator"
@@ -220,6 +221,18 @@ export function HlsPlayer({
     episode,
     onError: setStreamError,
     onNetworkError: () => setNetworkErrorCount((c) => c + 1),
+  })
+
+  useDashLoader({
+    videoRef,
+    sources,
+    selectedQuality,
+    retryKey,
+    movieId,
+    imdbId,
+    season,
+    episode,
+    onError: setStreamError,
   })
 
   useVideoEvents({

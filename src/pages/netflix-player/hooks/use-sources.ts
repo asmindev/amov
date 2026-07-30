@@ -32,7 +32,7 @@ export function useSources(params: UseSourcesParams): UseSourcesReturn {
   const [providerIndex, setProviderIndex] = useState(0)
   const provider = DECRYPTOR_PROVIDERS[providerIndex]
 
-  const enabled = !!params.tmdbId && !!params.title
+  const enabled = !!params.tmdbId
 
   const queryKey = [
     ...queryKeys.decryptor.sources(params.tmdbId, provider),
@@ -53,14 +53,20 @@ export function useSources(params: UseSourcesParams): UseSourcesReturn {
   })
 
   // Auto-fallback: if current provider errors, try next
+  // Guard with failureCount to avoid racing on stale isError
+  // when providerIndex changes and the new query hasn't settled.
   useEffect(() => {
-    if (query.isError && providerIndex < DECRYPTOR_PROVIDERS.length - 1) {
+    if (
+      query.isError &&
+      query.failureCount > 0 &&
+      providerIndex < DECRYPTOR_PROVIDERS.length - 1
+    ) {
       const timer = setTimeout(() => {
         setProviderIndex((i) => i + 1)
       }, 800)
       return () => clearTimeout(timer)
     }
-  }, [query.isError, providerIndex])
+  }, [query.isError, query.failureCount, providerIndex])
 
   return {
     data: query.data,

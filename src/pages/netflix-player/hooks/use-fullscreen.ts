@@ -20,7 +20,6 @@ export function useFullscreen(
     document.addEventListener("fullscreenchange", handler)
     document.addEventListener("webkitfullscreenchange", handler)
 
-    const v = videoRef.current
     const onWebkitBeginFs = () => {
       setFullscreen(true)
       setIosNativeFullscreen(true)
@@ -30,6 +29,9 @@ export function useFullscreen(
       setIosNativeFullscreen(false)
     }
 
+    // Re-listen on the current video element each time videoRef changes
+    // (e.g. after HLS.js attaches a new <video> element)
+    const v = videoRef.current
     if (v) {
       v.addEventListener("webkitbeginfullscreen", onWebkitBeginFs)
       v.addEventListener("webkitendfullscreen", onWebkitEndFs)
@@ -43,7 +45,7 @@ export function useFullscreen(
         v.removeEventListener("webkitendfullscreen", onWebkitEndFs)
       }
     }
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [videoRef])
 
   const toggleFullscreen = useCallback(async () => {
     const el = containerRef.current
