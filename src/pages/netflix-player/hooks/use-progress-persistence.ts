@@ -47,16 +47,17 @@ export function useProgressPersistence({
 
   useEffect(() => {
     if (!playing || !duration) {
-      // Flush final position on pause before clearing
+      // Flush final position on pause — read video directly, not the ref (may be stale)
       const v = videoRef.current
-      if (v && lastSavedRef.current > 30) {
+      const ts = v && v.paused ? v.currentTime : lastSavedRef.current
+      if (ts > 30) {
         const all = loadAll()
         const key = `${mediaType}_${movieId}`
         all[key] = {
           id: movieId,
           type: mediaType,
-          progress: (lastSavedRef.current / duration) * 100,
-          timestamp: lastSavedRef.current,
+          progress: (ts / duration) * 100,
+          timestamp: ts,
           duration,
           updatedAt: Date.now(),
         }

@@ -67,6 +67,8 @@ export function HlsPlayer({
 
   // ── State (seed currentTime/duration from localStorage for instant visual feedback) ──
   const savedProgress = getWatchProgress(mediaType, movieId)
+  // Track restored progress so timeupdate doesn't overwrite it during initial buffering
+  const restoredTsRef = useRef(savedProgress?.timestamp ?? 0)
   const [playing, setPlaying] = useState(false)
   const [currentTime, setCurrentTime] = useState(
     savedProgress?.timestamp ?? 0
@@ -276,7 +278,14 @@ export function HlsPlayer({
         rafRef.current = 0
         const v = videoRef.current
         if (!v) return
-        const t = v.currentTime
+        let t = v.currentTime
+        // Ponytail: restore-in-progress guard — if we restored progress and video is
+        // still loading (not playing yet), ignore currentTime=0 so it doesn't
+        // overwrite the optimistic state before seek completes.
+        const restored = restoredTsRef.current
+        if (t === 0 && restored > 0 && !v.played.length) {
+          t = restored
+        }
         setCurrentTime((prev) => {
           if (Math.abs(t - prev) < 0.1) return prev
           return t
@@ -292,7 +301,10 @@ export function HlsPlayer({
     },
     onDuration: () => {
       const v = videoRef.current
-      if (v) setDuration(v.duration)
+      // Guard against transient NaN (HLS config / quality switch)
+      if (v && isFinite(v.duration) && v.duration !== 0) {
+        setDuration(v.duration)
+      }
     },
     onWaiting: () => {
       if (bufferingDebounceRef.current) clearTimeout(bufferingDebounceRef.current)
