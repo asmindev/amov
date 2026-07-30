@@ -11,6 +11,8 @@ export function ContinueWatchingSection() {
 
   if (!data || data.length === 0) return null
 
+  // ponytail: anime excluded because Movie.mediaType only accepts "movie" | "tv"
+  // — revisit when anime type is added to TrendingSection's Movie type
   const movies = data
     .filter((e) => e.type !== "anime")
     .map((entry) => ({

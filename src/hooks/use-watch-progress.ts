@@ -91,7 +91,7 @@ export function useWatchProgressTracker(
       saveAllProgress(all)
       setLastProgress(entry)
     },
-    [contentType, contentId]
+    [contentType, contentId, metadata]
   )
 
   useEffect(() => {

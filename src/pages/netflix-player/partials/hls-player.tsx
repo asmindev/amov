@@ -10,7 +10,6 @@ import type { WyzieSubtitleGroup } from "@/api/decryptor.api"
 import { fetchWyzieSubtitles } from "@/api/decryptor.api"
 import { RefreshCw, AlertTriangle, WifiOff } from "lucide-react"
 import { AnimatePresence } from "motion/react"
-import { useWatchProgressTracker } from "@/hooks/use-watch-progress"
 import { useProgressPersistence } from "../hooks/use-progress-persistence"
 import { TopAppBar } from "./player-ui/top-app-bar"
 import { BottomControls } from "./player-ui/bottom-controls"
@@ -312,8 +311,6 @@ export function HlsPlayer({
   }, [iosNativeFullscreen, vttUrl])
 
   // Track progress → localStorage
-  useWatchProgressTracker(mediaType, movieId, true)
-
   useProgressPersistence({
     videoRef,
     mediaType,

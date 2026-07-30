@@ -108,5 +108,5 @@ export function useProgressPersistence({
         saveTimerRef.current = null
       }
     }
-  }, [playing, duration, mediaType, movieId, videoRef, intervalSeconds])
+  }, [playing, duration, mediaType, movieId, videoRef, intervalSeconds, title, posterPath, backdropPath])
 }
