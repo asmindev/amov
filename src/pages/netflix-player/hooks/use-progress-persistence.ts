@@ -65,9 +65,9 @@ export function useProgressPersistence({
           progress: (lastSavedRef.current / duration) * 100,
           timestamp: lastSavedRef.current,
           duration,
-          title: title ?? undefined,
-          posterPath: posterPath ?? undefined,
-          backdropPath: backdropPath ?? undefined,
+          title,
+          posterPath,
+          backdropPath,
           updatedAt: Date.now(),
         }
         saveAll(all)
@@ -94,9 +94,9 @@ export function useProgressPersistence({
         progress: duration ? (ts / duration) * 100 : 0,
         timestamp: ts,
         duration,
-        title: title ?? undefined,
-        posterPath: posterPath ?? undefined,
-        backdropPath: backdropPath ?? undefined,
+        title,
+        posterPath,
+        backdropPath,
         updatedAt: Date.now(),
       }
       saveAll(all)

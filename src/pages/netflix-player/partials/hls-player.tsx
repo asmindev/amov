@@ -11,6 +11,7 @@ import { fetchWyzieSubtitles } from "@/api/decryptor.api"
 import { RefreshCw, AlertTriangle, WifiOff } from "lucide-react"
 import { AnimatePresence } from "motion/react"
 import { useWatchProgressTracker } from "@/hooks/use-watch-progress"
+import { useProgressPersistence } from "../hooks/use-progress-persistence"
 import { TopAppBar } from "./player-ui/top-app-bar"
 import { BottomControls } from "./player-ui/bottom-controls"
 import { SettingsModal } from "./player-ui/settings-modal"
@@ -48,6 +49,7 @@ export function HlsPlayer({
   popularity = 0,
   voteAverage = 0,
   logoPath,
+  backdropPath,
   mediaType = "movie",
   season = 1,
   episode = 1,
@@ -311,6 +313,17 @@ export function HlsPlayer({
 
   // Track progress → localStorage
   useWatchProgressTracker(mediaType, movieId, true)
+
+  useProgressPersistence({
+    videoRef,
+    mediaType,
+    movieId,
+    duration,
+    playing,
+    title: movieTitle,
+    posterPath: backdropPath ?? null,
+    backdropPath: backdropPath ?? null,
+  })
 
   // ── Cleanup RAF on unmount ────────────────────────────────────────────────
   useEffect(() => {
