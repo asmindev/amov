@@ -1,6 +1,7 @@
 import { TrendingSection } from "./trending-section"
 import { useContinueWatching } from "@/hooks/use-continue-watching"
 import { TrendingSectionSkeleton } from "./skeletons"
+import type { Movie } from "@/types/movie.types"
 
 export function ContinueWatchingSection() {
   const { data, isLoading } = useContinueWatching()
@@ -11,25 +12,21 @@ export function ContinueWatchingSection() {
 
   if (!data || data.length === 0) return null
 
-  // ponytail: anime excluded because Movie.mediaType only accepts "movie" | "tv"
-  // — revisit when anime type is added to TrendingSection's Movie type
-  const movies = data
-    .filter((e) => e.type !== "anime")
-    .map((entry) => ({
-      id: Number(entry.id),
-      title: entry.title ?? "Unknown",
-      posterPath: entry.posterPath ?? null,
-      backdropPath: entry.backdropPath ?? null,
-      overview: "",
-      releaseDate: "",
-      voteAverage: 0,
-      voteCount: 0,
-      genreIds: [] as number[],
-      popularity: 0,
-      adult: false,
-      originalLanguage: "",
-      mediaType: entry.type === "tv" ? "tv" : "movie",
-    }))
+  const movies: Movie[] = data.map((entry) => ({
+    id: Number(entry.id),
+    title: entry.title,
+    posterPath: entry.posterPath,
+    backdropPath: entry.backdropPath,
+    overview: "",
+    releaseDate: "",
+    voteAverage: 0,
+    voteCount: 0,
+    genreIds: [],
+    popularity: 0,
+    adult: false,
+    originalLanguage: "",
+    mediaType: entry.type,
+  }))
 
   return <TrendingSection title="Continue Watching" movies={movies} />
 }

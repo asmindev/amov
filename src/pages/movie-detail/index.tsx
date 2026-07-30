@@ -122,8 +122,6 @@ export default function MovieDetailPage() {
         mediaType={mediaType}
         season={search.season}
         episode={search.episode}
-        posterPath={movie.posterPath}
-        backdropPath={movie.backdropPath}
       />
     )
   }

@@ -21,7 +21,6 @@ export interface HlsPlayerProps {
   popularity?: number
   voteAverage?: number
   logoPath?: string | null
-  backdropPath?: string | null
   mediaType?: "movie" | "tv"
   season?: number
   episode?: number

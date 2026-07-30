@@ -4,16 +4,22 @@ import { loadAllProgress, type WatchProgress } from "@/hooks/use-watch-progress"
 import { fetchWatchHistory, mergeWatchHistory } from "@/api/watch-history.api"
 import { getMediaDetail } from "@/api/movies.api"
 
-function needsFetch(e: WatchProgress) {
-  return !e.title || !e.posterPath
+export interface ContinueWatchingItem {
+  id: string | number
+  type: "movie" | "tv"
+  progress: number
+  timestamp: number
+  duration: number
+  title: string
+  posterPath: string | null
+  backdropPath: string | null
+  season?: number
+  episode?: number
+  updatedAt: number
 }
 
 export function useContinueWatching(): {
-  data: (WatchProgress & {
-    title: string
-    posterPath: string | null
-    backdropPath: string | null
-  })[]
+  data: ContinueWatchingItem[]
   isLoading: boolean
 } {
   const user = useAuthStore((s) => s.user)
@@ -43,11 +49,9 @@ export function useContinueWatching(): {
     return filter(merged).sort((a, b) => b.updatedAt - a.updatedAt).slice(0, 20)
   })()
 
-  const staleEntries = raw.filter(needsFetch)
-
-  // Fetch TMDB details for entries missing metadata (old data / cloud-only items)
+  // Always fetch fresh details from TMDB for every entry
   const details = useQueries({
-    queries: staleEntries.map((e) => ({
+    queries: raw.map((e) => ({
       queryKey: ["movie-detail", e.type, e.id],
       queryFn: () =>
         getMediaDetail(e.type === "tv" ? "tv" : "movie", String(e.id)),
@@ -55,30 +59,36 @@ export function useContinueWatching(): {
     })),
   })
 
-  const data = raw.map((e) => {
-    if (!needsFetch(e)) {
-      return {
-        ...e,
-        title: e.title!,
-        posterPath: e.posterPath ?? null,
-        backdropPath: e.backdropPath ?? null,
-      }
-    }
-    const idx = staleEntries.findIndex((s) => s.id === e.id && s.type === e.type)
-    const detail = idx !== -1 ? details[idx]?.data : null
+  const data = raw.map((e, i) => {
+    const detail = details[i]?.data
     if (detail) {
       return {
-        ...e,
+        id: e.id,
+        type: (e.type === "tv" ? "tv" : "movie") as "movie" | "tv",
+        progress: e.progress,
+        timestamp: e.timestamp,
+        duration: e.duration,
         title: detail.title,
         posterPath: detail.posterPath,
         backdropPath: detail.backdropPath,
+        season: e.season,
+        episode: e.episode,
+        updatedAt: e.updatedAt,
       }
     }
+    // Fallback to localStorage metadata while fetching
     return {
-      ...e,
+      id: e.id,
+      type: (e.type === "tv" ? "tv" : "movie") as "movie" | "tv",
+      progress: e.progress,
+      timestamp: e.timestamp,
+      duration: e.duration,
       title: e.title ?? "Unknown",
       posterPath: e.posterPath ?? null,
       backdropPath: e.backdropPath ?? null,
+      season: e.season,
+      episode: e.episode,
+      updatedAt: e.updatedAt,
     }
   })
 

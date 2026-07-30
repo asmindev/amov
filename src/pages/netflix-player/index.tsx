@@ -152,7 +152,6 @@ export default function NetflixPlayerPage() {
           onRefetchCurrentProvider={refetch}
           isFetchingProvider={sourcesPending}
           imdbId={movie?.imdbId ?? undefined}
-          backdropPath={movie.backdropPath}
           movieOverview={movie.overview}
           popularity={movie.popularity}
           voteAverage={movie.voteAverage}

@@ -50,7 +50,6 @@ export function HlsPlayer({
   popularity = 0,
   voteAverage = 0,
   logoPath,
-  backdropPath,
   mediaType = "movie",
   season = 1,
   episode = 1,
