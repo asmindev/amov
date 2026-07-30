@@ -4,6 +4,7 @@ import { usePopularMovies } from "./hooks/use-popular-movies"
 import { useNetflixMovies } from "./hooks/use-netflix-movies"
 import { HeroBanner } from "./partials/hero-banner"
 import { TrendingSection } from "./partials/trending-section"
+import { ContinueWatchingSection } from "./partials/continue-watching-section"
 import {
   HeroBannerSkeleton,
   TrendingSectionSkeleton,
@@ -32,6 +33,8 @@ export default function HomePage() {
       ) : movies.length > 0 ? (
         <HeroBanner movies={movies} />
       ) : null}
+
+      <ContinueWatchingSection />
 
       <div className="mx-auto mt-6 w-full space-y-8 lg:w-11/12">
         {trending.isPending ? (
