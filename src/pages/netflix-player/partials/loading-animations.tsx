@@ -140,35 +140,35 @@ export function ProviderConnectingOverlay({
 export function BufferingPulse() {
   return (
     <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center">
-      {[0, 1, 2].map((i) => (
-        <motion.div
-          key={i}
-          className="absolute rounded-full border border-white/20"
-          style={{ width: 48 + i * 24, height: 48 + i * 24 }}
-          initial={false}
-          animate={{
-            scale: [1, 1.4, 1],
-            opacity: [0.4, 0.05, 0.4],
-          }}
-          transition={{
-            repeat: Infinity,
-            duration: 2,
-            delay: i * 0.4,
-            ease: "easeInOut",
-          }}
-        />
-      ))}
-      <motion.div
-        className="rounded-full bg-white/30"
-        style={{ width: 10, height: 10 }}
-        initial={false}
-        animate={{ opacity: [0.4, 0.8, 0.4] }}
-        transition={{
-          repeat: Infinity,
-          duration: 2,
-          ease: "easeInOut",
-        }}
-      />
+      <div className="relative flex items-center justify-center">
+        {/* Hypnotic spiral — concentric arcs rotating at different speeds */}
+        {[0, 1, 2, 3, 4, 5, 6, 7].map((i) => {
+          const size = 32 + i * 20
+          const border = i % 2 === 0 ? "border-white/25" : "border-white/10"
+          return (
+            <motion.div
+              key={i}
+              className={`absolute rounded-full border ${border}`}
+              style={{
+                width: size,
+                height: size,
+                borderTopColor: "transparent",
+                borderBottomColor: "transparent",
+              }}
+              initial={false}
+              animate={{ rotate: 360 }}
+              transition={{
+                repeat: Infinity,
+                duration: 2 + i * 0.5,
+                ease: "linear",
+                repeatType: "loop",
+              }}
+            />
+          )
+        })}
+        {/* Center dot */}
+        <div className="h-3 w-3 rounded-full bg-red-500 shadow-lg shadow-red-500/50" />
+      </div>
     </div>
   )
 }
