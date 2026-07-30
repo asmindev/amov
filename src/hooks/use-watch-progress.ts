@@ -6,6 +6,9 @@ export interface WatchProgress {
   progress: number // percentage 0–100
   timestamp: number // seconds
   duration: number // seconds
+  title?: string
+  posterPath?: string | null
+  backdropPath?: string | null
   season?: number
   episode?: number
   updatedAt: number // Date.now()
