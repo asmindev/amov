@@ -92,7 +92,6 @@ export function HlsPlayer({
   const [buffering, setBuffering] = useState(false)
   const [hoverX, setHoverX] = useState<number | null>(null)
   const [isDragging, setIsDragging] = useState(false)
-  const dragXRef = useRef<number | null>(null)
   const [showVolSlider, setShowVolSlider] = useState(false)
   const [skipIndicator, setSkipIndicator] = useState<{
     type: "forward" | "backward"
@@ -453,7 +452,7 @@ export function HlsPlayer({
 
   // Replace onClick with onPointerDown so dragging the thumb works seamlessly
   const handleProgressPointerDown = useCallback(
-    (e: globalThis.PointerEvent) => {
+    (e: React.PointerEvent<HTMLDivElement>) => {
       setIsDragging(true)
       setUiVisible(true)
       seekTo(e.clientX)

@@ -3,6 +3,7 @@ import type {
   SetStateAction,
   ChangeEvent,
   RefObject,
+  PointerEvent,
 } from "react"
 import type { MouseEvent } from "react"
 import type { StreamSource } from "@/api/decryptor.api"
@@ -20,7 +21,7 @@ export interface BottomControlsProps {
   hoverPct: number | null
   hoverX: number | null
   handleProgressHover: (e: MouseEvent<HTMLDivElement>) => void
-  handleProgressPointerDown: (e: globalThis.PointerEvent) => void
+  handleProgressPointerDown: (e: PointerEvent<HTMLDivElement>) => void
   setHoverX: (val: number | null) => void
   playing: boolean
   togglePlay: () => void

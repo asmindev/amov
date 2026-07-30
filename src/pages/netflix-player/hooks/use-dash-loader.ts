@@ -1,5 +1,5 @@
 import { useEffect, type RefObject } from "react"
-import dashjs from "dashjs"
+import * as dashjs from "dashjs"
 import type { StreamSource } from "@/api/decryptor.api"
 import { DECRYPTOR_URL } from "@/lib/config"
 import { getSavedTimestamp } from "../helpers/get-saved-timestamp"
@@ -59,7 +59,7 @@ export function useDashLoader({
     if (savedTs > 30) {
       player.seek(savedTs)
     }
-    player.on(dashjs.MediaPlayer.events.ERROR, (e) => {
+    player.on(dashjs.MediaPlayer.events.ERROR, (e: dashjs.ErrorEvent) => {
       console.warn("DASH playback error:", e)
       onError?.({
         type: "media",
