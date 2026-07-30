@@ -384,7 +384,9 @@ export function HlsPlayer({
   const seek = useCallback((delta: number) => {
     const v = videoRef.current
     if (!v) return
-    v.currentTime = Math.max(0, Math.min(v.duration, v.currentTime + delta))
+    const newTime = Math.max(0, Math.min(v.duration, v.currentTime + delta))
+    v.currentTime = newTime
+    setCurrentTime(newTime) // optimistic — instant UI feedback
     setSkipIndicator({
       type: delta > 0 ? "forward" : "backward",
       id: Date.now(),
@@ -416,8 +418,10 @@ export function HlsPlayer({
       const v = videoRef.current
       if (!bar || !v || !duration) return
       const { left, width } = bar.getBoundingClientRect()
-      v.currentTime =
+      const newTime =
         Math.max(0, Math.min(1, (e.clientX - left) / width)) * duration
+      v.currentTime = newTime
+      setCurrentTime(newTime) // optimistic — instant UI feedback
     },
     [duration]
   )
