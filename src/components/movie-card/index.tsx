@@ -188,6 +188,20 @@ export function MovieCard({
                   </Link>
                 </div>
 
+                {progress !== undefined && (
+                  <div className="flex items-center gap-2 px-3 pb-1">
+                    <div className="h-1.5 flex-1 rounded-full bg-white/15">
+                      <div
+                        className="h-full rounded-full bg-primary transition-all duration-300"
+                        style={{ width: `${Math.min(progress, 100)}%` }}
+                      />
+                    </div>
+                    <span className="text-[11px] font-semibold text-primary">
+                      {Math.round(progress)}%
+                    </span>
+                  </div>
+                )}
+
                 <div className="flex shrink-0 items-center gap-1.5 px-3 pb-1 text-[11px] font-semibold text-gray-400">
                   <span className="font-bold text-green-500">
                     {Math.round(movie.voteAverage * 10)}% Match
