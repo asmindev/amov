@@ -66,29 +66,28 @@ export const TopAppBar = memo(function TopAppBar({
         <div className="group/server relative">
           <TooltipProvider>
             <Tooltip>
-              <TooltipTrigger>
-                <span>
-                  <DropdownMenu
-                    open={openMenu === "provider"}
-                    onOpenChange={(open) => setOpenMenu(open ? "provider" : null)}
-                  >
-                    <DropdownMenuTrigger
-                      render={
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="flex max-md:h-10 max-md:w-10 h-12 w-12 scale-95 flex-col items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-white/10 hover:text-white active:scale-90"
-                          onClick={(e) => e.stopPropagation()}
+              <TooltipTrigger render={<span />}>
+                <DropdownMenu
+                  open={openMenu === "provider"}
+                  onOpenChange={(open) => setOpenMenu(open ? "provider" : null)}
+                >
+                  <DropdownMenuTrigger
+                    render={
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="flex max-md:h-10 max-md:w-10 h-12 w-12 scale-95 flex-col items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-white/10 hover:text-white active:scale-90"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <span
+                          className="material-symbols-outlined text-2xl md:text-4xl!"
+                          data-icon="dns"
                         >
-                          <span
-                            className="material-symbols-outlined text-2xl md:text-4xl!"
-                            data-icon="dns"
-                          >
-                            dns
-                          </span>
-                        </Button>
-                      }
-                    />
+                          dns
+                        </span>
+                      </Button>
+                    }
+                  />
                     <DropdownMenuPortal>
               <DropdownMenuContent
                 align="end"
@@ -121,8 +120,7 @@ export const TopAppBar = memo(function TopAppBar({
               </DropdownMenuContent>
             </DropdownMenuPortal>
           </DropdownMenu>
-        </span>
-      </TooltipTrigger>
+        </TooltipTrigger>
       <TooltipContent>Server: {provider}</TooltipContent>
     </Tooltip>
   </TooltipProvider>
