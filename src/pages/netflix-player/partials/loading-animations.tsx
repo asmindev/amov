@@ -140,26 +140,35 @@ export function ProviderConnectingOverlay({
 export function BufferingPulse() {
   return (
     <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center">
-      <div className="relative flex items-center justify-center">
-        {[0, 1, 2].map((i) => (
-          <motion.div
-            key={i}
-            className="absolute rounded-full border border-white/20"
-            style={{ width: 48 + i * 24, height: 48 + i * 24 }}
-            animate={{
-              scale: [1, 1.3, 1],
-              opacity: [0.3, 0.05, 0.3],
-            }}
-            transition={{
-              repeat: Infinity,
-              duration: 2,
-              delay: i * 0.4,
-              ease: "easeInOut",
-            }}
-          />
-        ))}
-        <div className="h-3 w-3 rounded-full bg-white/30" />
-      </div>
+      {[0, 1, 2].map((i) => (
+        <motion.div
+          key={i}
+          className="absolute rounded-full border border-white/20"
+          style={{ width: 48 + i * 24, height: 48 + i * 24 }}
+          initial={false}
+          animate={{
+            scale: [1, 1.4, 1],
+            opacity: [0.4, 0.05, 0.4],
+          }}
+          transition={{
+            repeat: Infinity,
+            duration: 2,
+            delay: i * 0.4,
+            ease: "easeInOut",
+          }}
+        />
+      ))}
+      <motion.div
+        className="rounded-full bg-white/30"
+        style={{ width: 10, height: 10 }}
+        initial={false}
+        animate={{ opacity: [0.4, 0.8, 0.4] }}
+        transition={{
+          repeat: Infinity,
+          duration: 2,
+          ease: "easeInOut",
+        }}
+      />
     </div>
   )
 }
