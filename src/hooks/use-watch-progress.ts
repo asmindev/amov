@@ -72,7 +72,8 @@ export function clearWatchProgress(type: string, id: string | number) {
 export function useWatchProgressTracker(
   contentType: "movie" | "tv" | "anime",
   contentId: string | number,
-  enabled: boolean
+  enabled: boolean,
+  metadata?: { title: string; posterPath: string | null; backdropPath: string | null }
 ) {
   const [lastProgress, setLastProgress] = useState<WatchProgress | null>(null)
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -83,6 +84,7 @@ export function useWatchProgressTracker(
       const all = loadAllProgress()
       const entry: WatchProgress = {
         ...msg,
+        ...metadata,
         updatedAt: Date.now(),
       }
       all[key] = entry

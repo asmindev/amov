@@ -23,6 +23,8 @@ interface MoviePlayerProps {
   mediaType?: "movie" | "tv"
   season?: number
   episode?: number
+  posterPath?: string | null
+  backdropPath?: string | null
 }
 
 export function MoviePlayer({
@@ -31,6 +33,8 @@ export function MoviePlayer({
   mediaType = "movie",
   season = 1,
   episode = 1,
+  posterPath,
+  backdropPath,
 }: MoviePlayerProps) {
   const isTv = mediaType === "tv"
   const saved = getWatchProgress(mediaType, movieId)
@@ -48,7 +52,11 @@ export function MoviePlayer({
       : "",
   ].join("")
 
-  useWatchProgressTracker(mediaType, movieId, true)
+  useWatchProgressTracker(mediaType, movieId, true, {
+    title: movieTitle,
+    posterPath: posterPath ?? null,
+    backdropPath: backdropPath ?? null,
+  })
 
   return (
     <div className="fixed inset-0 z-[100] bg-black">
