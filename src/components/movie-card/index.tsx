@@ -17,6 +17,8 @@ type MovieCardProps = {
   className?: string
   /** Expand on hover (TrendingSection). Default: false (bottom overlay). */
   expandOnHover?: boolean
+  /** Watch progress percentage 0–100 (Continue Watching). Shows progress bar. */
+  progress?: number
 }
 
 const EXPANDED_W = 320
@@ -29,6 +31,7 @@ export function MovieCard({
   logoPath,
   className,
   expandOnHover = false,
+  progress,
 }: MovieCardProps) {
   const [isHovered, setIsHovered] = useState(false)
   const [hoverTimeout, setHoverTimeout] = useState<ReturnType<
@@ -110,6 +113,14 @@ export function MovieCard({
                 alt={movie.title}
                 className="h-full w-full rounded-none object-cover"
               />
+              {progress !== undefined && (
+                <div className="absolute right-0 bottom-0 left-0 h-1 bg-white/20">
+                  <div
+                    className="h-full bg-primary transition-all duration-300"
+                    style={{ width: `${Math.min(progress, 100)}%` }}
+                  />
+                </div>
+              )}
             </motion.div>
           ) : (
             <motion.div

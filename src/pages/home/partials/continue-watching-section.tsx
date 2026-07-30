@@ -28,5 +28,16 @@ export function ContinueWatchingSection() {
     mediaType: entry.type,
   }))
 
-  return <TrendingSection title="Continue Watching" movies={movies} />
+  const progressMap: Record<number, number> = {}
+  for (const entry of data) {
+    progressMap[Number(entry.id)] = entry.progress
+  }
+
+  return (
+    <TrendingSection
+      title="Continue Watching"
+      movies={movies}
+      progressMap={progressMap}
+    />
+  )
 }

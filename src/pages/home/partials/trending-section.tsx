@@ -9,6 +9,8 @@ type TrendingSectionProps = {
   movies: Movie[]
   genres?: Genre[]
   showRank?: boolean
+  /** Map of movie id → watch progress percentage (Continue Watching). */
+  progressMap?: Record<number, number>
 }
 
 export function TrendingSection({
@@ -16,6 +18,7 @@ export function TrendingSection({
   movies,
   genres,
   showRank = false,
+  progressMap,
 }: TrendingSectionProps) {
   const wrapperRef = useRef<HTMLDivElement>(null)
 
@@ -67,6 +70,7 @@ export function TrendingSection({
               genres={genres}
               logoPath={movieDetails[index]?.logoPath}
               expandOnHover
+              progress={progressMap?.[movie.id]}
             />
           ))}
         </div>
