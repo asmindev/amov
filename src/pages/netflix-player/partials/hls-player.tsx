@@ -88,6 +88,8 @@ export function HlsPlayer({
   }, [openMenu])
   const [buffering, setBuffering] = useState(false)
   const [hoverX, setHoverX] = useState<number | null>(null)
+  const [isDragging, setIsDragging] = useState(false)
+  const dragXRef = useRef<number | null>(null)
   const [showVolSlider, setShowVolSlider] = useState(false)
   const [skipIndicator, setSkipIndicator] = useState<{
     type: "forward" | "backward"
@@ -412,20 +414,6 @@ export function HlsPlayer({
     }
   }, [])
 
-  const handleProgressClick = useCallback(
-    (e: MouseEvent<HTMLDivElement>) => {
-      const bar = progressBarRef.current
-      const v = videoRef.current
-      if (!bar || !v || !duration) return
-      const { left, width } = bar.getBoundingClientRect()
-      const newTime =
-        Math.max(0, Math.min(1, (e.clientX - left) / width)) * duration
-      v.currentTime = newTime
-      setCurrentTime(newTime) // optimistic — instant UI feedback
-    },
-    [duration]
-  )
-
   const handleProgressHover = useCallback(
     (e: MouseEvent<HTMLDivElement>) => {
       const bar = progressBarRef.current
@@ -434,6 +422,31 @@ export function HlsPlayer({
       setHoverX(Math.max(0, Math.min(1, (e.clientX - left) / width)))
     },
     []
+  )
+
+  // ── Draggable progress bar (pointer events) ─────────────────────────────────
+  const seekTo = useCallback(
+    (clientX: number) => {
+      const bar = progressBarRef.current
+      const v = videoRef.current
+      if (!bar || !v || !duration) return
+      const { left, width } = bar.getBoundingClientRect()
+      const newTime =
+        Math.max(0, Math.min(1, (clientX - left) / width)) * duration
+      v.currentTime = newTime
+      setCurrentTime(newTime)
+    },
+    [duration]
+  )
+
+  // Replace onClick with onPointerDown so dragging the thumb works seamlessly
+  const handleProgressPointerDown = useCallback(
+    (e: globalThis.PointerEvent) => {
+      setIsDragging(true)
+      setUiVisible(true)
+      seekTo(e.clientX)
+    },
+    [seekTo]
   )
 
   const handleVolumeChange = useCallback(
@@ -452,6 +465,23 @@ export function HlsPlayer({
     if (!v) return
     v.muted = !v.muted
   }, [])
+
+  // ── Document-level drag tracking ───────────────────────────────────────────
+  useEffect(() => {
+    if (!isDragging) return
+    const onMove = (e: globalThis.PointerEvent) => {
+      seekTo(e.clientX)
+    }
+    const onUp = () => {
+      setIsDragging(false)
+    }
+    document.addEventListener("pointermove", onMove)
+    document.addEventListener("pointerup", onUp)
+    return () => {
+      document.removeEventListener("pointermove", onMove)
+      document.removeEventListener("pointerup", onUp)
+    }
+  }, [isDragging, seekTo])
 
   const progressPct = duration ? (currentTime / duration) * 100 : 0
   const bufferedPct = duration ? (bufferedEnd / duration) * 100 : 0
@@ -715,7 +745,7 @@ export function HlsPlayer({
           hoverPct={hoverPct}
           hoverX={hoverX}
           handleProgressHover={handleProgressHover}
-          handleProgressClick={handleProgressClick}
+          handleProgressPointerDown={handleProgressPointerDown}
           setHoverX={setHoverX}
           playing={playing}
           togglePlay={togglePlay}

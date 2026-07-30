@@ -1,10 +1,10 @@
 import type {
   Dispatch,
   SetStateAction,
-  MouseEvent,
   ChangeEvent,
   RefObject,
 } from "react"
+import type { MouseEvent } from "react"
 import type { StreamSource } from "@/api/decryptor.api"
 import { fmtTime } from "@/helpers/time"
 import { Button } from "@/components/ui/button"
@@ -20,7 +20,7 @@ export interface BottomControlsProps {
   hoverPct: number | null
   hoverX: number | null
   handleProgressHover: (e: MouseEvent<HTMLDivElement>) => void
-  handleProgressClick: (e: MouseEvent<HTMLDivElement>) => void
+  handleProgressPointerDown: (e: globalThis.PointerEvent) => void
   setHoverX: (val: number | null) => void
   playing: boolean
   togglePlay: () => void
@@ -53,7 +53,7 @@ export function BottomControls({
   hoverPct,
   hoverX,
   handleProgressHover,
-  handleProgressClick,
+  handleProgressPointerDown,
   setHoverX,
   playing,
   togglePlay,
@@ -92,7 +92,7 @@ export function BottomControls({
         <div
           ref={progressBarRef}
           className="relative flex h-1 flex-1 cursor-pointer items-center overflow-visible rounded-full bg-[#333333] transition-all duration-200 group-hover:h-1.5"
-          onClick={handleProgressClick}
+          onPointerDown={handleProgressPointerDown}
         >
           {/* Buffered */}
           <div
