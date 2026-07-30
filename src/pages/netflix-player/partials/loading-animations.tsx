@@ -139,36 +139,50 @@ export function ProviderConnectingOverlay({
 
 export function BufferingPulse() {
   return (
-    <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center">
-      <div className="relative flex items-center justify-center">
-        {/* Hypnotic spiral — concentric arcs rotating at different speeds */}
-        {[0, 1, 2, 3, 4, 5, 6, 7].map((i) => {
-          const size = 32 + i * 20
-          const border = i % 2 === 0 ? "border-white/25" : "border-white/10"
+    <div className="pointer-events-none absolute inset-0 z-10 flex flex-col items-center justify-center gap-8">
+      {/* Hypnotic circles — concentric with alternating segments, smooth rotation */}
+      <div className="relative flex h-40 w-40 items-center justify-center">
+        {[0, 1, 2, 3].map((i) => {
+          const size = 100 - i * 22
           return (
             <motion.div
               key={i}
-              className={`absolute rounded-full border ${border}`}
+              className="absolute rounded-full"
               style={{
                 width: size,
                 height: size,
-                borderTopColor: "transparent",
-                borderBottomColor: "transparent",
+                background: `conic-gradient(from 0deg, rgba(255,255,255,0.35) 0deg 160deg, transparent 160deg 360deg)`,
+                WebkitMask: `radial-gradient(circle, transparent ${(size / 2) - 3}px, black ${(size / 2) - 2}px)`,
+                mask: `radial-gradient(circle, transparent ${(size / 2) - 3}px, black ${(size / 2) - 2}px)`,
               }}
               initial={false}
               animate={{ rotate: 360 }}
               transition={{
                 repeat: Infinity,
-                duration: 2 + i * 0.5,
+                duration: 3 + i * 0.8,
                 ease: "linear",
-                repeatType: "loop",
               }}
             />
           )
         })}
-        {/* Center dot */}
-        <div className="h-3 w-3 rounded-full bg-red-500 shadow-lg shadow-red-500/50" />
+        {/* Center pulsing dot */}
+        <motion.div
+          className="h-4 w-4 rounded-full bg-primary"
+          initial={false}
+          animate={{ scale: [1, 1.4, 1], opacity: [0.6, 1, 0.6] }}
+          transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
+        />
       </div>
+
+      {/* Text */}
+      <motion.p
+        className="text-sm font-medium tracking-wider text-white/50 uppercase"
+        initial={{ opacity: 0.4 }}
+        animate={{ opacity: [0.4, 1, 0.4] }}
+        transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
+      >
+        Buffering
+      </motion.p>
     </div>
   )
 }
