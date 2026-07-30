@@ -1,23 +1,19 @@
-import { useQuery } from "@tanstack/react-query"
+import { useQuery, useQueries } from "@tanstack/react-query"
 import { useAuthStore } from "@/stores/auth-store"
-import {
-  loadAllProgress,
-  saveAllProgress,
-  type WatchProgress,
-} from "@/hooks/use-watch-progress"
+import { loadAllProgress, type WatchProgress } from "@/hooks/use-watch-progress"
 import { fetchWatchHistory, mergeWatchHistory } from "@/api/watch-history.api"
 import { getMediaDetail } from "@/api/movies.api"
 
-function entryKey(e: WatchProgress) {
-  return `${e.type}_${e.id}`
-}
-
-function needsEnrich(e: WatchProgress) {
+function needsFetch(e: WatchProgress) {
   return !e.title || !e.posterPath
 }
 
 export function useContinueWatching(): {
-  data: WatchProgress[]
+  data: (WatchProgress & {
+    title: string
+    posterPath: string | null
+    backdropPath: string | null
+  })[]
   isLoading: boolean
 } {
   const user = useAuthStore((s) => s.user)
@@ -47,65 +43,44 @@ export function useContinueWatching(): {
     return filter(merged).sort((a, b) => b.updatedAt - a.updatedAt).slice(0, 20)
   })()
 
-  // Enrich entries missing metadata (old localStorage entries)
-  const staleIds = raw.filter(needsEnrich).map(entryKey).join(",")
+  const staleEntries = raw.filter(needsFetch)
 
-  const { data: enriched } = useQuery({
-    queryKey: ["continue-watching-enrich", staleIds],
-    queryFn: async () => {
-      const toFetch = raw.filter(needsEnrich)
-      if (toFetch.length === 0) return raw
-
-      const results = await Promise.allSettled(
-        toFetch.map((e) =>
-          getMediaDetail(
-            e.type === "tv" ? "tv" : "movie",
-            String(e.id)
-          ).then((detail) => ({
-            key: entryKey(e),
-            title: detail.title,
-            posterPath: detail.posterPath,
-            backdropPath: detail.backdropPath,
-          }))
-        )
-      )
-
-      // Persist enriched metadata back to localStorage so next visit is instant
-      const all = loadAllProgress()
-      for (const result of results) {
-        if (result.status === "fulfilled") {
-          const entry = all[result.value.key]
-          if (entry) {
-            entry.title = result.value.title
-            entry.posterPath = result.value.posterPath
-            entry.backdropPath = result.value.backdropPath
-          }
-        }
-      }
-      saveAllProgress(all)
-
-      return raw.map((e) => {
-        if (!needsEnrich(e)) return e
-        const found = results.find(
-          (r) => r.status === "fulfilled" && r.value.key === entryKey(e)
-        )
-        if (found && found.status === "fulfilled") {
-          return {
-            ...e,
-            title: found.value.title,
-            posterPath: found.value.posterPath,
-            backdropPath: found.value.backdropPath,
-          }
-        }
-        return e
-      })
-    },
-    enabled: staleIds.length > 0,
-    staleTime: 300_000,
+  // Fetch TMDB details for entries missing metadata (old data / cloud-only items)
+  const details = useQueries({
+    queries: staleEntries.map((e) => ({
+      queryKey: ["movie-detail", e.type, e.id],
+      queryFn: () =>
+        getMediaDetail(e.type === "tv" ? "tv" : "movie", String(e.id)),
+      staleTime: 300_000,
+    })),
   })
 
-  return {
-    data: enriched ?? raw,
-    isLoading,
-  }
+  const data = raw.map((e) => {
+    if (!needsFetch(e)) {
+      return {
+        ...e,
+        title: e.title!,
+        posterPath: e.posterPath ?? null,
+        backdropPath: e.backdropPath ?? null,
+      }
+    }
+    const idx = staleEntries.findIndex((s) => s.id === e.id && s.type === e.type)
+    const detail = idx !== -1 ? details[idx]?.data : null
+    if (detail) {
+      return {
+        ...e,
+        title: detail.title,
+        posterPath: detail.posterPath,
+        backdropPath: detail.backdropPath,
+      }
+    }
+    return {
+      ...e,
+      title: e.title ?? "Unknown",
+      posterPath: e.posterPath ?? null,
+      backdropPath: e.backdropPath ?? null,
+    }
+  })
+
+  return { data, isLoading }
 }
