@@ -50,6 +50,7 @@ export function HlsPlayer({
   popularity = 0,
   voteAverage = 0,
   logoPath,
+  backdropPath,
   mediaType = "movie",
   season = 1,
   episode = 1,
@@ -330,14 +331,12 @@ export function HlsPlayer({
     }
   }, [iosNativeFullscreen, vttUrl])
 
-  // Track progress → localStorage (native video, not iframe)
   useProgressPersistence({
     videoRef,
     mediaType,
     movieId,
     duration,
     playing,
-  })
 
   // ── Cleanup RAF on unmount ────────────────────────────────────────────────
   useEffect(() => {

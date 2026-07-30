@@ -6,6 +6,9 @@ export interface WatchProgress {
   progress: number // percentage 0–100
   timestamp: number // seconds
   duration: number // seconds
+  title?: string
+  posterPath?: string | null
+  backdropPath?: string | null
   season?: number
   episode?: number
   updatedAt: number // Date.now()
@@ -27,7 +30,7 @@ function getStorageKey(type: string, id: string | number): string {
   return `${type}_${id}`
 }
 
-function loadAllProgress(): Record<string, WatchProgress> {
+export function loadAllProgress(): Record<string, WatchProgress> {
   try {
     const raw = localStorage.getItem(STORAGE_KEY)
     return raw ? (JSON.parse(raw) as Record<string, WatchProgress>) : {}
@@ -69,7 +72,8 @@ export function clearWatchProgress(type: string, id: string | number) {
 export function useWatchProgressTracker(
   contentType: "movie" | "tv" | "anime",
   contentId: string | number,
-  enabled: boolean
+  enabled: boolean,
+  metadata?: { title: string; posterPath: string | null; backdropPath: string | null }
 ) {
   const [lastProgress, setLastProgress] = useState<WatchProgress | null>(null)
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -80,13 +84,14 @@ export function useWatchProgressTracker(
       const all = loadAllProgress()
       const entry: WatchProgress = {
         ...msg,
+        ...metadata,
         updatedAt: Date.now(),
       }
       all[key] = entry
       saveAllProgress(all)
       setLastProgress(entry)
     },
-    [contentType, contentId]
+    [contentType, contentId, metadata]
   )
 
   useEffect(() => {

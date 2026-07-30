@@ -11,6 +11,10 @@ interface UseProgressPersistenceOpts {
   playing: boolean
   /** Seconds between persistence writes (default 5) */
   intervalSeconds?: number
+  /** Display metadata for Continue Watching on home page */
+  title?: string
+  posterPath?: string | null
+  backdropPath?: string | null
 }
 
 function loadAll(): Record<string, WatchProgress> {
@@ -41,6 +45,9 @@ export function useProgressPersistence({
   duration,
   playing,
   intervalSeconds = 5,
+  title,
+  posterPath,
+  backdropPath,
 }: UseProgressPersistenceOpts) {
   const lastSavedRef = useRef<number>(0)
   const saveTimerRef = useRef<ReturnType<typeof setInterval> | null>(null)
@@ -58,6 +65,9 @@ export function useProgressPersistence({
           progress: (lastSavedRef.current / duration) * 100,
           timestamp: lastSavedRef.current,
           duration,
+          title,
+          posterPath,
+          backdropPath,
           updatedAt: Date.now(),
         }
         saveAll(all)
@@ -84,6 +94,9 @@ export function useProgressPersistence({
         progress: duration ? (ts / duration) * 100 : 0,
         timestamp: ts,
         duration,
+        title,
+        posterPath,
+        backdropPath,
         updatedAt: Date.now(),
       }
       saveAll(all)
@@ -95,5 +108,5 @@ export function useProgressPersistence({
         saveTimerRef.current = null
       }
     }
-  }, [playing, duration, mediaType, movieId, videoRef, intervalSeconds])
+  }, [playing, duration, mediaType, movieId, videoRef, intervalSeconds, title, posterPath, backdropPath])
 }

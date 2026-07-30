@@ -10,8 +10,11 @@ interface AuthState {
   isAuthModalOpen: boolean
   authMode: "signin" | "signup"
 
+  syncEnabled: boolean
+
   setAuthModalOpen: (open: boolean, mode?: "signin" | "signup") => void
   setAuthMode: (mode: "signin" | "signup") => void
+  setSyncEnabled: (enabled: boolean) => void
   initAuth: () => Promise<void>
   signInWithEmail: (
     email: string,
@@ -47,6 +50,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   isLoading: true,
   isAuthModalOpen: false,
   authMode: "signin",
+  syncEnabled: false,
 
   setAuthModalOpen: (open, mode) =>
     set((state) => ({
@@ -55,6 +59,8 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     })),
 
   setAuthMode: (mode) => set({ authMode: mode }),
+
+  setSyncEnabled: (enabled) => set({ syncEnabled: enabled }),
 
   initAuth: async () => {
     const client = supabase
@@ -68,7 +74,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
       if (error || !data.user) {
         await client.auth.signOut()
-        set({ user: null, session: null, role: null, isLoading: false })
+        set({ user: null, session: null, role: null, isLoading: false, syncEnabled: false })
         return
       }
 
@@ -83,13 +89,13 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
       client.auth.onAuthStateChange(async (event, session) => {
         if (event === "SIGNED_OUT" || !session) {
-          set({ session: null, user: null, role: null, isLoading: false })
+          set({ session: null, user: null, role: null, isLoading: false, syncEnabled: false })
         } else {
           const { data: userData, error: userError } =
             await client.auth.getUser()
           if (userError || !userData.user) {
             await client.auth.signOut()
-            set({ session: null, user: null, role: null, isLoading: false })
+            set({ session: null, user: null, role: null, isLoading: false, syncEnabled: false })
           } else {
             const userRole = await fetchUserRole(userData.user.id)
             set({
@@ -149,6 +155,6 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     if (!supabase) return
     set({ isLoading: true })
     await supabase.auth.signOut()
-    set({ user: null, session: null, role: null, isLoading: false })
+    set({ user: null, session: null, role: null, isLoading: false, syncEnabled: false })
   },
 }))
