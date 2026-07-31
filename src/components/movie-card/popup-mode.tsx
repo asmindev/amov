@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "motion/react"
 import { getImageUrl } from "@/helpers/image-url"
 import { recordAnalyticsEvent } from "@/api/analytics.api"
 import { useWatchlistStore } from "@/stores/watchlist-store"
+import { useInWatchlist } from "@/hooks/use-watchlist"
 import { PopupMetadataRow } from "./metadata-row"
 import { useGenreNames } from "./hooks"
 import type { Movie, Genre } from "@/types/movie.types"
@@ -32,7 +33,7 @@ export function PopupMode({
   className,
 }: PopupModeProps) {
   const genreNames = useGenreNames(movie, genres)
-  const inList = useWatchlistStore((s) => s.isInWatchlist(movie.mediaType === "tv" ? "tv" : "movie", movie.id))
+  const inList = useInWatchlist(movie.mediaType === "tv" ? "tv" : "movie", movie.id)
   const toggle = useWatchlistStore((s) => s.toggle)
 
   const trackClick = () => {

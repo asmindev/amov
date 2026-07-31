@@ -2,7 +2,12 @@
 import { useQueries } from "@tanstack/react-query"
 import { useWatchlistStore } from "@/stores/watchlist-store"
 import { getMediaDetail } from "@/api/movies.api"
+import { queryKeys } from "@/lib/query-keys"
 import type { Movie } from "@/types/movie.types"
+
+export function useInWatchlist(type: string, id: string | number): boolean {
+  return useWatchlistStore((s) => s.items[`${type}_${id}`] !== undefined)
+}
 
 export function useWatchlistItems() {
   const entries = useWatchlistStore((s) => s.items)
@@ -12,7 +17,7 @@ export function useWatchlistItems() {
 
   const details = useQueries({
     queries: sorted.map((e) => ({
-      queryKey: ["movie-detail", e.type, e.id],
+      queryKey: queryKeys.media.detail(e.type, String(e.id)),
       queryFn: () => getMediaDetail(e.type, String(e.id)),
       staleTime: 300_000,
     })),

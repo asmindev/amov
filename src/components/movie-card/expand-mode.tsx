@@ -3,6 +3,7 @@ import { Bookmark } from "lucide-react"
 import { getImageUrl } from "@/helpers/image-url"
 import { recordAnalyticsEvent } from "@/api/analytics.api"
 import { useWatchlistStore } from "@/stores/watchlist-store"
+import { useInWatchlist } from "@/hooks/use-watchlist"
 import { ActionButtons } from "./action-buttons"
 import { MetadataRow } from "./metadata-row"
 import { ThinProgressBar, LabeledProgressBar } from "./progress-bar"
@@ -37,7 +38,7 @@ export function ExpandMode({
   progress,
 }: ExpandModeProps) {
   const genreNames = useGenreNames(movie, genres)
-  const inList = useWatchlistStore((s) => s.isInWatchlist(movie.mediaType === "tv" ? "tv" : "movie", movie.id))
+  const inList = useInWatchlist(movie.mediaType === "tv" ? "tv" : "movie", movie.id)
   const toggle = useWatchlistStore((s) => s.toggle)
 
   const trackClick = () => {

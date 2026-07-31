@@ -7,6 +7,7 @@ import { getMovieQuality } from "@/helpers/movie-quality"
 import { getMaturityRating } from "@/helpers/maturity-rating"
 import { clearWatchProgress } from "@/hooks/use-watch-progress"
 import { useWatchlistStore } from "@/stores/watchlist-store"
+import { useInWatchlist } from "@/hooks/use-watchlist"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 
@@ -61,9 +62,7 @@ export function MovieHero({
   savedProgress,
 }: MovieHeroProps) {
   const mediaType = movie.mediaType || "movie"
-  const inList = useWatchlistStore((s) =>
-    s.isInWatchlist(mediaType, movie.id)
-  )
+  const inList = useInWatchlist(mediaType, movie.id)
   const toggle = useWatchlistStore((s) => s.toggle)
 
   return (
@@ -196,7 +195,7 @@ export function MovieHero({
         <Button
           type="button"
           aria-pressed={inList}
-          onClick={() => toggle(mediaType, movie.id)}
+          onClick={() => mediaType && toggle(mediaType, movie.id)}
           className={cn(
             "flex items-center gap-1.5 rounded-none px-5 py-3 text-sm font-bold text-white shadow-lg backdrop-blur-md transition-all hover:scale-105 active:scale-95 md:gap-2 md:px-8 md:py-3.5 md:text-base",
             inList
