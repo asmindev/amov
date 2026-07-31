@@ -1,11 +1,11 @@
 import { useState } from "react"
 import { Link } from "@tanstack/react-router"
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog"
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet"
 import { useAuthStore } from "@/stores/auth-store"
 import { loadAllProgress } from "@/hooks/use-watch-progress"
 import {
@@ -50,11 +50,11 @@ export function ProfileSheet({
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="top-auto right-0 bottom-0 left-0 w-full max-w-none translate-x-0 translate-y-0 rounded-t-2xl rounded-b-none border-x-0 border-b-0 sm:max-w-none">
-        <DialogHeader>
-          <DialogTitle>Profile</DialogTitle>
-        </DialogHeader>
+    <Sheet open={open} onOpenChange={onOpenChange}>
+      <SheetContent side="bottom" className="mx-auto max-w-md rounded-t-2xl">
+        <SheetHeader>
+          <SheetTitle>Profile</SheetTitle>
+        </SheetHeader>
         <div className="flex flex-col gap-3">
           {user ? (
             <>
@@ -85,7 +85,8 @@ export function ProfileSheet({
               >
                 {syncing ? (
                   <>
-                    <span className="material-symbols-outlined !text-[16px] animate-spin">progress_activity</span> Syncing...
+                    <span className="material-symbols-outlined !text-[16px] animate-spin">progress_activity</span>{" "}
+                    Syncing...
                   </>
                 ) : syncEnabled ? (
                   "Synced ✓"
@@ -131,7 +132,7 @@ export function ProfileSheet({
             Language: {currentLang === "en-US" ? "EN" : "ID"}
           </button>
         </div>
-      </DialogContent>
-    </Dialog>
+      </SheetContent>
+    </Sheet>
   )
 }
