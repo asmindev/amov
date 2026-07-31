@@ -119,20 +119,26 @@ export function PopupMode({
                     className="flex h-7 w-9 items-center justify-center bg-primary transition-colors hover:bg-primary/90"
                     onClick={trackClick}
                   >
-                    <span className="material-symbols-outlined fill ml-0.5 !text-[20px]">
+                    <span className="material-symbols-outlined fill ml-0.5 text-[20px]!">
                       play_arrow
                     </span>
                   </Link>
                   <button
                     type="button"
-                    aria-label={inList ? "Remove from watchlist" : "Add to watchlist"}
+                    aria-label={
+                      inList ? "Remove from watchlist" : "Add to watchlist"
+                    }
                     onClick={(e) => {
                       e.stopPropagation()
                       toggle(movie.mediaType || "movie", movie.id)
                     }}
                     className="flex h-7 w-9 items-center justify-center border border-white/20 bg-black/50 text-white transition-colors hover:border-white hover:bg-black/80"
                   >
-                    {inList ? <Check className="h-4 w-4" /> : <Plus className="h-4 w-4" />}
+                    {inList ? (
+                      <Check className="h-4 w-4" />
+                    ) : (
+                      <Plus className="h-4 w-4" />
+                    )}
                   </button>
                   <button className="flex h-7 w-9 items-center justify-center border border-white/20 bg-black/50 text-white transition-colors hover:border-white hover:bg-black/80">
                     <ThumbsUp className="h-4 w-4" />
