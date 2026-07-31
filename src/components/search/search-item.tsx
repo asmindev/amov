@@ -1,7 +1,6 @@
 import { CommandItem } from "@/components/ui/command"
 import { getImageUrl } from "@/helpers/image-url"
 import { formatYear } from "@/helpers/format-date"
-import { Star, Clapperboard, Tv } from "lucide-react"
 import { useWatchlistStore } from "@/stores/watchlist-store"
 import { useInWatchlist } from "@/hooks/use-watchlist"
 import type { Movie } from "@/types/movie.types"
@@ -37,9 +36,9 @@ export function SearchItem({
         ) : (
           <div className="flex h-full w-full items-center justify-center">
             {item.mediaType === "movie" ? (
-              <Clapperboard className="h-4 w-4 text-white/20" />
+              <span className="material-symbols-outlined !text-[16px] text-white/20">movie</span>
             ) : (
-              <Tv className="h-4 w-4 text-white/20" />
+              <span className="material-symbols-outlined !text-[16px] text-white/20">tv</span>
             )}
           </div>
         )}
@@ -65,7 +64,7 @@ export function SearchItem({
         <div className="mt-0.5 flex items-center gap-3 text-xs text-white/50">
           {showRating && item.voteAverage > 0 && (
             <span className="flex items-center gap-1 text-[#46d369]">
-              <Star className="h-3 w-3 fill-[#46d369]" />
+              <span className="material-symbols-outlined !text-[12px] text-[#46d369]">star</span>
               {item.voteAverage.toFixed(1)}
             </span>
           )}

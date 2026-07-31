@@ -1,5 +1,4 @@
 import { Link } from "@tanstack/react-router"
-import { Plus, Check, ThumbsUp, ChevronDown } from "lucide-react"
 import { motion, AnimatePresence } from "motion/react"
 import { getImageUrl } from "@/helpers/image-url"
 import { recordAnalyticsEvent } from "@/api/analytics.api"
@@ -135,13 +134,13 @@ export function PopupMode({
                     className="flex h-7 w-9 items-center justify-center border border-white/20 bg-black/50 text-white transition-colors hover:border-white hover:bg-black/80"
                   >
                     {inList ? (
-                      <Check className="h-4 w-4" />
+                      <span className="material-symbols-outlined !text-[16px]">check</span>
                     ) : (
-                      <Plus className="h-4 w-4" />
+                      <span className="material-symbols-outlined !text-[16px]">add</span>
                     )}
                   </button>
                   <button className="flex h-7 w-9 items-center justify-center border border-white/20 bg-black/50 text-white transition-colors hover:border-white hover:bg-black/80">
-                    <ThumbsUp className="h-4 w-4" />
+                    <span className="material-symbols-outlined !text-[16px]">thumb_up</span>
                   </button>
                 </div>
                 <Link
@@ -153,7 +152,7 @@ export function PopupMode({
                   className="flex h-9 w-9 items-center justify-center rounded-full border border-white/20 bg-black/50 text-white transition-colors hover:border-white hover:bg-black/80"
                   onClick={trackClick}
                 >
-                  <ChevronDown className="h-4 w-4" />
+                  <span className="material-symbols-outlined !text-[16px]">expand_more</span>
                 </Link>
               </div>
 

@@ -1,5 +1,4 @@
 import { Link } from "@tanstack/react-router"
-import { Plus, Check, ThumbsUp, ChevronDown } from "lucide-react"
 import { useWatchlistStore } from "@/stores/watchlist-store"
 import { useInWatchlist } from "@/hooks/use-watchlist"
 import type { Movie } from "@/types/movie.types"
@@ -45,13 +44,13 @@ export function ActionButtons({ movie, onTrackClick, variant = "expand" }: Actio
           className={btnClass}
         >
           {inList ? (
-            <Check className={variant === "popup" ? "h-4 w-4" : "h-3.5 w-3.5"} />
+            <span className="material-symbols-outlined !text-[16px]">check</span>
           ) : (
-            <Plus className={variant === "popup" ? "h-4 w-4" : "h-3.5 w-3.5"} />
+            <span className="material-symbols-outlined !text-[16px]">add</span>
           )}
         </button>
         <button className={btnClass}>
-          <ThumbsUp className={variant === "popup" ? "h-4 w-4" : "h-3.5 w-3.5"} />
+          <span className="material-symbols-outlined !text-[16px]">thumb_up</span>
         </button>
       </div>
       <Link
@@ -63,7 +62,7 @@ export function ActionButtons({ movie, onTrackClick, variant = "expand" }: Actio
         className={chevronClass}
         onClick={onTrackClick}
       >
-        <ChevronDown className="h-4 w-4" />
+        <span className="material-symbols-outlined !text-[16px]">expand_more</span>
       </Link>
     </div>
   )

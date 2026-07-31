@@ -1,5 +1,4 @@
 import { motion, AnimatePresence } from "motion/react"
-import { X } from "lucide-react"
 import { getImageUrl } from "@/helpers/image-url"
 import { recordAnalyticsEvent } from "@/api/analytics.api"
 import { ActionButtons } from "./action-buttons"
@@ -89,7 +88,7 @@ export function ExpandMode({
             isHovered ? "opacity-100" : "opacity-0"
           }`}
         >
-          <X className="h-3.5 w-3.5" />
+          <span className="material-symbols-outlined !text-[14px]">close</span>
         </button>
       )}
 

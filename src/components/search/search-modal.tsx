@@ -13,7 +13,6 @@ import { SearchResults } from "./search-results"
 import { SearchItem } from "./search-item"
 import { useSearch, getSearchHistory, clearSearchHistory } from "./use-search"
 import { useTrendingSearches } from "./use-trending-searches"
-import { History, TrendingUp, Trash2, Search, ArrowRight } from "lucide-react"
 import { recordAnalyticsEvent } from "@/api/analytics.api"
 import { addSearchHistory } from "./use-search"
 
@@ -79,7 +78,7 @@ export function SearchModal({ open, onOpenChange }: SearchModalProps) {
                 <CommandGroup
                   heading={
                     <span className="flex items-center gap-2">
-                      <TrendingUp className="h-3.5 w-3.5 text-primary" />
+                      <span className="material-symbols-outlined !text-[14px] text-primary">trending_up</span>
                       Trending
                     </span>
                   }
@@ -117,7 +116,7 @@ export function SearchModal({ open, onOpenChange }: SearchModalProps) {
                 }}
               >
                 <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10">
-                  <Search className="h-4 w-4 text-primary" />
+                  <span className="material-symbols-outlined !text-[16px] text-primary">search</span>
                 </div>
                 <div className="min-w-0 flex-1">
                   <span className="text-sm text-muted-foreground">
@@ -128,7 +127,7 @@ export function SearchModal({ open, onOpenChange }: SearchModalProps) {
                     in Discover
                   </span>
                 </div>
-                <ArrowRight className="h-4 w-4 shrink-0 text-muted-foreground transition-transform group-aria-selected:translate-x-0.5 group-aria-selected:text-primary" />
+                <span className="material-symbols-outlined !text-[16px] shrink-0 text-muted-foreground transition-transform group-aria-selected:translate-x-0.5 group-aria-selected:text-primary">arrow_forward</span>
               </CommandItem>
 
               {isFetching ? (
@@ -178,7 +177,7 @@ function SearchHistory({ onSelect }: { onSelect: (query: string) => void }) {
       <CommandGroup
         heading={
           <span className="flex items-center gap-2">
-            <History className="h-3.5 w-3.5 text-muted-foreground" />
+            <span className="material-symbols-outlined !text-[14px] text-muted-foreground">history</span>
             Recent searches
           </span>
         }
@@ -190,7 +189,7 @@ function SearchHistory({ onSelect }: { onSelect: (query: string) => void }) {
             className="flex items-center gap-2 rounded-lg px-2 py-1.5 text-sm text-white/70 aria-selected:bg-white/5"
             onSelect={() => onSelect(h)}
           >
-            <History className="h-3.5 w-3.5 text-muted-foreground" />
+            <span className="material-symbols-outlined !text-[14px] text-muted-foreground">history</span>
             <span>{h}</span>
           </CommandItem>
         ))}
@@ -202,7 +201,7 @@ function SearchHistory({ onSelect }: { onSelect: (query: string) => void }) {
             setHistory([])
           }}
         >
-          <Trash2 className="h-3 w-3" />
+          <span className="material-symbols-outlined !text-[12px]">delete</span>
           Clear history
         </CommandItem>
       </CommandGroup>
