@@ -1,4 +1,5 @@
 import { motion, AnimatePresence } from "motion/react"
+import { X } from "lucide-react"
 import { getImageUrl } from "@/helpers/image-url"
 import { recordAnalyticsEvent } from "@/api/analytics.api"
 import { ActionButtons } from "./action-buttons"
@@ -20,6 +21,7 @@ interface ExpandModeProps {
   logoPath?: string | null
   className?: string
   progress?: number
+  onDismiss?: (movie: Movie) => void
 }
 
 export function ExpandMode({
@@ -33,6 +35,7 @@ export function ExpandMode({
   logoPath,
   className,
   progress,
+  onDismiss,
 }: ExpandModeProps) {
   const genreNames = useGenreNames(movie, genres)
 
@@ -71,6 +74,23 @@ export function ExpandMode({
             {rank}
           </h1>
         </div>
+      )}
+
+      {/* Dismiss (Continue Watching) — inside the card so hover state stays active */}
+      {onDismiss && (
+        <button
+          type="button"
+          aria-label="Remove from Continue Watching"
+          onClick={(e) => {
+            e.stopPropagation()
+            onDismiss(movie)
+          }}
+          className={`absolute right-2 top-2 z-40 rounded-full bg-black/60 p-1.5 text-white backdrop-blur transition-opacity hover:bg-black/80 ${
+            isHovered ? "opacity-100" : "opacity-0"
+          }`}
+        >
+          <X className="h-3.5 w-3.5" />
+        </button>
       )}
 
       <AnimatePresence mode="wait" initial={false}>

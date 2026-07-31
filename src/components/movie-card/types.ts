@@ -11,4 +11,6 @@ export type MovieCardProps = {
   expandOnHover?: boolean
   /** Watch progress percentage 0–100 (Continue Watching). Shows progress bar. */
   progress?: number
+  /** When provided, shows a dismiss (X) button on hover (Continue Watching). */
+  onDismiss?: (movie: Movie) => void
 }

@@ -12,6 +12,7 @@ export function MovieCard({
   className,
   expandOnHover = false,
   progress,
+  onDismiss,
 }: MovieCardProps) {
   const { isHovered, handleMouseEnter, handleMouseLeave } = useMovieCardHover()
 
@@ -28,6 +29,7 @@ export function MovieCard({
         logoPath={logoPath}
         className={className}
         progress={progress}
+        onDismiss={onDismiss}
       />
     )
   }

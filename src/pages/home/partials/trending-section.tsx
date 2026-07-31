@@ -1,5 +1,5 @@
 import { useRef } from "react"
-import { ChevronLeft, ChevronRight, X } from "lucide-react"
+import { ChevronLeft, ChevronRight } from "lucide-react"
 import { MovieCard } from "@/components/movie-card"
 import { useMovieDetails } from "@/hooks/use-movie-details"
 import type { Movie, Genre } from "@/types/movie.types"
@@ -65,33 +65,17 @@ export function TrendingSection({
       >
         <div className="flex w-max gap-3">
           {movies.map((movie, index) => (
-            <div
+            <MovieCard
               key={movie.id}
-              className="group/card relative h-[288px] shrink-0 cursor-pointer"
-            >
-              <MovieCard
-                movie={movie}
-                rank={index + 1}
-                showRank={showRank}
-                genres={genres}
-                logoPath={movieDetails[index]?.logoPath}
-                expandOnHover
-                progress={progressMap?.[movie.id]}
-              />
-              {onDismiss && (
-                <button
-                  type="button"
-                  aria-label="Remove from Continue Watching"
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    onDismiss(movie)
-                  }}
-                  className="absolute right-2 top-2 z-40 rounded-full bg-black/60 p-1.5 text-white opacity-0 backdrop-blur transition-opacity group-hover/card:opacity-100 hover:bg-black/80"
-                >
-                  <X className="h-3.5 w-3.5" />
-                </button>
-              )}
-            </div>
+              movie={movie}
+              rank={index + 1}
+              showRank={showRank}
+              genres={genres}
+              logoPath={movieDetails[index]?.logoPath}
+              expandOnHover
+              progress={progressMap?.[movie.id]}
+              onDismiss={onDismiss}
+            />
           ))}
         </div>
       </div>
