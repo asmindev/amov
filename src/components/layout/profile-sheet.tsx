@@ -6,7 +6,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import { Globe, Loader2 } from "lucide-react"
 import { useAuthStore } from "@/stores/auth-store"
 import { loadAllProgress } from "@/hooks/use-watch-progress"
 import {
@@ -86,7 +85,7 @@ export function ProfileSheet({
               >
                 {syncing ? (
                   <>
-                    <Loader2 className="h-4 w-4 animate-spin" /> Syncing...
+                    <span className="material-symbols-outlined !text-[16px] animate-spin">progress_activity</span> Syncing...
                   </>
                 ) : syncEnabled ? (
                   "Synced ✓"
@@ -128,7 +127,7 @@ export function ProfileSheet({
             onClick={toggleLanguage}
             className="flex items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/5 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-white/10"
           >
-            <Globe className="h-4 w-4" />
+            <span className="material-symbols-outlined !text-[16px]">language</span>
             Language: {currentLang === "en-US" ? "EN" : "ID"}
           </button>
         </div>

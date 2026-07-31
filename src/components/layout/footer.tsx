@@ -1,15 +1,6 @@
 import { useState, useEffect } from "react"
 import { Link } from "@tanstack/react-router"
 import { motion } from "motion/react"
-import {
-  ArrowUpRight,
-  Globe2,
-  Film,
-  Tv,
-  Bookmark,
-  Sparkles,
-  ArrowUp,
-} from "lucide-react"
 
 export function Footer() {
   const [time, setTime] = useState<string>("")
@@ -104,7 +95,7 @@ export function Footer() {
             className="group flex h-14 w-14 shrink-0 items-center justify-center rounded-full border border-white/20 bg-white/5 text-white transition-all duration-300 hover:scale-110 hover:border-white hover:bg-white hover:text-black active:scale-95"
             aria-label="Scroll to top"
           >
-            <ArrowUp className="h-6 w-6 transition-transform duration-300 group-hover:-translate-y-1" />
+            <span className="material-symbols-outlined !text-[24px] transition-transform duration-300 group-hover:-translate-y-1">arrow_upward</span>
           </button>
         </div>
 
@@ -121,7 +112,7 @@ export function Footer() {
                   to="/"
                   className="group inline-flex items-center gap-2 text-white/70 transition-colors hover:text-primary"
                 >
-                  <Film className="h-4 w-4 text-primary opacity-0 transition-opacity group-hover:opacity-100" />
+                  <span className="material-symbols-outlined !text-[16px] text-primary opacity-0 transition-opacity group-hover:opacity-100">movie</span>
                   <span>Featured Movies</span>
                 </Link>
               </li>
@@ -131,7 +122,7 @@ export function Footer() {
                   search={{ type: "tv" }}
                   className="group inline-flex items-center gap-2 text-white/70 transition-colors hover:text-primary"
                 >
-                  <Tv className="h-4 w-4 text-primary opacity-0 transition-opacity group-hover:opacity-100" />
+                  <span className="material-symbols-outlined !text-[16px] text-primary opacity-0 transition-opacity group-hover:opacity-100">tv</span>
                   <span>TV Series</span>
                 </Link>
               </li>
@@ -140,7 +131,7 @@ export function Footer() {
                   to="/watchlist"
                   className="group inline-flex items-center gap-2 text-white/70 transition-colors hover:text-primary"
                 >
-                  <Bookmark className="h-4 w-4 text-primary opacity-0 transition-opacity group-hover:opacity-100" />
+                  <span className="material-symbols-outlined !text-[16px] text-primary opacity-0 transition-opacity group-hover:opacity-100">bookmark</span>
                   <span>Saved Watchlist</span>
                 </Link>
               </li>
@@ -161,7 +152,7 @@ export function Footer() {
                   className="group inline-flex items-center gap-1.5 text-white/70 transition-colors hover:text-white"
                 >
                   <span>The Movie Database (TMDB)</span>
-                  <ArrowUpRight className="h-3.5 w-3.5 opacity-50 transition-all group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:opacity-100" />
+                  <span className="material-symbols-outlined !text-[14px] opacity-50 transition-all group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:opacity-100">arrow_outward</span>
                 </a>
               </li>
               <li>
@@ -172,7 +163,7 @@ export function Footer() {
                   className="group inline-flex items-center gap-1.5 text-white/70 transition-colors hover:text-white"
                 >
                   <span>Videasy Network</span>
-                  <ArrowUpRight className="h-3.5 w-3.5 opacity-50 transition-all group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:opacity-100" />
+                  <span className="material-symbols-outlined !text-[14px] opacity-50 transition-all group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:opacity-100">arrow_outward</span>
                 </a>
               </li>
             </ul>
@@ -210,7 +201,7 @@ export function Footer() {
             </p>
             <div className="relative overflow-hidden rounded-none border border-white/10 bg-white/5 p-5 backdrop-blur-md">
               <div className="mb-2 flex items-center gap-2">
-                <Sparkles className="h-4 w-4 text-primary" />
+                <span className="material-symbols-outlined !text-[16px] text-primary">auto_awesome</span>
                 <span className="text-xs font-bold tracking-wider text-white uppercase">
                   TMDB API Notice
                 </span>
@@ -239,7 +230,7 @@ export function Footer() {
         {/* Bottom Copyright & Status Bar */}
         <div className="flex flex-col items-center justify-between gap-4 border-t border-white/10 pt-8 text-xs text-white/40 sm:flex-row">
           <div className="flex items-center gap-2">
-            <Globe2 className="h-4 w-4" />
+            <span className="material-symbols-outlined !text-[16px]">language</span>
             <span>
               &copy; {new Date().getFullYear()} AMOV Studio. All rights
               reserved.

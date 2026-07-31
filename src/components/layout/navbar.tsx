@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react"
 import { Link, useLocation } from "@tanstack/react-router"
 import { SearchModal } from "@/components/search/search-modal"
-import { Search } from "lucide-react"
 import { useAuthStore } from "@/stores/auth-store"
 import { loadAllProgress } from "@/hooks/use-watch-progress"
 import {
@@ -125,7 +124,7 @@ export function Navbar() {
                   : "text-white/70 hover:text-white"
               }`}
             >
-              <Search className="h-5 w-5" />
+              <span className="material-symbols-outlined !text-[20px]">search</span>
             </button>
 
             {/* Auth Controls */}
