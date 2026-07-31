@@ -42,7 +42,7 @@ export function Footer() {
       <div className="pointer-events-none absolute -top-40 left-1/2 h-[400px] w-[800px] -translate-x-1/2 rounded-full bg-primary/10 blur-[140px]" />
       <div className="pointer-events-none absolute right-0 -bottom-20 h-[300px] w-[500px] rounded-full bg-red-600/5 blur-[120px]" />
 
-      <div className="relative mx-auto max-w-[1400px] px-6 pt-20 pb-12 md:px-16">
+      <div className="relative mx-auto max-w-[1400px] px-6 pt-20 pb-24 md:px-16 md:pb-12">
         {/* Top Header Bar with Live Indicator & Action */}
         <div className="mb-20 flex flex-col justify-between gap-8 border-b border-white/10 pb-12 md:flex-row md:items-end">
           <div className="space-y-6">

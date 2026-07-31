@@ -1,6 +1,7 @@
 import { useEffect } from "react"
 import { Outlet, useLocation } from "@tanstack/react-router"
 import { Navbar } from "@/components/layout/navbar"
+import { BottomNav } from "@/components/layout/bottom-nav"
 import { Footer } from "@/components/layout/footer"
 import { AuthModal } from "@/components/auth/auth-modal"
 import { useAuthStore } from "@/stores/auth-store"
@@ -33,6 +34,7 @@ export default function AppLayout() {
         <Outlet />
       </main>
       <Footer />
+      <BottomNav />
       <AuthModal />
     </div>
   )
