@@ -140,7 +140,7 @@ export function AuthModal() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="name@example.com"
-                className="w-full rounded-lg border border-white/10 bg-neutral-900/90 py-2 pr-3 pl-9 text-sm text-white placeholder-neutral-500 transition-colors focus:border-red-500 focus:outline-none"
+                className="w-full rounded-lg border border-white/10 bg-neutral-900/90 py-2 pr-3 pl-9 text-base text-white placeholder-neutral-500 transition-colors focus:border-red-500 focus:outline-none"
               />
             </div>
           </div>
@@ -158,7 +158,7 @@ export function AuthModal() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
-                className="w-full rounded-lg border border-white/10 bg-neutral-900/90 py-2 pr-3 pl-9 text-sm text-white placeholder-neutral-500 transition-colors focus:border-red-500 focus:outline-none"
+                className="w-full rounded-lg border border-white/10 bg-neutral-900/90 py-2 pr-3 pl-9 text-base text-white placeholder-neutral-500 transition-colors focus:border-red-500 focus:outline-none"
               />
             </div>
           </div>
