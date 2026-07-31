@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import { Link, useLocation } from "@tanstack/react-router"
 import { SearchModal } from "@/components/search/search-modal"
-import { Search, Globe } from "lucide-react"
+import { Search } from "lucide-react"
 import { useAuthStore } from "@/stores/auth-store"
 import { loadAllProgress } from "@/hooks/use-watch-progress"
 import {
@@ -60,16 +60,6 @@ export function Navbar() {
 
   const isTransparentMode = pathname === "/" || pathname.startsWith("/movie/")
 
-  const currentLang =
-    typeof window !== "undefined"
-      ? localStorage.getItem("app-language") || "en-US"
-      : "en-US"
-  const toggleLanguage = () => {
-    const nextLang = currentLang === "en-US" ? "id-ID" : "en-US"
-    localStorage.setItem("app-language", nextLang)
-    window.location.reload()
-  }
-
   return (
     <>
       <nav
@@ -87,7 +77,7 @@ export function Navbar() {
             >
               AMOV
             </Link>
-            <div className="hidden items-center gap-1 sm:flex">
+            <div className="hidden items-center gap-1 md:flex">
               {navLinks.map((link) => {
                 const isActive =
                   link.to === "/"
@@ -126,21 +116,7 @@ export function Navbar() {
               )}
             </div>
           </div>
-          <div className="flex items-center gap-5">
-            <button
-              onClick={toggleLanguage}
-              className={`flex items-center gap-1.5 text-sm font-medium transition-colors ${
-                scrolled || !isTransparentMode
-                  ? "text-muted-foreground hover:text-foreground"
-                  : "text-white/70 hover:text-white"
-              }`}
-            >
-              <Globe className="h-4 w-4" />
-              <span className="uppercase">
-                {currentLang === "en-US" ? "EN" : "ID"}
-              </span>
-            </button>
-
+          <div className="hidden items-center gap-5 md:flex">
             <button
               onClick={() => setIsSearchOpen(true)}
               className={`transition-colors ${
