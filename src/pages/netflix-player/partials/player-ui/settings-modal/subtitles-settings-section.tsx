@@ -1,6 +1,5 @@
 import { useMemo, useState } from "react"
 import { Button } from "@/components/ui/button"
-import { Check, ChevronDown, Search, X } from "lucide-react"
 import type { SubtitlesSettingsSectionProps } from "./types"
 import type { WyzieSubtitleGroup } from "@/api/decryptor.api"
 
@@ -76,7 +75,7 @@ export function SubtitlesSettingsSection({
 
       {/* Search */}
       <div className="relative mb-2">
-        <Search className="pointer-events-none absolute top-1/2 left-2.5 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
+        <span className="material-symbols-outlined !text-[14px] pointer-events-none absolute top-1/2 left-2.5 -translate-y-1/2 text-muted-foreground">search</span>
         <input
           value={search}
           onChange={(e) => setSearch(e.target.value)}
@@ -88,7 +87,7 @@ export function SubtitlesSettingsSection({
             onClick={() => setSearch("")}
             className="absolute top-1/2 right-2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
           >
-            <X className="h-3.5 w-3.5" />
+            <span className="material-symbols-outlined !text-[14px] ">close</span>
           </button>
         )}
       </div>
@@ -105,7 +104,7 @@ export function SubtitlesSettingsSection({
           }`}
         >
           <span>Off</span>
-          {!selectedSub && <Check className="h-3.5 w-3.5 text-primary" />}
+          {!selectedSub && <span className="material-symbols-outlined !text-[14px] text-primary">check</span>}
         </button>
 
         {/* Provider Subtitles Section */}
@@ -142,7 +141,7 @@ export function SubtitlesSettingsSection({
                       </span>
                     )}
                     {isActive && !subError && (
-                      <Check className="h-3.5 w-3.5 text-primary" />
+                      <span className="material-symbols-outlined !text-[14px] text-primary">check</span>
                     )}
                   </span>
                 </button>
@@ -240,11 +239,9 @@ function LanguageGroup({
             {count}
           </span>
         </div>
-        <ChevronDown
-          className={`h-3.5 w-3.5 transition-transform duration-200 ${
+        <span className={`material-symbols-outlined !text-[14px] transition-transform duration-200 ${
             isExpanded ? "rotate-180" : ""
-          }`}
-        />
+          }`}>expand_more</span>
       </button>
 
       {/* Expanded subtitles */}
@@ -291,7 +288,7 @@ function LanguageGroup({
                     </span>
                   )}
                   {isActive && !subError && (
-                    <Check className="h-3.5 w-3.5 text-primary" />
+                    <span className="material-symbols-outlined !text-[14px] text-primary">check</span>
                   )}
                 </span>
               </button>

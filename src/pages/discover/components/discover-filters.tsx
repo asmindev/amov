@@ -18,16 +18,6 @@ import {
 } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import {
-  SlidersHorizontal,
-  X,
-  Calendar,
-  Globe,
-  Tv,
-  ArrowUpDown,
-  Clapperboard,
-  ChevronDown,
-} from "lucide-react"
 import { PROVIDERS, COUNTRIES, SORT_OPTIONS, YEARS } from "../constants"
 import type { Genre } from "@/types/movie.types"
 
@@ -136,7 +126,7 @@ export function DiscoverFilters({
         {/* Type select */}
         <FilterPill
           label="Type"
-          icon={<Clapperboard className="h-3.5 w-3.5" />}
+          icon={<span className="material-symbols-outlined !text-[14px] ">movie</span>}
           isActive={selectedType !== "all"}
         >
           <Select
@@ -151,9 +141,9 @@ export function DiscoverFilters({
           >
             <SelectTrigger className="h-8 gap-1.5 rounded-md border-white/10 bg-white/5 px-3 text-xs font-medium transition-all hover:bg-white/10 data-[state=open]:bg-white/10">
               {selectedType === "tv" ? (
-                <Tv className="h-3.5 w-3.5 shrink-0 opacity-70" />
+                <span className="material-symbols-outlined !text-[14px] shrink-0 opacity-70">tv</span>
               ) : (
-                <Clapperboard className="h-3.5 w-3.5 shrink-0 opacity-70" />
+                <span className="material-symbols-outlined !text-[14px] shrink-0 opacity-70">movie</span>
               )}
               <SelectValue placeholder="Type">
                 {selectedType === "tv"
@@ -176,7 +166,7 @@ export function DiscoverFilters({
         {/* Genre multi-select */}
         <FilterPill
           label="Genres"
-          icon={<Clapperboard className="h-3.5 w-3.5" />}
+          icon={<span className="material-symbols-outlined !text-[14px] ">movie</span>}
           isActive={selectedGenres.length > 0}
         >
           <DropdownMenu>
@@ -194,7 +184,7 @@ export function DiscoverFilters({
                       {selectedGenres.length}
                     </span>
                   )}
-                  <ChevronDown className="h-3 w-3 opacity-40" />
+                  <span className="material-symbols-outlined !text-[12px] opacity-40">expand_more</span>
                 </Button>
               }
             />
@@ -261,7 +251,7 @@ export function DiscoverFilters({
         {/* Country */}
         <FilterPill
           label="Country"
-          icon={<Globe className="h-3.5 w-3.5" />}
+          icon={<span className="material-symbols-outlined !text-[14px] ">language</span>}
           isActive={!!selectedCountry}
         >
           <Select
@@ -271,7 +261,7 @@ export function DiscoverFilters({
             }
           >
             <SelectTrigger className="h-8 gap-1.5 rounded-md border-white/10 bg-white/5 px-3 text-xs font-medium transition-all hover:bg-white/10 data-[state=open]:bg-white/10">
-              <Globe className="h-3.5 w-3.5 shrink-0 opacity-70" />
+              <span className="material-symbols-outlined !text-[14px] shrink-0 opacity-70">language</span>
               <SelectValue placeholder="Country">
                 {!selectedCountry || selectedCountry === "all"
                   ? "Country"
@@ -294,7 +284,7 @@ export function DiscoverFilters({
         {/* Providers */}
         <FilterPill
           label="Providers"
-          icon={<Tv className="h-3.5 w-3.5" />}
+          icon={<span className="material-symbols-outlined !text-[14px] ">tv</span>}
           isActive={selectedProviders.length > 0}
         >
           <DropdownMenu>
@@ -305,14 +295,14 @@ export function DiscoverFilters({
                   size="sm"
                   className="h-8 gap-1.5 rounded-md border-white/10 bg-white/5 px-3 text-xs font-medium transition-all hover:bg-white/10 data-[state=open]:border-white/20 data-[state=open]:bg-white/10"
                 >
-                  <Tv className="h-3.5 w-3.5 opacity-70" />
+                  <span className="material-symbols-outlined !text-[14px] opacity-70">tv</span>
                   Streaming
                   {selectedProviders.length > 0 && (
                     <span className="flex h-4 w-4 items-center justify-center rounded-sm bg-primary text-[10px] font-bold text-primary-foreground">
                       {selectedProviders.length}
                     </span>
                   )}
-                  <ChevronDown className="h-3 w-3 opacity-40" />
+                  <span className="material-symbols-outlined !text-[12px] opacity-40">expand_more</span>
                 </Button>
               }
             />
@@ -352,7 +342,7 @@ export function DiscoverFilters({
             }
           >
             <SelectTrigger className="h-8 gap-1.5 rounded-md border-white/10 bg-white/5 px-3 text-xs font-medium transition-all hover:bg-white/10 data-[state=open]:bg-white/10">
-              <ArrowUpDown className="h-3.5 w-3.5 shrink-0 opacity-70" />
+              <span className="material-symbols-outlined !text-[14px] shrink-0 opacity-70">swap_vert</span>
               <SelectValue placeholder="Sort By">
                 {SORT_OPTIONS.find((opt) => opt.value === selectedSortBy)
                   ?.label ?? "Most Popular"}
@@ -407,7 +397,7 @@ export function DiscoverFilters({
                       className="flex items-center gap-1 rounded-md bg-primary/15 px-2.5 py-1 text-[11px] font-medium text-primary ring-1 ring-primary/30 transition-colors hover:bg-primary/25"
                     >
                       {genre.name}
-                      <X className="h-3 w-3" />
+                      <span className="material-symbols-outlined !text-[12px] ">close</span>
                     </motion.button>
                   )
                 })}
@@ -423,7 +413,7 @@ export function DiscoverFilters({
                     className="flex items-center gap-1 rounded-md bg-primary/15 px-2.5 py-1 text-[11px] font-medium text-primary ring-1 ring-primary/30 transition-colors hover:bg-primary/25"
                   >
                     {selectedYear}
-                    <X className="h-3 w-3" />
+                    <span className="material-symbols-outlined !text-[12px] ">close</span>
                   </motion.button>
                 )}
 
@@ -438,7 +428,7 @@ export function DiscoverFilters({
                     className="flex items-center gap-1 rounded-md bg-primary/15 px-2.5 py-1 text-[11px] font-medium text-primary ring-1 ring-primary/30 transition-colors hover:bg-primary/25"
                   >
                     {COUNTRIES.find((c) => c.code === selectedCountry)?.name}
-                    <X className="h-3 w-3" />
+                    <span className="material-symbols-outlined !text-[12px] ">close</span>
                   </motion.button>
                 )}
 
@@ -464,7 +454,7 @@ export function DiscoverFilters({
                       className="flex items-center gap-1 rounded-md bg-primary/15 px-2.5 py-1 text-[11px] font-medium text-primary ring-1 ring-primary/30 transition-colors hover:bg-primary/25"
                     >
                       {provider.name}
-                      <X className="h-3 w-3" />
+                      <span className="material-symbols-outlined !text-[12px] ">close</span>
                     </motion.button>
                   )
                 })}
@@ -480,7 +470,7 @@ export function DiscoverFilters({
                     className="flex items-center gap-1 rounded-md bg-primary/15 px-2.5 py-1 text-[11px] font-medium text-primary ring-1 ring-primary/30 transition-colors hover:bg-primary/25"
                   >
                     {selectedType === "tv" ? "TV Series" : "Movie"}
-                    <X className="h-3 w-3" />
+                    <span className="material-symbols-outlined !text-[12px] ">close</span>
                   </motion.button>
                 )}
 
@@ -498,7 +488,7 @@ export function DiscoverFilters({
                       SORT_OPTIONS.find((o) => o.value === selectedSortBy)
                         ?.label
                     }
-                    <X className="h-3 w-3" />
+                    <span className="material-symbols-outlined !text-[12px] ">close</span>
                   </motion.button>
                 )}
               </AnimatePresence>
@@ -518,7 +508,7 @@ export function DiscoverFilters({
                 }
                 className="h-7 gap-1 rounded-md px-2.5 text-[11px] text-muted-foreground hover:text-white"
               >
-                <X className="h-3 w-3" />
+                <span className="material-symbols-outlined !text-[12px] ">close</span>
                 Clear all
               </Button>
             </div>

@@ -1,4 +1,3 @@
-import { Globe, DollarSign, TrendingUp, Tv, Layers } from "lucide-react"
 import { InfoRow } from "./info-row"
 import { formatDate } from "@/helpers/format-date"
 
@@ -43,7 +42,7 @@ export function InfoSidebar({
       <InfoRow
         label="Original Language"
         value={originalLanguage.toUpperCase()}
-        icon={<Globe className="h-4 w-4" />}
+        icon={<span className="material-symbols-outlined !text-[16px]">language</span>}
       />
 
       {isTv ? (
@@ -52,14 +51,14 @@ export function InfoSidebar({
             <InfoRow
               label="Seasons"
               value={`${numberOfSeasons} Season${numberOfSeasons > 1 ? "s" : ""}`}
-              icon={<Layers className="h-4 w-4" />}
+              icon={<span className="material-symbols-outlined !text-[16px]">layers</span>}
             />
           )}
           {numberOfEpisodes !== undefined && (
             <InfoRow
               label="Episodes"
               value={`${numberOfEpisodes} Episode${numberOfEpisodes > 1 ? "s" : ""}`}
-              icon={<Tv className="h-4 w-4" />}
+              icon={<span className="material-symbols-outlined !text-[16px]">tv</span>}
             />
           )}
         </>
@@ -68,12 +67,12 @@ export function InfoSidebar({
           <InfoRow
             label="Budget"
             value={formatMoney(budget)}
-            icon={<DollarSign className="h-4 w-4" />}
+            icon={<span className="material-symbols-outlined !text-[16px]">attach_money</span>}
           />
           <InfoRow
             label="Revenue"
             value={formatMoney(revenue)}
-            icon={<TrendingUp className="h-4 w-4" />}
+            icon={<span className="material-symbols-outlined !text-[16px]">trending_up</span>}
           />
         </>
       )}

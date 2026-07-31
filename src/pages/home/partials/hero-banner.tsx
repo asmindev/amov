@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react"
 import { Link } from "@tanstack/react-router"
-import { ChevronLeft, ChevronRight, Volume2, VolumeX } from "lucide-react"
 import { motion, AnimatePresence } from "motion/react"
 import { getImageUrl } from "@/helpers/image-url"
 import { getMovieQuality } from "@/helpers/movie-quality"
@@ -143,9 +142,9 @@ export function HeroBanner({ movies }: HeroBannerProps) {
           className="absolute top-1/2 right-6 z-20 -translate-y-1/2 rounded-full bg-black/50 p-3 text-white backdrop-blur-sm transition-colors hover:bg-black/70"
         >
           {muted ? (
-            <VolumeX className="h-5 w-5" />
+            <span className="material-symbols-outlined !text-[20px] ">volume_off</span>
           ) : (
-            <Volume2 className="h-5 w-5" />
+            <span className="material-symbols-outlined !text-[20px] ">volume_up</span>
           )}
         </button>
       )}
@@ -259,7 +258,7 @@ export function HeroBanner({ movies }: HeroBannerProps) {
           }
           className="rounded-full bg-white/10 p-2 text-white/70 backdrop-blur-sm transition-colors hover:bg-white/20 hover:text-white"
         >
-          <ChevronLeft className="h-5 w-5" />
+          <span className="material-symbols-outlined !text-[20px] ">chevron_left</span>
         </button>
         <button
           onClick={() =>
@@ -267,7 +266,7 @@ export function HeroBanner({ movies }: HeroBannerProps) {
           }
           className="rounded-full bg-white/10 p-2 text-white/70 backdrop-blur-sm transition-colors hover:bg-white/20 hover:text-white"
         >
-          <ChevronRight className="h-5 w-5" />
+          <span className="material-symbols-outlined !text-[20px] ">chevron_right</span>
         </button>
       </div>
     </div>

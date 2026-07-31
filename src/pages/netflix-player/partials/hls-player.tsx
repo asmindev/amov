@@ -8,7 +8,6 @@ import {
 } from "react"
 import type { WyzieSubtitleGroup } from "@/api/decryptor.api"
 import { fetchWyzieSubtitles } from "@/api/decryptor.api"
-import { RefreshCw, AlertTriangle, WifiOff } from "lucide-react"
 import { AnimatePresence } from "motion/react"
 import { TopAppBar } from "./player-ui/top-app-bar"
 import { BottomControls } from "./player-ui/bottom-controls"
@@ -578,9 +577,9 @@ export function HlsPlayer({
       {streamError && (
         <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-black/90 px-6">
           {streamError.type === "network" ? (
-            <WifiOff className="mb-4 h-12 w-12 text-red-400" />
+            <span className="material-symbols-outlined !text-[48px] mb-4 text-red-400">wifi_off</span>
           ) : (
-            <AlertTriangle className="mb-4 h-12 w-12 text-red-400" />
+            <span className="material-symbols-outlined !text-[48px] mb-4 text-red-400">warning</span>
           )}
           <h3 className="mb-1 text-lg font-bold text-white">
             {streamError.message}
@@ -601,7 +600,7 @@ export function HlsPlayer({
               onClick={handleRetry}
               className="flex items-center gap-2 rounded-lg bg-white/10 px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-white/20"
             >
-              <RefreshCw className="h-4 w-4" />
+              <span className="material-symbols-outlined !text-[16px] ">refresh</span>
               Retry
             </button>
             {allProviders.length > 1 && (

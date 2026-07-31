@@ -1,5 +1,4 @@
 import { useRef } from "react"
-import { ChevronLeft, ChevronRight } from "lucide-react"
 import { MovieCard } from "@/components/movie-card"
 import { useMovieDetails } from "@/hooks/use-movie-details"
 import type { Movie, Genre } from "@/types/movie.types"
@@ -49,13 +48,13 @@ export function TrendingSection({
             onClick={() => scroll("left")}
             className="rounded border border-white/10 bg-white/5 p-2 text-gray-400 transition-colors hover:bg-white/10 hover:text-white"
           >
-            <ChevronLeft className="h-5 w-5" />
+            <span className="material-symbols-outlined !text-[20px] ">chevron_left</span>
           </button>
           <button
             onClick={() => scroll("right")}
             className="rounded border border-white/10 bg-white/5 p-2 text-gray-400 transition-colors hover:bg-white/10 hover:text-white"
           >
-            <ChevronRight className="h-5 w-5" />
+            <span className="material-symbols-outlined !text-[20px] ">chevron_right</span>
           </button>
         </div>
       </div>

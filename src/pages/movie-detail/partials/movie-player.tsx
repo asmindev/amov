@@ -1,6 +1,5 @@
 import { Link } from "@tanstack/react-router"
 import { motion, AnimatePresence } from "motion/react"
-import { ChevronLeft, History } from "lucide-react"
 import {
   useWatchProgressTracker,
   getWatchProgress,
@@ -66,7 +65,7 @@ export function MoviePlayer({
         params={{ type: mediaType, id: movieId.toString() }}
         className="absolute top-6 left-6 z-50 flex items-center gap-2 rounded-full border border-white/20 bg-black/50 px-4 py-2 text-sm font-semibold text-white backdrop-blur-md transition-all hover:scale-105 hover:bg-white/20"
       >
-        <ChevronLeft className="h-4 w-4" />
+        <span className="material-symbols-outlined !text-[16px] ">chevron_left</span>
         Back to Details
       </Link>
 
@@ -79,7 +78,7 @@ export function MoviePlayer({
             transition={{ delay: 1, duration: 0.5 }}
             className="absolute right-6 bottom-20 z-50 flex items-center gap-3 rounded-xl border border-red-500/30 bg-black/70 px-5 py-3 text-sm text-white shadow-xl backdrop-blur-md"
           >
-            <History className="h-4 w-4 shrink-0 text-red-400" />
+            <span className="material-symbols-outlined !text-[16px] shrink-0 text-red-400">history</span>
             <span>
               Resumed from{" "}
               <span className="font-bold text-red-400">

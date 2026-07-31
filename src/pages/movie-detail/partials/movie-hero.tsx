@@ -1,6 +1,5 @@
 import { Link } from "@tanstack/react-router"
 import { motion } from "motion/react"
-import { Volume2, VolumeX, History, RotateCcw, Plus, Check } from "lucide-react"
 import { getImageUrl } from "@/helpers/image-url"
 import { formatYear } from "@/helpers/format-date"
 import { getMovieQuality } from "@/helpers/movie-quality"
@@ -78,9 +77,9 @@ export function MovieHero({
           className="absolute right-6 bottom-8 z-50 rounded-full border border-white/10 bg-black/20 p-3 text-white backdrop-blur-md transition-all hover:scale-105 hover:bg-white/20 md:right-16 md:bottom-8"
         >
           {muted ? (
-            <VolumeX className="h-5 w-5" />
+            <span className="material-symbols-outlined !text-[20px] ">volume_off</span>
           ) : (
-            <Volume2 className="h-5 w-5" />
+            <span className="material-symbols-outlined !text-[20px] ">volume_up</span>
           )}
         </button>
       )}
@@ -125,7 +124,7 @@ export function MovieHero({
         >
           <div className="mb-1.5 flex items-center justify-between text-xs text-white/60">
             <span className="flex items-center gap-1.5">
-              <History className="h-3 w-3 text-primary" />
+              <span className="material-symbols-outlined !text-[12px] text-primary">history</span>
               Continue watching
             </span>
             <span className="font-mono">
@@ -149,7 +148,7 @@ export function MovieHero({
             onClick={() => clearWatchProgress(mediaType, movie.id)}
             className="mt-1.5 flex items-center gap-1 text-xs text-white/40 transition-colors hover:text-white/70"
           >
-            <RotateCcw className="h-3 w-3" />
+            <span className="material-symbols-outlined !text-[12px] ">replay</span>
             Start from beginning
           </button>
         </motion.div>
@@ -204,9 +203,9 @@ export function MovieHero({
           )}
         >
           {inList ? (
-            <Check className="h-4 w-4" />
+            <span className="material-symbols-outlined !text-[16px] ">check</span>
           ) : (
-            <Plus className="h-4 w-4" />
+            <span className="material-symbols-outlined !text-[16px] ">add</span>
           )}
           {inList ? "In Watchlist" : "Add to Watchlist"}
         </Button>

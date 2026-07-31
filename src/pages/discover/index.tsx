@@ -1,6 +1,5 @@
 import { useNavigate, useSearch } from "@tanstack/react-router"
 import { useState, useEffect, useRef, useCallback } from "react"
-import { Search as SearchIcon, X } from "lucide-react"
 import { motion } from "motion/react"
 import { useDiscover } from "./hooks/use-discover"
 import { useGenres } from "@/hooks/use-genres"
@@ -130,7 +129,7 @@ export default function DiscoverPage() {
           Find your next watch
         </p>
         <div className="relative mx-auto max-w-2xl">
-          <SearchIcon className="absolute top-1/2 left-5 h-5 w-5 -translate-y-1/2 text-muted-foreground/70" />
+          <span className="material-symbols-outlined !text-[20px] absolute top-1/2 left-5 -translate-y-1/2 text-muted-foreground/70">search</span>
           <input
             type="text"
             value={localQuery}
@@ -143,7 +142,7 @@ export default function DiscoverPage() {
               onClick={() => setLocalQuery("")}
               className="absolute top-1/2 right-4 -translate-y-1/2 rounded-full p-1 text-muted-foreground transition-colors hover:text-white"
             >
-              <X className="h-4 w-4" />
+              <span className="material-symbols-outlined !text-[16px] ">close</span>
             </button>
           )}
         </div>

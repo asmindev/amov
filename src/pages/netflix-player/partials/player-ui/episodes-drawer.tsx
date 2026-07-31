@@ -1,6 +1,5 @@
 import { useRef, useState, useMemo } from "react"
 import { motion } from "motion/react"
-import { X, Check } from "lucide-react"
 import { useTvSeasonEpisodes } from "@/pages/movie-detail/hooks/use-movie-detail"
 import { getImageUrl } from "@/helpers/image-url"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -112,7 +111,7 @@ export function EpisodesDrawer({
             className="flex h-8 w-8 items-center justify-center rounded-full bg-white/10 text-white/70 transition-colors hover:bg-white/20 hover:text-white"
             aria-label="Close episodes drawer"
           >
-            <X className="h-4 w-4" />
+            <span className="material-symbols-outlined !text-[16px] ">close</span>
           </button>
         </div>
 
@@ -203,7 +202,7 @@ export function EpisodesDrawer({
                       {/* Playing Badge */}
                       {isCurrent && (
                         <span className="absolute top-2 right-2 flex items-center gap-1 rounded-md bg-primary/90 px-2 py-0.5 text-[10px] font-extrabold text-white shadow-md">
-                          <Check className="h-3 w-3" /> PLAYING
+                          <span className="material-symbols-outlined !text-[12px]">check</span> PLAYING
                         </span>
                       )}
                     </div>

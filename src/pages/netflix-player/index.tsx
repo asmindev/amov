@@ -1,6 +1,5 @@
 import { useEffect } from "react"
 import { useParams, useSearch, Link } from "@tanstack/react-router"
-import { AlertTriangle, ServerCrash } from "lucide-react"
 import { useMediaDetail } from "@/pages/movie-detail/hooks/use-movie-detail"
 import { useSources } from "./hooks/use-sources"
 import { HlsPlayer } from "./partials/hls-player"
@@ -85,7 +84,7 @@ export default function NetflixPlayerPage() {
   if (movieError || !movie) {
     return (
       <div className="fixed inset-0 flex flex-col items-center justify-center gap-4 bg-black">
-        <AlertTriangle className="h-10 w-10 text-red-400" />
+        <span className="material-symbols-outlined !text-[40px] text-red-400">warning</span>
         <p className="font-semibold text-white">Could not load details</p>
         <Link
           to="/$type/$id"
@@ -102,7 +101,7 @@ export default function NetflixPlayerPage() {
   if (sourcesError) {
     return (
       <div className="fixed inset-0 flex flex-col items-center justify-center gap-4 bg-black px-6">
-        <ServerCrash className="h-12 w-12 text-red-400" />
+        <span className="material-symbols-outlined !text-[48px] text-red-400">dns_off</span>
         <h2 className="text-center text-xl font-bold text-white">
           All providers failed
         </h2>
