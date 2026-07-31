@@ -103,7 +103,7 @@ export function DiscoverFilters({
       <div className="flex flex-wrap items-center gap-2">
         {/* Section label */}
         <div className="flex items-center gap-2 pr-1 text-sm font-medium text-muted-foreground">
-          <SlidersHorizontal className="h-4 w-4" />
+          <span className="material-symbols-outlined !text-[16px]">tune</span>
           <span>Filters</span>
           <AnimatePresence>
             {hasFilters && (
@@ -177,7 +177,7 @@ export function DiscoverFilters({
                   size="sm"
                   className="h-8 gap-1.5 rounded-md border-white/10 bg-white/5 px-3 text-xs font-medium transition-all hover:bg-white/10 data-[state=open]:border-white/20 data-[state=open]:bg-white/10"
                 >
-                  <Clapperboard className="h-3.5 w-3.5 opacity-70" />
+                  <span className="material-symbols-outlined !text-[14px] opacity-70">movie</span>
                   Genres
                   {selectedGenres.length > 0 && (
                     <span className="flex h-4 w-4 items-center justify-center rounded-sm bg-primary text-[10px] font-bold text-primary-foreground">
@@ -218,7 +218,7 @@ export function DiscoverFilters({
         {/* Year */}
         <FilterPill
           label="Year"
-          icon={<Calendar className="h-3.5 w-3.5" />}
+          icon={<span className="material-symbols-outlined !text-[14px]">calendar_month</span>}
           isActive={!!selectedYear}
         >
           <Select
@@ -228,7 +228,7 @@ export function DiscoverFilters({
             }
           >
             <SelectTrigger className="h-8 gap-1.5 rounded-md border-white/10 bg-white/5 px-3 text-xs font-medium transition-all hover:bg-white/10 data-[state=open]:bg-white/10">
-              <Calendar className="h-3.5 w-3.5 shrink-0 opacity-70" />
+              <span className="material-symbols-outlined !text-[14px] shrink-0 opacity-70">calendar_month</span>
               <SelectValue placeholder="Year">
                 {!selectedYear || selectedYear === "all"
                   ? "Year"

@@ -7,7 +7,6 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
-import { AlertCircle, Loader2, Lock, Mail, Film } from "lucide-react"
 
 export function AuthModal() {
   const {
@@ -66,7 +65,7 @@ export function AuthModal() {
       <DialogContent className="border-white/10 bg-neutral-950 p-6 text-white shadow-2xl backdrop-blur-2xl sm:max-w-md">
         <DialogHeader className="flex flex-col items-center gap-2">
           <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-red-600/20 text-red-500 ring-1 ring-red-500/30">
-            <Film className="h-6 w-6" />
+            <span className="material-symbols-outlined !text-[24px] ">movie</span>
           </div>
           <DialogTitle className="text-xl font-bold tracking-tight text-white">
             {authMode === "signin"
@@ -117,13 +116,13 @@ export function AuthModal() {
         {/* Error / Success Banners */}
         {errorMessage && (
           <div className="flex items-center gap-2 rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-2 text-xs text-red-400">
-            <AlertCircle className="h-4 w-4 shrink-0" />
+            <span className="material-symbols-outlined !text-[16px] shrink-0">error</span>
             <span>{errorMessage}</span>
           </div>
         )}
         {successMessage && (
           <div className="flex items-center gap-2 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-3 py-2 text-xs text-emerald-400">
-            <AlertCircle className="h-4 w-4 shrink-0" />
+            <span className="material-symbols-outlined !text-[16px] shrink-0">error</span>
             <span>{successMessage}</span>
           </div>
         )}
@@ -134,7 +133,7 @@ export function AuthModal() {
               Email Address
             </label>
             <div className="relative">
-              <Mail className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-neutral-500" />
+              <span className="material-symbols-outlined !text-[16px] absolute top-1/2 left-3 -translate-y-1/2 text-neutral-500">mail</span>
               <input
                 type="email"
                 required
@@ -151,7 +150,7 @@ export function AuthModal() {
               Password
             </label>
             <div className="relative">
-              <Lock className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-neutral-500" />
+              <span className="material-symbols-outlined !text-[16px] absolute top-1/2 left-3 -translate-y-1/2 text-neutral-500">lock</span>
               <input
                 type="password"
                 required
@@ -170,7 +169,7 @@ export function AuthModal() {
             className="w-full rounded-lg bg-red-600 py-2.5 font-semibold text-white transition-colors hover:bg-red-500 active:scale-[0.99]"
           >
             {isLoading ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
+              <span className="material-symbols-outlined !text-[16px] animate-spin">progress_activity</span>
             ) : authMode === "signin" ? (
               "Sign In"
             ) : (
