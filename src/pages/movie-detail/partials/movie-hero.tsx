@@ -1,11 +1,14 @@
 import { Link } from "@tanstack/react-router"
 import { motion } from "motion/react"
-import { Volume2, VolumeX, History, RotateCcw } from "lucide-react"
+import { Volume2, VolumeX, History, RotateCcw, Plus, Check } from "lucide-react"
 import { getImageUrl } from "@/helpers/image-url"
 import { formatYear } from "@/helpers/format-date"
 import { getMovieQuality } from "@/helpers/movie-quality"
 import { getMaturityRating } from "@/helpers/maturity-rating"
 import { clearWatchProgress } from "@/hooks/use-watch-progress"
+import { useWatchlistStore } from "@/stores/watchlist-store"
+import { useInWatchlist } from "@/hooks/use-watchlist"
+import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 
 function formatRuntime(minutes: number | null): string {
@@ -59,6 +62,8 @@ export function MovieHero({
   savedProgress,
 }: MovieHeroProps) {
   const mediaType = movie.mediaType || "movie"
+  const inList = useInWatchlist(mediaType, movie.id)
+  const toggle = useWatchlistStore((s) => s.toggle)
 
   return (
     <motion.div
@@ -187,13 +192,23 @@ export function MovieHero({
           </button>
         )} */}
         {/* button watchlist */}
-        <Button variant="outline" 
-          className="flex items-center gap-1.5 rounded-none bg-primary px-5 py-3 text-sm font-bold text-white shadow-lg transition-all hover:scale-105 hover:bg-gray-200 active:scale-95 md:gap-2 md:px-8 md:py-3.5 md:text-base"
+        <Button
+          type="button"
+          aria-pressed={inList}
+          onClick={() => mediaType && toggle(mediaType, movie.id)}
+          className={cn(
+            "flex items-center gap-1.5 rounded-none px-5 py-3 text-sm font-bold text-white shadow-lg backdrop-blur-md transition-all hover:scale-105 active:scale-95 md:gap-2 md:px-8 md:py-3.5 md:text-base",
+            inList
+              ? "bg-primary hover:bg-gray-200"
+              : "bg-white/15 hover:bg-white/25"
+          )}
         >
-          <span className="material-symbols-outlined fill text-xl md:text-2xl!">
-            add
-          </span>
-          Watchlist
+          {inList ? (
+            <Check className="h-4 w-4" />
+          ) : (
+            <Plus className="h-4 w-4" />
+          )}
+          {inList ? "In Watchlist" : "Add to Watchlist"}
         </Button>
       </div>
     </motion.div>

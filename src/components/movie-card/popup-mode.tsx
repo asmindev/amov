@@ -1,8 +1,10 @@
 import { Link } from "@tanstack/react-router"
-import { Plus, ThumbsUp, ChevronDown } from "lucide-react"
+import { Plus, ThumbsUp, ChevronDown, Bookmark } from "lucide-react"
 import { motion, AnimatePresence } from "motion/react"
 import { getImageUrl } from "@/helpers/image-url"
 import { recordAnalyticsEvent } from "@/api/analytics.api"
+import { useWatchlistStore } from "@/stores/watchlist-store"
+import { useInWatchlist } from "@/hooks/use-watchlist"
 import { PopupMetadataRow } from "./metadata-row"
 import { useGenreNames } from "./hooks"
 import type { Movie, Genre } from "@/types/movie.types"
@@ -31,6 +33,8 @@ export function PopupMode({
   className,
 }: PopupModeProps) {
   const genreNames = useGenreNames(movie, genres)
+  const inList = useInWatchlist(movie.mediaType === "tv" ? "tv" : "movie", movie.id)
+  const toggle = useWatchlistStore((s) => s.toggle)
 
   const trackClick = () => {
     recordAnalyticsEvent({
@@ -86,6 +90,17 @@ export function PopupMode({
                 className="h-full w-full object-cover opacity-80"
               />
               <div className="absolute inset-0 bg-linear-to-t from-card to-transparent" />
+              <button
+                type="button"
+                aria-label={inList ? "Remove from watchlist" : "Add to watchlist"}
+                onClick={(e) => {
+                  e.stopPropagation()
+                  toggle(movie.mediaType === "tv" ? "tv" : "movie", movie.id)
+                }}
+                className="absolute right-2 top-2 z-20 rounded-full bg-black/60 p-2 text-white backdrop-blur transition-opacity hover:bg-black/80"
+              >
+                {inList ? <Bookmark className="h-4 w-4 fill-current" /> : <Bookmark className="h-4 w-4" />}
+              </button>
             </div>
 
             {/* Details */}

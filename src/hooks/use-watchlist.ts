@@ -1,0 +1,39 @@
+// src/hooks/use-watchlist.ts
+import { useQueries } from "@tanstack/react-query"
+import { useWatchlistStore } from "@/stores/watchlist-store"
+import { getMediaDetail } from "@/api/movies.api"
+import { queryKeys } from "@/lib/query-keys"
+import type { Movie } from "@/types/movie.types"
+
+export function useInWatchlist(type: string, id: string | number): boolean {
+  return useWatchlistStore((s) => s.items[`${type}_${id}`] !== undefined)
+}
+
+export function useWatchlistItems() {
+  const entries = useWatchlistStore((s) => s.items)
+  const remove = useWatchlistStore((s) => s.remove)
+
+  const sorted = Object.values(entries).sort((a, b) => b.addedAt - a.addedAt)
+
+  const details = useQueries({
+    queries: sorted.map((e) => ({
+      queryKey: queryKeys.media.detail(e.type, String(e.id)),
+      queryFn: () => getMediaDetail(e.type, String(e.id)),
+      staleTime: 300_000,
+    })),
+  })
+
+  const items: Movie[] = []
+  sorted.forEach((_e, i) => {
+    const detail = details[i]?.data
+    if (detail) items.push(detail)
+    // fetch failures are skipped — entry stays in localStorage, reappears next visit
+  })
+
+  return {
+    items,
+    isLoading: details.some((q) => q.isLoading),
+    remove,
+    isEmpty: items.length === 0 && !details.some((q) => q.isLoading),
+  }
+}
