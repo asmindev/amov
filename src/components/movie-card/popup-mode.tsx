@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router"
-import { Plus, ThumbsUp, ChevronDown, Bookmark } from "lucide-react"
+import { Plus, Check, ThumbsUp, ChevronDown } from "lucide-react"
 import { motion, AnimatePresence } from "motion/react"
 import { getImageUrl } from "@/helpers/image-url"
 import { recordAnalyticsEvent } from "@/api/analytics.api"
@@ -33,7 +33,7 @@ export function PopupMode({
   className,
 }: PopupModeProps) {
   const genreNames = useGenreNames(movie, genres)
-  const inList = useInWatchlist(movie.mediaType === "tv" ? "tv" : "movie", movie.id)
+  const inList = useInWatchlist(movie.mediaType || "movie", movie.id)
   const toggle = useWatchlistStore((s) => s.toggle)
 
   const trackClick = () => {
@@ -90,17 +90,6 @@ export function PopupMode({
                 className="h-full w-full object-cover opacity-80"
               />
               <div className="absolute inset-0 bg-linear-to-t from-card to-transparent" />
-              <button
-                type="button"
-                aria-label={inList ? "Remove from watchlist" : "Add to watchlist"}
-                onClick={(e) => {
-                  e.stopPropagation()
-                  toggle(movie.mediaType === "tv" ? "tv" : "movie", movie.id)
-                }}
-                className="absolute right-2 top-2 z-20 rounded-full bg-black/60 p-2 text-white backdrop-blur transition-opacity hover:bg-black/80"
-              >
-                {inList ? <Bookmark className="h-4 w-4 fill-current" /> : <Bookmark className="h-4 w-4" />}
-              </button>
             </div>
 
             {/* Details */}
@@ -134,8 +123,16 @@ export function PopupMode({
                       play_arrow
                     </span>
                   </Link>
-                  <button className="flex h-7 w-9 items-center justify-center border border-white/20 bg-black/50 text-white transition-colors hover:border-white hover:bg-black/80">
-                    <Plus className="h-4 w-4" />
+                  <button
+                    type="button"
+                    aria-label={inList ? "Remove from watchlist" : "Add to watchlist"}
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      toggle(movie.mediaType || "movie", movie.id)
+                    }}
+                    className="flex h-7 w-9 items-center justify-center border border-white/20 bg-black/50 text-white transition-colors hover:border-white hover:bg-black/80"
+                  >
+                    {inList ? <Check className="h-4 w-4" /> : <Plus className="h-4 w-4" />}
                   </button>
                   <button className="flex h-7 w-9 items-center justify-center border border-white/20 bg-black/50 text-white transition-colors hover:border-white hover:bg-black/80">
                     <ThumbsUp className="h-4 w-4" />

@@ -2,6 +2,8 @@ import { CommandItem } from "@/components/ui/command"
 import { getImageUrl } from "@/helpers/image-url"
 import { formatYear } from "@/helpers/format-date"
 import { Star, Clapperboard, Tv } from "lucide-react"
+import { useWatchlistStore } from "@/stores/watchlist-store"
+import { useInWatchlist } from "@/hooks/use-watchlist"
 import type { Movie } from "@/types/movie.types"
 
 interface SearchItemProps {
@@ -17,6 +19,8 @@ export function SearchItem({
   showType = true,
   showRating = true,
 }: SearchItemProps) {
+  const inList = useInWatchlist(item.mediaType || "movie", item.id)
+  const toggle = useWatchlistStore((s) => s.toggle)
   return (
     <CommandItem
       value={`${item.mediaType}-${item.id}`}
@@ -81,9 +85,16 @@ export function SearchItem({
         </button>
         <button
           type="button"
+          aria-label={inList ? "Remove from watchlist" : "Add to watchlist"}
+          onClick={(e) => {
+            e.stopPropagation()
+            toggle(item.mediaType || "movie", item.id)
+          }}
           className="flex h-7 w-9 items-center justify-center border border-white/20 bg-black/50 text-white transition-colors hover:border-white hover:bg-black/80"
         >
-          <span className="material-symbols-outlined !text-[16px]">add</span>
+          <span className="material-symbols-outlined !text-[16px]">
+            {inList ? "check" : "add"}
+          </span>
         </button>
       </div>
     </CommandItem>
