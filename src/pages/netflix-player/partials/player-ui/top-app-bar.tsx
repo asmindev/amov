@@ -43,7 +43,7 @@ export const TopAppBar = memo(function TopAppBar({
 }: TopAppBarProps) {
   return (
     <div className="pointer-events-none fixed top-0 z-40 flex w-full items-center justify-between bg-linear-to-b from-black/80 to-transparent px-edge-margin-mobile py-4 md:px-edge-margin-desktop">
-      <div className="flex items-center gap-2 md:gap-4">
+      <div className="flex min-w-0 flex-1 items-center gap-2 md:gap-4">
         <Link
           to="/$type/$id"
           params={{ type: mediaType, id: movieId.toString() }}
@@ -57,7 +57,7 @@ export const TopAppBar = memo(function TopAppBar({
             arrow_back
           </span>
         </Link>
-        <h1 className="max-w-5/12 truncate text-lg leading-none font-bold tracking-wide text-white sm:max-w-md md:max-w-xl md:text-2xl lg:max-w-3xl">
+        <h1 className="min-w-0 flex-1 truncate text-lg leading-none font-bold tracking-wide text-white sm:max-w-md md:max-w-xl md:text-2xl lg:max-w-3xl">
           {movieTitle}
         </h1>
       </div>
