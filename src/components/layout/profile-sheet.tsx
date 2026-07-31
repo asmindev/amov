@@ -51,7 +51,10 @@ export function ProfileSheet({
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="bottom" className="mx-auto max-w-md rounded-t-2xl">
+      <SheetContent
+        side="bottom"
+        className="mx-auto max-w-md rounded-t-2xl pb-10"
+      >
         <SheetHeader>
           <SheetTitle>Profile</SheetTitle>
         </SheetHeader>
