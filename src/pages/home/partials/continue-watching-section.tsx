@@ -1,10 +1,16 @@
+import { useState } from "react"
 import { TrendingSection } from "./trending-section"
 import { useContinueWatching } from "@/hooks/use-continue-watching"
+import { dismissWatchProgress } from "@/hooks/use-watch-progress"
 import { TrendingSectionSkeleton } from "./skeletons"
 import type { Movie } from "@/types/movie.types"
 
 export function ContinueWatchingSection() {
   const { data, isLoading } = useContinueWatching()
+  // Dismiss mutates localStorage; this tick re-renders so the row updates
+  // without waiting for a React Query refetch.
+  const [dismissTick, setDismissTick] = useState(0)
+  void dismissTick
 
   if (isLoading) {
     return <TrendingSectionSkeleton />
@@ -38,6 +44,10 @@ export function ContinueWatchingSection() {
       title="Continue Watching"
       movies={movies}
       progressMap={progressMap}
+      onDismiss={(movie) => {
+        dismissWatchProgress(movie.mediaType || "movie", movie.id)
+        setDismissTick((t) => t + 1)
+      }}
     />
   )
 }

@@ -12,6 +12,8 @@ export interface WatchProgress {
   season?: number
   episode?: number
   updatedAt: number // Date.now()
+  /** Set when the user dismisses this entry from Continue Watching. */
+  dismissedAt?: number
 }
 
 export interface PlayerMessage {
@@ -58,6 +60,19 @@ export function getWatchProgress(
 export function clearWatchProgress(type: string, id: string | number) {
   const all = loadAllProgress()
   delete all[getStorageKey(type, id)]
+  saveAllProgress(all)
+}
+
+/**
+ * Hide an entry from Continue Watching without deleting its progress.
+ * Watching the content again overwrites the entry, clearing dismissedAt.
+ */
+export function dismissWatchProgress(type: string, id: string | number) {
+  const all = loadAllProgress()
+  const key = getStorageKey(type, id)
+  const entry = all[key]
+  if (!entry) return // silent no-op on missing entry
+  all[key] = { ...entry, dismissedAt: Date.now() }
   saveAllProgress(all)
 }
 

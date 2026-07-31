@@ -38,7 +38,9 @@ export function useContinueWatching(): {
     const local = Object.values(loadAllProgress())
 
     const filter = (entries: WatchProgress[]) =>
-      entries.filter((e) => e.progress > 0 && e.progress < 100)
+      entries.filter(
+        (e) => e.progress > 0 && e.progress < 100 && !e.dismissedAt
+      )
 
     if (!syncEnabled || !user) {
       return filter(local).sort((a, b) => b.updatedAt - a.updatedAt).slice(0, 20)
