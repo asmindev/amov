@@ -155,25 +155,38 @@ export function useSourceLoader({
 
           const proxyUrl = buildProxyUrl(targetUrl)
           xhr.open("GET", proxyUrl, true)
+
+          xhr.addEventListener("load", () => {
+            if (xhr.status >= 500 || xhr.status === 403 || xhr.status === 404) {
+              console.warn(
+                `[Proxy Loader] Received HTTP ${xhr.status} from proxy for URL: ${targetUrl}`
+              )
+            }
+          })
         },
       })
 
       let networkErrorCount = 0
-      const MAX_NETWORK_ERRORS = 3
+      const MAX_NETWORK_ERRORS = 2
 
       hls.on(Hls.Events.ERROR, (_event, data) => {
-        if (data.fatal) {
+        const statusCode = data.response?.code ?? 0
+        const isTimeoutOrBadGateway = statusCode === 504 || statusCode === 502 || statusCode === 500
+
+        if (data.fatal || isTimeoutOrBadGateway) {
           switch (data.type) {
             case Hls.ErrorTypes.NETWORK_ERROR:
               networkErrorCount++
-              if (networkErrorCount >= MAX_NETWORK_ERRORS) {
+              if (networkErrorCount >= MAX_NETWORK_ERRORS || isTimeoutOrBadGateway) {
                 dispatchRef.current({
                   type: "STREAM_ERROR",
                   error: {
                     type: "network",
-                    message: "Stream unreachable",
-                    details: `CDN returned errors after ${MAX_NETWORK_ERRORS} attempts. The source may be offline.`
-                  }
+                    message: isTimeoutOrBadGateway ? "CDN Gateway Timeout (504)" : "Stream unreachable",
+                    details: isTimeoutOrBadGateway
+                      ? `Server mirror timeout (HTTP ${statusCode}). Switching to alternative provider...`
+                      : `CDN returned errors after ${MAX_NETWORK_ERRORS} attempts. The source may be offline.`,
+                  },
                 })
                 hls.destroy()
               } else {
