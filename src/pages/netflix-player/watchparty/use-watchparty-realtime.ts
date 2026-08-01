@@ -41,6 +41,8 @@ export function useWatchpartyRealtime({
 }: UseWatchpartyRealtimeOpts): UseWatchpartyRealtimeReturn {
   const [status, setStatus] = useState<WatchpartyStatus>("idle")
   const [peers, setPeers] = useState<WatchpartyMember[]>([])
+  const peersRef = useRef<WatchpartyMember[]>([])
+  const myJoinedAtRef = useRef<number>(0)
   const channelRef = useRef<RealtimeChannel | null>(null)
 
   // Keep latest callbacks without re-subscribing the channel
@@ -91,22 +93,34 @@ export function useWatchpartyRealtime({
           }
           break
         case "request_sync":
-          // Existing viewer in room responds with their current playback state
+          // Only the oldest peer in the room responds to request_sync
+          // to prevent newly joined peers (at 0:00) from overwriting established playback state.
           if (getPlaybackSnapshotRef.current) {
-            const snap = getPlaybackSnapshotRef.current()
-            console.log("[Watchparty Realtime] Responding to request_sync with state:", snap)
-            void channel
-              .send({
-                type: "broadcast",
-                event: "sync_state",
-                payload: {
-                  senderId: userId,
-                  t: Date.now(),
-                  currentTime: snap.currentTime,
-                  playing: snap.playing,
-                },
-              })
-              .catch(() => {})
+            const currentPeers = peersRef.current
+            const myJoinedAt = myJoinedAtRef.current
+            const isOldestPeer = currentPeers.every(
+              (peer) => peer.joinedAt >= myJoinedAt
+            )
+
+            if (isOldestPeer) {
+              const snap = getPlaybackSnapshotRef.current()
+              console.log(
+                "[Watchparty Realtime] Responding as oldest peer to request_sync with state:",
+                snap
+              )
+              void channel
+                .send({
+                  type: "broadcast",
+                  event: "sync_state",
+                  payload: {
+                    senderId: userId,
+                    t: Date.now(),
+                    currentTime: snap.currentTime,
+                    playing: snap.playing,
+                  },
+                })
+                .catch(() => {})
+            }
           }
           break
         case "sync_state":
@@ -147,6 +161,7 @@ export function useWatchpartyRealtime({
       )
       // Exclude self so the roster shows *other* viewers and the count is
       // "N others watching" rather than counting yourself.
+      peersRef.current = members
       setPeers(members.filter((m) => m.userId !== userId))
     }
 
@@ -169,11 +184,13 @@ export function useWatchpartyRealtime({
       if (disposed) return
       if (subStatus === "SUBSCRIBED") {
         setStatus("subscribed")
+        const now = Date.now()
+        myJoinedAtRef.current = now
         void channel
           .track({
             userId,
             displayName,
-            joinedAt: Date.now(),
+            joinedAt: now,
           })
           .catch(() => {})
 

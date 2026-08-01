@@ -97,12 +97,13 @@ export function useVideoBindings({
     }
     const handleError = () => {
       const code = v.error?.code ?? 0
+      console.warn("[Video Event] Native video playback error:", code, v.error?.message)
       dispatchRef.current({
         type: "STREAM_ERROR",
         error: {
           type: code === 2 ? "network" : "media",
-          message: MEDIA_ERROR_MESSAGES[code] ?? "Video playback failed",
-          details: v.error?.message ?? undefined,
+          message: MEDIA_ERROR_MESSAGES[code] ?? "Video stream error",
+          details: v.error?.message || "Failed to load video stream from proxy CDN.",
         },
       })
     }
