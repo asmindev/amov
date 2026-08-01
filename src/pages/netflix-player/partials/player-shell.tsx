@@ -8,6 +8,7 @@ import {
   type SetStateAction,
 } from "react"
 import { AnimatePresence } from "motion/react"
+import { useNavigate } from "@tanstack/react-router"
 import type { WyzieSubtitleGroup } from "@/api/decryptor.api"
 import { fetchWyzieSubtitles } from "@/api/decryptor.api"
 import { TopAppBar } from "./player-ui/top-app-bar"
@@ -373,6 +374,25 @@ export function PlayerShell({
   const { currentCues, uiVisible } = useStoreSelector(store, selectSubtitle)
   const { skipIndicator } = useStoreSelector(store, selectSkip)
 
+  const navigate = useNavigate()
+
+  const handleStartWatchparty = useCallback(() => {
+    const base =
+      movieTitle
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, "")
+        .slice(0, 20) || "watch"
+    const rand = Math.random().toString(36).slice(2, 7)
+    const roomSlug = `${base}-${rand}`
+
+    void navigate({
+      to: "/$type/$id/netflix",
+      params: { type: mediaType, id: String(movieId) },
+      search: { room: roomSlug, season, episode },
+    })
+  }, [movieTitle, navigate, mediaType, movieId, season, episode])
+
   const handleSetOpenMenu = useCallback(
     (val: SetStateAction<"settings" | "provider" | "episodes" | null>) => {
       actions.setMenu(typeof val === "function" ? val(state.openMenu) : val)
@@ -534,6 +554,8 @@ export function PlayerShell({
           onProviderChange={onProviderChange}
           openMenu={state.openMenu}
           setOpenMenu={handleSetOpenMenu}
+          onStartWatchparty={handleStartWatchparty}
+          isWatchpartyActive={watchpartyEnabled}
         />
 
         {/* ── Mobile Vertical Skip Buttons ── */}

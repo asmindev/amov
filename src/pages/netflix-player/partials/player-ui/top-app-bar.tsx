@@ -28,6 +28,8 @@ export interface TopAppBarProps {
   setOpenMenu: Dispatch<
     SetStateAction<"settings" | "provider" | "episodes" | null>
   >
+  onStartWatchparty?: () => void
+  isWatchpartyActive?: boolean
 }
 
 export const TopAppBar = memo(function TopAppBar({
@@ -40,6 +42,8 @@ export const TopAppBar = memo(function TopAppBar({
   onProviderChange,
   openMenu,
   setOpenMenu,
+  onStartWatchparty,
+  isWatchpartyActive,
 }: TopAppBarProps) {
   return (
     <div className="pointer-events-none fixed top-0 z-40 flex w-full items-center justify-between bg-linear-to-b from-black/80 to-transparent px-edge-margin-mobile py-4 md:px-edge-margin-desktop">
@@ -125,6 +129,29 @@ export const TopAppBar = memo(function TopAppBar({
     </Tooltip>
   </TooltipProvider>
         </div>
+
+        {!isWatchpartyActive && onStartWatchparty && (
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger render={<span />}>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="flex max-md:h-10 max-md:w-10 h-12 w-12 scale-95 flex-col items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-white/10 hover:text-white active:scale-90"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    onStartWatchparty()
+                  }}
+                >
+                  <span className="material-symbols-outlined text-2xl md:text-3xl!">
+                    groups
+                  </span>
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Start Watchparty</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        )}
       </div>
     </div>
   )
