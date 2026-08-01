@@ -1,4 +1,61 @@
+import { useCallback, useRef, useSyncExternalStore } from "react"
 import type { PlaybackState } from "./types"
+import type { PlaybackStore } from "./use-player-controller"
+
+function shallowEqual<T>(objA: T, objB: T): boolean {
+  if (Object.is(objA, objB)) return true
+  if (
+    typeof objA !== "object" ||
+    objA === null ||
+    typeof objB !== "object" ||
+    objB === null
+  ) {
+    return false
+  }
+  const keysA = Object.keys(objA) as (keyof T)[]
+  const keysB = Object.keys(objB) as (keyof T)[]
+  if (keysA.length !== keysB.length) return false
+  for (let i = 0; i < keysA.length; i++) {
+    const k = keysA[i]
+    if (
+      !Object.prototype.hasOwnProperty.call(objB, k) ||
+      !Object.is(objA[k], objB[k])
+    ) {
+      return false
+    }
+  }
+  return true
+}
+
+export function useStoreSelector<T>(
+  store: PlaybackStore,
+  selector: (s: PlaybackState) => T
+): T {
+  const lastSelectedRef = useRef<T | undefined>(undefined)
+  const lastStateRef = useRef<PlaybackState | undefined>(undefined)
+
+  const getSnapshot = useCallback(() => {
+    const currentState = store.getSnapshot()
+    if (
+      currentState === lastStateRef.current &&
+      lastSelectedRef.current !== undefined
+    ) {
+      return lastSelectedRef.current
+    }
+    const nextSelected = selector(currentState)
+    if (
+      lastSelectedRef.current !== undefined &&
+      shallowEqual(lastSelectedRef.current, nextSelected)
+    ) {
+      return lastSelectedRef.current
+    }
+    lastStateRef.current = currentState
+    lastSelectedRef.current = nextSelected
+    return nextSelected
+  }, [store, selector])
+
+  return useSyncExternalStore(store.subscribe, getSnapshot)
+}
 
 // BottomControls — progress bar + timestamps
 export const selectProgress = (s: PlaybackState) => ({

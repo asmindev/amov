@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 import { useParams, useSearch, useNavigate, Link } from "@tanstack/react-router"
 import { useMediaDetail } from "@/pages/movie-detail/hooks/use-movie-detail"
 import { useSources } from "./hooks/use-sources"
-import { HlsPlayer } from "./partials/hls-player"
+import { PlayerShell } from "./partials/player-shell"
 import { MoviePendingSkeleton, SourceLoadingOverlay } from "./partials/loading-animations"
 import { getBackdropUrl as getBdUrl } from "@/helpers/image-url"
 import { recordAnalyticsEvent } from "@/api/analytics.api"
@@ -222,7 +222,7 @@ export default function NetflixPlayerPage() {
     <div className="fixed inset-0 bg-black">
       {/* ── HLS Player ── */}
       {sources ? (
-        <HlsPlayer
+        <PlayerShell
           sources={sources.sources}
           subtitles={sources.subtitles}
           movieId={movie.id}

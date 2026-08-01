@@ -6,6 +6,12 @@ import { DECRYPTOR_URL } from "@/lib/config"
 import { getSavedTimestamp } from "../helpers/get-saved-timestamp"
 import type { PlaybackActions } from "../controller/use-player-controller"
 
+export interface StreamError {
+  type: "network" | "media" | "source" | "unknown"
+  message: string
+  details?: string
+}
+
 interface UseSourceLoaderOpts {
   videoRef: RefObject<HTMLVideoElement | null>
   hlsRef: RefObject<Hls | null>

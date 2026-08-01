@@ -43,6 +43,7 @@ export function usePlayerController(
   _containerRef: RefObject<HTMLDivElement | null>,
   init: InitialPlaybackState
 ) {
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const initialState = useMemo(() => createInitialState(init), [])
   const stateRef = useRef(initialState)
   const listenersRef = useRef(new Set<() => void>())

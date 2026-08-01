@@ -1,7 +1,7 @@
 import type { StreamSource, StreamSubtitle } from "@/api/decryptor.api"
-import type { DecryptorProvider } from "@/lib/config"
-import type { ParsedCue } from "../hooks/use-subtitles"
-import type { StreamError } from "../hooks/use-hls-loader"
+import type { DecryptorProvider, DECRYPTOR_PROVIDERS } from "@/lib/config"
+import type { ParsedCue } from "../hooks/use-subtitle-engine"
+import type { StreamError } from "../hooks/use-source-loader"
 
 export interface PlaybackState {
   // Core
@@ -80,6 +80,43 @@ export type PlaybackAction =
   | { type: "SET_ALL_PROVIDERS"; providers: readonly string[] }
   | { type: "SET_PROVIDER"; provider: DecryptorProvider }
   | { type: "SET_MOBILE_SKIP_VISIBLE"; visible: boolean }
+
+import type { TvSeason } from "@/types/movie.types"
+
+export interface WatchpartyPlayerProps {
+  roomId: string
+  roomSlug: string
+  userId: string
+  displayName?: string
+}
+
+export interface PlayerShellProps {
+  sources: StreamSource[]
+  subtitles: StreamSubtitle[]
+  movieId: number
+  movieTitle: string
+  movieYear: string
+  poster?: string
+  provider: DecryptorProvider
+  providerIndex: number
+  allProviders: typeof DECRYPTOR_PROVIDERS
+  onProviderChange: (index: number) => void
+  onRefetchCurrentProvider?: () => void
+  isFetchingProvider: boolean
+  imdbId?: string
+  movieOverview?: string
+  popularity?: number
+  voteAverage?: number
+  logoPath?: string | null
+  mediaType?: "movie" | "tv"
+  season?: number
+  episode?: number
+  seasons?: TvSeason[]
+  watchparty?: WatchpartyPlayerProps
+}
+
+// Backward compatibility alias during refactor
+export type HlsPlayerProps = PlayerShellProps
 
 export interface InitialPlaybackState {
   savedProgress: { timestamp: number; duration: number } | null

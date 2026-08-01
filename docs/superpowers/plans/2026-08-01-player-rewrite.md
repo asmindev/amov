@@ -524,7 +524,6 @@ export function useVideoBindings({
       if (bufferingDebounce) clearTimeout(bufferingDebounce)
       dispatchRef.current({ type: "BUFFERING", buffering: false })
       dispatchRef.current({ type: "STREAM_ERROR", error: null })
-      dispatchRef.current({ type: "INCR_NETWORK_ERROR" })
     }
     const handleVolume = () => {
       dispatchRef.current({

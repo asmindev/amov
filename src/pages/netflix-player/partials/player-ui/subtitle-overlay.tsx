@@ -1,5 +1,5 @@
 import { memo } from "react"
-import type { ParsedCue } from "../../hooks/use-subtitles"
+import type { ParsedCue } from "../../hooks/use-subtitle-engine"
 
 interface SubtitleOverlayProps {
   currentActiveCues: ParsedCue[]
