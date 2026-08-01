@@ -36,4 +36,8 @@ export const queryKeys = {
     sources: (tmdbId: string, provider: string) =>
       ["decryptor", "sources", tmdbId, provider] as const,
   },
+  rooms: {
+    all: ["rooms"] as const,
+    detail: (slug: string) => [...queryKeys.rooms.all, "detail", slug] as const,
+  },
 }

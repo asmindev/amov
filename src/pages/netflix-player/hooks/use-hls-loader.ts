@@ -72,8 +72,8 @@ export function useHlsLoader({
       const hls = new Hls({
         enableWorker: true,
         startFragPrefetch: true,
-        maxBufferLength: 30,
-        maxMaxBufferLength: 60,
+        maxBufferLength: 60,
+        maxMaxBufferLength: 120,
         backBufferLength: 60,
         startPosition: savedTs > 30 ? savedTs : -1,
         xhrSetup: (xhr, url) => {

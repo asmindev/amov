@@ -3,6 +3,13 @@ import type { DecryptorProvider } from "@/lib/config"
 import type { DECRYPTOR_PROVIDERS } from "@/lib/config"
 import type { TvSeason } from "@/types/movie.types"
 
+export interface WatchpartyPlayerProps {
+  roomId: string
+  roomSlug: string
+  userId: string
+  displayName?: string
+}
+
 export interface HlsPlayerProps {
   sources: StreamSource[]
   subtitles: StreamSubtitle[]
@@ -25,4 +32,5 @@ export interface HlsPlayerProps {
   season?: number
   episode?: number
   seasons?: TvSeason[]
+  watchparty?: WatchpartyPlayerProps
 }

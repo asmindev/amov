@@ -114,10 +114,11 @@ const netflixPlayerRoute = createRoute({
   }),
   validateSearch: (
     search: Record<string, unknown>
-  ): { season?: number; episode?: number } => {
+  ): { season?: number; episode?: number; room?: string } => {
     return {
       season: search.season ? Number(search.season) : undefined,
       episode: search.episode ? Number(search.episode) : undefined,
+      room: typeof search.room === "string" ? search.room : undefined,
     }
   },
   component: () => (

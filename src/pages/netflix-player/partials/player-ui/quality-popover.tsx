@@ -6,6 +6,14 @@ import {
 } from "@/components/ui/popover"
 import type { StreamSource } from "@/api/decryptor.api"
 
+function formatLabel(src: StreamSource): string | null {
+  const url = (src.url ?? "").toLowerCase()
+  const type = (src.type ?? "").toLowerCase()
+  if (type.includes("hls") || url.includes(".m3u8")) return "HLS"
+  if (type.includes("dash") || url.includes(".mpd")) return "DASH"
+  return null
+}
+
 interface QualityPopoverProps {
   sources: StreamSource[]
   selectedQuality: number
@@ -65,6 +73,11 @@ export function QualityPopover({
                 {src.quality}
                 {src.size ? ` (${src.size})` : ""}
               </span>
+              {formatLabel(src) && (
+                <span className="ml-2 rounded bg-white/10 px-1.5 py-0.5 text-[10px] font-semibold tracking-wide text-secondary uppercase">
+                  {formatLabel(src)}
+                </span>
+              )}
               {i === 0 && (
                 <span className="ml-2 text-xs text-secondary">Best</span>
               )}

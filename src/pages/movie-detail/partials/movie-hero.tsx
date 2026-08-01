@@ -1,4 +1,5 @@
-import { Link } from "@tanstack/react-router"
+import { useState } from "react"
+import { Link, useNavigate } from "@tanstack/react-router"
 import { motion } from "motion/react"
 import { getImageUrl } from "@/helpers/image-url"
 import { formatYear } from "@/helpers/format-date"
@@ -7,6 +8,8 @@ import { getMaturityRating } from "@/helpers/maturity-rating"
 import { clearWatchProgress } from "@/hooks/use-watch-progress"
 import { useWatchlistStore } from "@/stores/watchlist-store"
 import { useInWatchlist } from "@/hooks/use-watchlist"
+import { useAuthStore } from "@/stores/auth-store"
+import { createWatchpartyRoom } from "@/api/watchparty.api"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 
@@ -63,6 +66,38 @@ export function MovieHero({
   const mediaType = movie.mediaType || "movie"
   const inList = useInWatchlist(mediaType, movie.id)
   const toggle = useWatchlistStore((s) => s.toggle)
+  const navigate = useNavigate()
+  const { user, setAuthModalOpen } = useAuthStore()
+  const [creatingRoom, setCreatingRoom] = useState(false)
+  const [roomError, setRoomError] = useState<string | null>(null)
+
+  const handleStartWatchparty = async () => {
+    if (!user) {
+      setAuthModalOpen(true, "signin")
+      return
+    }
+    if (creatingRoom) return
+    setCreatingRoom(true)
+    setRoomError(null)
+    try {
+      const room = await createWatchpartyRoom({
+        tmdbId: movie.id,
+        title: movie.title,
+        mediaType,
+      })
+      if (room) {
+        await navigate({
+          to: "/$type/$id/netflix",
+          params: { type: mediaType, id: movie.id.toString() },
+          search: { room: room.slug },
+        })
+      } else {
+        setRoomError("Couldn't start a watchparty. Check that Supabase is configured and try again.")
+      }
+    } finally {
+      setCreatingRoom(false)
+    }
+  }
 
   return (
     <motion.div
@@ -166,7 +201,27 @@ export function MovieHero({
           {savedProgress && savedProgress.timestamp > 30 ? "Resume" : "Play"}
         </Link>
 
-{/* 
+        <button
+          type="button"
+          onClick={handleStartWatchparty}
+          disabled={creatingRoom}
+          className="flex items-center gap-1.5 rounded-none bg-white/15 px-5 py-3 text-sm font-bold text-white backdrop-blur-md transition-all hover:scale-105 hover:bg-white/25 active:scale-95 md:gap-2 md:px-8 md:py-3.5 md:text-base disabled:opacity-60"
+        >
+          {creatingRoom ? (
+            <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white" />
+          ) : (
+            <span className="material-symbols-outlined !text-[20px] md:!text-[24px]">
+              groups
+            </span>
+          )}
+          Watchparty
+        </button>
+
+        {roomError && (
+          <p className="w-full text-xs text-red-400">{roomError}</p>
+        )}
+
+{/*
         <Link
           to="/$type/$id"
           params={{ type: mediaType, id: movie.id.toString() }}

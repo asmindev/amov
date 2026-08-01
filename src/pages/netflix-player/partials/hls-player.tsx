@@ -29,6 +29,9 @@ import { SkipIndicator } from "./player-ui/skip-indicator"
 import type { HlsPlayerProps } from "../hls-player.types"
 import type { StreamError } from "../hooks/use-hls-loader"
 import { getWatchProgress } from "@/hooks/use-watch-progress"
+import { useWatchpartyRealtime } from "../watchparty/use-watchparty-realtime"
+import { useRemoteVideo } from "../watchparty/use-remote-video"
+import { RoomOverlay } from "../watchparty/room-overlay"
 
 // ─── Main Component ───────────────────────────────────────────────────────────
 
@@ -54,6 +57,7 @@ export function HlsPlayer({
   season = 1,
   episode = 1,
   seasons = [],
+  watchparty,
 }: HlsPlayerProps) {
   const videoRef = useRef<HTMLVideoElement>(null)
   const hlsRef = useRef(null)
@@ -63,6 +67,8 @@ export function HlsPlayer({
   const rafRef = useRef<number>(0)
   const pauseDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const bufferingDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const seekBroadcastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const pendingSeekRef = useRef<number | null>(null)
 
   // ── State (seed currentTime/duration from localStorage for instant visual feedback) ──
   const savedProgress = getWatchProgress(mediaType, movieId)
@@ -73,7 +79,9 @@ export function HlsPlayer({
     savedProgress?.timestamp ?? 0
   )
   const [duration, setDuration] = useState(savedProgress?.duration ?? 0)
-  const [bufferedEnd, setBufferedEnd] = useState(0)
+  const [bufferedRanges, setBufferedRanges] = useState<
+    { start: number; end: number }[]
+  >([])
   const [volume, setVolume] = useState(1)
   const [muted, setMuted] = useState(false)
   const [uiVisible, setUiVisible] = useState(true)
@@ -244,9 +252,64 @@ export function HlsPlayer({
     onError: setStreamError,
   })
 
+  // ── Watchparty sync ────────────────────────────────────────────────────────
+  const watchpartyEnabled = !!watchparty
+  // Remote commands apply to the DOM; the remoteAppliedRef flag tells the DOM
+  // play/pause handler that this event came from a remote command (skip echo).
+  const { applyRemotePlay, applyRemotePause, applyRemoteSeek, remoteAppliedRef } =
+    useRemoteVideo({
+      videoRef,
+    })
+
+  const {
+    peers,
+    status: watchpartyStatus,
+    sendPlay: broadcastPlay,
+    sendPause: broadcastPause,
+    sendSeek: broadcastSeek,
+  } = useWatchpartyRealtime({
+    roomId: watchparty?.roomId ?? null,
+    userId: watchparty?.userId ?? null,
+    displayName: watchparty?.displayName,
+    enabled: watchpartyEnabled,
+    onPlay: applyRemotePlay,
+    onPause: applyRemotePause,
+    onSeek: applyRemoteSeek,
+  })
+
   useVideoEvents({
     videoRef,
+    onProgress: () => {
+      // Read ALL buffered ranges (not just the last end) so the grey bar
+      // honestly shows gaps after seeks / quality switches.
+      const v = videoRef.current
+      if (!v) return
+      const ranges: { start: number; end: number }[] = []
+      for (let i = 0; i < v.buffered.length; i++) {
+        ranges.push({ start: v.buffered.start(i), end: v.buffered.end(i) })
+      }
+      setBufferedRanges((prev) => {
+        if (
+          prev.length === ranges.length &&
+          prev.every(
+            (r, i) =>
+              Math.abs(r.start - ranges[i].start) < 0.5 &&
+              Math.abs(r.end - ranges[i].end) < 0.5
+          )
+        ) {
+          return prev
+        }
+        return ranges
+      })
+    },
     onPlay: () => {
+      // A play event that we triggered ourselves via applyRemotePlay must not
+      // be re-broadcast (would loop around the room).
+      if (remoteAppliedRef.current) {
+        remoteAppliedRef.current = false
+      } else if (watchpartyEnabled) {
+        broadcastPlay()
+      }
       setPlaying(true)
       if (hideTimerRef.current) clearTimeout(hideTimerRef.current)
       hideTimerRef.current = setTimeout(() => {
@@ -260,6 +323,11 @@ export function HlsPlayer({
       }, 3500)
     },
     onPause: () => {
+      if (remoteAppliedRef.current) {
+        remoteAppliedRef.current = false
+      } else if (watchpartyEnabled) {
+        broadcastPause()
+      }
       if (pauseDebounceRef.current) clearTimeout(pauseDebounceRef.current)
       pauseDebounceRef.current = setTimeout(() => {
         const v = videoRef.current
@@ -288,13 +356,6 @@ export function HlsPlayer({
           if (Math.abs(t - prev) < 0.1) return prev
           return t
         })
-        if (v.buffered.length > 0) {
-          const b = v.buffered.end(v.buffered.length - 1)
-          setBufferedEnd((prev) => {
-            if (Math.abs(b - prev) < 0.5) return prev
-            return b
-          })
-        }
       })
     },
     onDuration: () => {
@@ -357,6 +418,7 @@ export function HlsPlayer({
       if (bufferingDebounceRef.current) clearTimeout(bufferingDebounceRef.current)
       if (hideTimerRef.current) clearTimeout(hideTimerRef.current)
       if (mobileSkipTimerRef.current) clearTimeout(mobileSkipTimerRef.current)
+      if (seekBroadcastTimerRef.current) clearTimeout(seekBroadcastTimerRef.current)
     }
   }, [])
 
@@ -393,17 +455,23 @@ export function HlsPlayer({
   }, [openMenu, showUI])
 
   // ── Handlers ──────────────────────────────────────────────────────────────
-  const seek = useCallback((delta: number) => {
-    const v = videoRef.current
-    if (!v) return
-    const newTime = Math.max(0, Math.min(v.duration, v.currentTime + delta))
-    v.currentTime = newTime
-    setCurrentTime(newTime) // optimistic — instant UI feedback
-    setSkipIndicator({
-      type: delta > 0 ? "forward" : "backward",
-      id: Date.now(),
-    })
-  }, [])
+  const seek = useCallback(
+    (delta: number) => {
+      const v = videoRef.current
+      if (!v) return
+      const newTime = Math.max(0, Math.min(v.duration, v.currentTime + delta))
+      v.currentTime = newTime
+      setCurrentTime(newTime) // optimistic — instant UI feedback
+      setSkipIndicator({
+        type: delta > 0 ? "forward" : "backward",
+        id: Date.now(),
+      })
+      if (watchpartyEnabled) {
+        broadcastSeek(newTime)
+      }
+    },
+    [watchpartyEnabled, broadcastSeek]
+  )
 
   useKeyboardControls({ videoRef, seek, showUI, toggleFullscreen })
 
@@ -435,6 +503,33 @@ export function HlsPlayer({
   )
 
   // ── Draggable progress bar (pointer events) ─────────────────────────────────
+  // Seek broadcasts are throttled so a drag scrub doesn't spam the channel:
+  // send at most one seek per 250ms and flush the last value on pointer-up.
+  const broadcastSeekThrottled = useCallback(
+    (t: number) => {
+      if (!watchpartyEnabled) return
+      pendingSeekRef.current = t
+      if (seekBroadcastTimerRef.current) return
+      seekBroadcastTimerRef.current = setTimeout(() => {
+        seekBroadcastTimerRef.current = null
+        const next = pendingSeekRef.current
+        pendingSeekRef.current = null
+        if (next !== null) broadcastSeek(next)
+      }, 250)
+    },
+    [watchpartyEnabled, broadcastSeek]
+  )
+
+  const flushPendingSeek = useCallback(() => {
+    if (seekBroadcastTimerRef.current) {
+      clearTimeout(seekBroadcastTimerRef.current)
+      seekBroadcastTimerRef.current = null
+    }
+    const next = pendingSeekRef.current
+    pendingSeekRef.current = null
+    if (next !== null) broadcastSeek(next)
+  }, [broadcastSeek])
+
   const seekTo = useCallback(
     (clientX: number) => {
       const bar = progressBarRef.current
@@ -445,8 +540,9 @@ export function HlsPlayer({
         Math.max(0, Math.min(1, (clientX - left) / width)) * duration
       v.currentTime = newTime
       setCurrentTime(newTime)
+      broadcastSeekThrottled(newTime)
     },
-    [duration]
+    [duration, broadcastSeekThrottled]
   )
 
   // Replace onClick with onPointerDown so dragging the thumb works seamlessly
@@ -484,6 +580,8 @@ export function HlsPlayer({
     }
     const onUp = () => {
       setIsDragging(false)
+      // Flush the final seek position so peers land exactly where the drag ended.
+      flushPendingSeek()
     }
     document.addEventListener("pointermove", onMove)
     document.addEventListener("pointerup", onUp)
@@ -491,10 +589,9 @@ export function HlsPlayer({
       document.removeEventListener("pointermove", onMove)
       document.removeEventListener("pointerup", onUp)
     }
-  }, [isDragging, seekTo])
+  }, [isDragging, seekTo, flushPendingSeek])
 
   const progressPct = duration ? (currentTime / duration) * 100 : 0
-  const bufferedPct = duration ? (bufferedEnd / duration) * 100 : 0
   const hoverPct = hoverX !== null ? hoverX * 100 : null
 
   const handleRetry = useCallback(() => {
@@ -741,7 +838,7 @@ export function HlsPlayer({
           progressBarRef={progressBarRef}
           currentTime={currentTime}
           duration={duration}
-          bufferedPct={bufferedPct}
+          bufferedRanges={bufferedRanges}
           progressPct={progressPct}
           hoverPct={hoverPct}
           hoverX={hoverX}
@@ -768,6 +865,19 @@ export function HlsPlayer({
           setSelectedQuality={setSelectedQuality}
         />
       </div>
+
+      {/* ── Watchparty overlay ── */}
+      {watchpartyEnabled && watchparty && (
+        <RoomOverlay
+          peers={peers}
+          status={watchpartyStatus}
+          roomSlug={watchparty.roomSlug}
+          mediaType={mediaType}
+          movieId={movieId}
+          season={season}
+          episode={episode}
+        />
+      )}
     </div>
   )
 }

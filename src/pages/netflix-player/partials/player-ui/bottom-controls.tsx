@@ -16,7 +16,7 @@ export interface BottomControlsProps {
   progressBarRef: RefObject<HTMLDivElement | null>
   currentTime: number
   duration: number
-  bufferedPct: number
+  bufferedRanges: { start: number; end: number }[]
   progressPct: number
   hoverPct: number | null
   hoverX: number | null
@@ -49,7 +49,7 @@ export function BottomControls({
   progressBarRef,
   currentTime,
   duration,
-  bufferedPct,
+  bufferedRanges,
   progressPct,
   hoverPct,
   hoverX,
@@ -95,11 +95,17 @@ export function BottomControls({
           className="relative flex h-1 flex-1 cursor-pointer items-center overflow-visible rounded-full bg-[#333333] transition-all duration-200 group-hover:h-1.5"
           onPointerDown={handleProgressPointerDown}
         >
-          {/* Buffered */}
-          <div
-            className="pointer-events-none absolute top-0 left-0 h-full rounded-full bg-white/20 transition-all duration-200"
-            style={{ width: `${bufferedPct}%` }}
-          />
+          {/* Buffered ranges — one segment per TimeRanges entry, so gaps show */}
+          {bufferedRanges.map((range, i) => (
+            <div
+              key={i}
+              className="pointer-events-none absolute top-0 h-full rounded-full bg-white/20"
+              style={{
+                left: `${duration ? (range.start / duration) * 100 : 0}%`,
+                width: `${duration ? ((range.end - range.start) / duration) * 100 : 0}%`,
+              }}
+            />
+          ))}
           {/* Played */}
           <div
             className="pointer-events-none absolute top-0 left-0 h-full rounded-full bg-primary-container"

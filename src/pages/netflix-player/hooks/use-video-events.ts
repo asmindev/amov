@@ -6,6 +6,7 @@ interface UseVideoEventsOpts {
   onPlay: () => void
   onPause: () => void
   onTimeUpdate: () => void
+  onProgress: () => void
   onDuration: () => void
   onWaiting: () => void
   onPlaying: () => void
@@ -25,6 +26,7 @@ export function useVideoEvents({
   onPlay,
   onPause,
   onTimeUpdate,
+  onProgress,
   onDuration,
   onWaiting,
   onPlaying,
@@ -34,6 +36,7 @@ export function useVideoEvents({
   const onPlayRef = useRef(onPlay)
   const onPauseRef = useRef(onPause)
   const onTimeUpdateRef = useRef(onTimeUpdate)
+  const onProgressRef = useRef(onProgress)
   const onDurationRef = useRef(onDuration)
   const onWaitingRef = useRef(onWaiting)
   const onPlayingRef = useRef(onPlaying)
@@ -45,6 +48,7 @@ export function useVideoEvents({
     onPlayRef.current = onPlay
     onPauseRef.current = onPause
     onTimeUpdateRef.current = onTimeUpdate
+    onProgressRef.current = onProgress
     onDurationRef.current = onDuration
     onWaitingRef.current = onWaiting
     onPlayingRef.current = onPlaying
@@ -59,6 +63,7 @@ export function useVideoEvents({
     const handlePlay = () => onPlayRef.current()
     const handlePause = () => onPauseRef.current()
     const handleTimeUpdate = () => onTimeUpdateRef.current()
+    const handleProgress = () => onProgressRef.current()
     const handleDuration = () => onDurationRef.current()
     const handleWaiting = () => onWaitingRef.current()
     const handlePlaying = () => onPlayingRef.current()
@@ -75,6 +80,7 @@ export function useVideoEvents({
     v.addEventListener("play", handlePlay)
     v.addEventListener("pause", handlePause)
     v.addEventListener("timeupdate", handleTimeUpdate)
+    v.addEventListener("progress", handleProgress)
     v.addEventListener("durationchange", handleDuration)
     v.addEventListener("waiting", handleWaiting)
     v.addEventListener("playing", handlePlaying)
@@ -84,6 +90,7 @@ export function useVideoEvents({
       v.removeEventListener("play", handlePlay)
       v.removeEventListener("pause", handlePause)
       v.removeEventListener("timeupdate", handleTimeUpdate)
+      v.removeEventListener("progress", handleProgress)
       v.removeEventListener("durationchange", handleDuration)
       v.removeEventListener("waiting", handleWaiting)
       v.removeEventListener("playing", handlePlaying)
