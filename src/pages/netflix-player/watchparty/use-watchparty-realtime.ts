@@ -15,6 +15,8 @@ interface UseWatchpartyRealtimeOpts {
   onPlay: () => void
   onPause: () => void
   onSeek: (t: number) => void
+  getPlaybackSnapshot?: () => { currentTime: number; playing: boolean }
+  onSyncState?: (currentTime: number, playing: boolean) => void
 }
 
 interface UseWatchpartyRealtimeReturn {
@@ -23,6 +25,7 @@ interface UseWatchpartyRealtimeReturn {
   sendPlay: () => void
   sendPause: () => void
   sendSeek: (t: number) => void
+  requestSync: () => void
 }
 
 export function useWatchpartyRealtime({
@@ -33,6 +36,8 @@ export function useWatchpartyRealtime({
   onPlay,
   onPause,
   onSeek,
+  getPlaybackSnapshot,
+  onSyncState,
 }: UseWatchpartyRealtimeOpts): UseWatchpartyRealtimeReturn {
   const [status, setStatus] = useState<WatchpartyStatus>("idle")
   const [peers, setPeers] = useState<WatchpartyMember[]>([])
@@ -42,11 +47,16 @@ export function useWatchpartyRealtime({
   const onPlayRef = useRef(onPlay)
   const onPauseRef = useRef(onPause)
   const onSeekRef = useRef(onSeek)
+  const getPlaybackSnapshotRef = useRef(getPlaybackSnapshot)
+  const onSyncStateRef = useRef(onSyncState)
+
   useEffect(() => {
     onPlayRef.current = onPlay
     onPauseRef.current = onPause
     onSeekRef.current = onSeek
-  }, [onPlay, onPause, onSeek])
+    getPlaybackSnapshotRef.current = getPlaybackSnapshot
+    onSyncStateRef.current = onSyncState
+  }, [onPlay, onPause, onSeek, getPlaybackSnapshot, onSyncState])
 
   useEffect(() => {
     if (!supabase || !enabled || !roomId || !userId) {
@@ -62,7 +72,7 @@ export function useWatchpartyRealtime({
 
     const handleBroadcast = (payload: {
       event: string
-      payload: { senderId?: string; currentTime?: number }
+      payload: { senderId?: string; currentTime?: number; playing?: boolean }
     }) => {
       if (disposed) return
       const p = payload.payload
@@ -80,12 +90,40 @@ export function useWatchpartyRealtime({
             onSeekRef.current(p.currentTime)
           }
           break
+        case "request_sync":
+          // Existing viewer in room responds with their current playback state
+          if (getPlaybackSnapshotRef.current) {
+            const snap = getPlaybackSnapshotRef.current()
+            console.log("[Watchparty Realtime] Responding to request_sync with state:", snap)
+            void channel
+              .send({
+                type: "broadcast",
+                event: "sync_state",
+                payload: {
+                  senderId: userId,
+                  t: Date.now(),
+                  currentTime: snap.currentTime,
+                  playing: snap.playing,
+                },
+              })
+              .catch(() => {})
+          }
+          break
+        case "sync_state":
+          // Newly joined viewer receives current state from an existing peer
+          if (typeof p.currentTime === "number" && onSyncStateRef.current) {
+            console.log("[Watchparty Realtime] Applying sync_state from peer:", p)
+            onSyncStateRef.current(p.currentTime, !!p.playing)
+          }
+          break
       }
     }
 
     channel.on("broadcast", { event: "play" }, handleBroadcast)
     channel.on("broadcast", { event: "pause" }, handleBroadcast)
     channel.on("broadcast", { event: "seek" }, handleBroadcast)
+    channel.on("broadcast", { event: "request_sync" }, handleBroadcast)
+    channel.on("broadcast", { event: "sync_state" }, handleBroadcast)
 
     interface TrackedPresence {
       userId: string
@@ -125,6 +163,8 @@ export function useWatchpartyRealtime({
       }, 3000)
     }
 
+    let requestSyncTimer: ReturnType<typeof setTimeout> | null = null
+
     const handleSubscribe = (subStatus: string) => {
       if (disposed) return
       if (subStatus === "SUBSCRIBED") {
@@ -136,6 +176,18 @@ export function useWatchpartyRealtime({
             joinedAt: Date.now(),
           })
           .catch(() => {})
+
+        requestSyncTimer = setTimeout(() => {
+          if (disposed || !channelRef.current) return
+          console.log("[Watchparty Realtime] Requesting initial sync from peers...")
+          void channelRef.current
+            .send({
+              type: "broadcast",
+              event: "request_sync",
+              payload: { senderId: userId, t: Date.now() },
+            })
+            .catch(() => {})
+        }, 500)
       } else if (subStatus === "CHANNEL_ERROR" || subStatus === "TIMED_OUT") {
         retrySubscribe()
       } else if (subStatus === "CLOSED") {
@@ -148,6 +200,7 @@ export function useWatchpartyRealtime({
     return () => {
       disposed = true
       if (retryTimer) clearTimeout(retryTimer)
+      if (requestSyncTimer) clearTimeout(requestSyncTimer)
       setPeers([])
       setStatus("idle")
       if (supabase) {
@@ -197,6 +250,18 @@ export function useWatchpartyRealtime({
     [userId]
   )
 
+  const requestSync = useCallback(() => {
+    if (!channelRef.current || !userId) return
+    console.log("[Watchparty Realtime] Manually requesting sync from peers...")
+    void channelRef.current
+      .send({
+        type: "broadcast",
+        event: "request_sync",
+        payload: { senderId: userId, t: Date.now() },
+      })
+      .catch(() => {})
+  }, [userId])
+
   return useMemo(
     () => ({
       peers,
@@ -204,7 +269,8 @@ export function useWatchpartyRealtime({
       sendPlay,
       sendPause,
       sendSeek,
+      requestSync,
     }),
-    [peers, status, sendPlay, sendPause, sendSeek]
+    [peers, status, sendPlay, sendPause, sendSeek, requestSync]
   )
 }

@@ -133,6 +133,26 @@ export function PlayerShell({
   const { applyRemotePlay, applyRemotePause, applyRemoteSeek, remoteAppliedRef } =
     useRemoteVideo({ videoRef })
 
+  const handleGetPlaybackSnapshot = useCallback(
+    () => ({
+      currentTime: videoRef.current?.currentTime ?? state.currentTime,
+      playing: state.playing,
+    }),
+    [state.currentTime, state.playing]
+  )
+
+  const handleApplySyncState = useCallback(
+    (t: number, remotePlaying: boolean) => {
+      actions.seek(t)
+      if (remotePlaying && videoRef.current?.paused) {
+        void videoRef.current.play().catch(() => {})
+      } else if (!remotePlaying && videoRef.current && !videoRef.current.paused) {
+        videoRef.current.pause()
+      }
+    },
+    [actions]
+  )
+
   const {
     peers,
     status: watchpartyStatus,
@@ -147,6 +167,8 @@ export function PlayerShell({
     onPlay: applyRemotePlay,
     onPause: applyRemotePause,
     onSeek: applyRemoteSeek,
+    getPlaybackSnapshot: handleGetPlaybackSnapshot,
+    onSyncState: handleApplySyncState,
   })
 
   // ── Wire Hooks ─────────────────────────────────────────────────────────────
