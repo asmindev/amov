@@ -66,6 +66,7 @@ export function useWatchpartyRealtime({
     }) => {
       if (disposed) return
       const p = payload.payload
+      console.log("[Watchparty Realtime] Received broadcast event:", payload.event, p)
       if (!p || p.senderId === userId) return
       switch (payload.event) {
         case "play":
@@ -159,36 +160,39 @@ export function useWatchpartyRealtime({
 
   const sendPlay = useCallback(() => {
     if (!channelRef.current || !userId) return
+    console.log("[Watchparty Realtime] Sending broadcast: PLAY", { userId })
     void channelRef.current
       .send({
         type: "broadcast",
         event: "play",
         payload: { senderId: userId, t: Date.now() },
       })
-      .catch(() => {})
+      .catch((err) => console.error("[Watchparty Realtime] Error sending PLAY:", err))
   }, [userId])
 
   const sendPause = useCallback(() => {
     if (!channelRef.current || !userId) return
+    console.log("[Watchparty Realtime] Sending broadcast: PAUSE", { userId })
     void channelRef.current
       .send({
         type: "broadcast",
         event: "pause",
         payload: { senderId: userId, t: Date.now() },
       })
-      .catch(() => {})
+      .catch((err) => console.error("[Watchparty Realtime] Error sending PAUSE:", err))
   }, [userId])
 
   const sendSeek = useCallback(
     (currentTime: number) => {
       if (!channelRef.current || !userId) return
+      console.log("[Watchparty Realtime] Sending broadcast: SEEK", { userId, currentTime })
       void channelRef.current
         .send({
           type: "broadcast",
           event: "seek",
           payload: { senderId: userId, t: Date.now(), currentTime },
         })
-        .catch(() => {})
+        .catch((err) => console.error("[Watchparty Realtime] Error sending SEEK:", err))
     },
     [userId]
   )

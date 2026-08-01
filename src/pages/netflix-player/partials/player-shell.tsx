@@ -127,8 +127,48 @@ export function PlayerShell({
   // ── Customization Settings ──────────────────────────────────────────────────
   const playerSettings = usePlayerSettings()
 
+  // ── Watchparty Sync ────────────────────────────────────────────────────────
+  const watchpartyEnabled = !!watchparty
+
+  const { applyRemotePlay, applyRemotePause, applyRemoteSeek, remoteAppliedRef } =
+    useRemoteVideo({ videoRef })
+
+  const {
+    peers,
+    status: watchpartyStatus,
+    sendPlay: broadcastPlay,
+    sendPause: broadcastPause,
+    sendSeek: broadcastSeek,
+  } = useWatchpartyRealtime({
+    roomId: watchparty?.roomId ?? null,
+    userId: watchparty?.userId ?? null,
+    displayName: watchparty?.displayName,
+    enabled: watchpartyEnabled,
+    onPlay: applyRemotePlay,
+    onPause: applyRemotePause,
+    onSeek: applyRemoteSeek,
+  })
+
   // ── Wire Hooks ─────────────────────────────────────────────────────────────
-  useVideoBindings({ videoRef, actions, openMenuRef })
+  useVideoBindings({
+    videoRef,
+    actions,
+    openMenuRef,
+    onPlay: () => {
+      if (remoteAppliedRef.current) {
+        remoteAppliedRef.current = false
+      } else if (watchpartyEnabled) {
+        broadcastPlay()
+      }
+    },
+    onPause: () => {
+      if (remoteAppliedRef.current) {
+        remoteAppliedRef.current = false
+      } else if (watchpartyEnabled) {
+        broadcastPause()
+      }
+    },
+  })
 
   useSourceLoader({
     videoRef,
@@ -167,26 +207,6 @@ export function PlayerShell({
       iosNativeFullscreen,
     })
   }, [fullscreen, iosNativeFullscreen, actions])
-
-  // ── Watchparty Sync ────────────────────────────────────────────────────────
-  const watchpartyEnabled = !!watchparty
-
-  const { applyRemotePlay, applyRemotePause, applyRemoteSeek } =
-    useRemoteVideo({ videoRef })
-
-  const {
-    peers,
-    status: watchpartyStatus,
-    sendSeek: broadcastSeek,
-  } = useWatchpartyRealtime({
-    roomId: watchparty?.roomId ?? null,
-    userId: watchparty?.userId ?? null,
-    displayName: watchparty?.displayName,
-    enabled: watchpartyEnabled,
-    onPlay: applyRemotePlay,
-    onPause: applyRemotePause,
-    onSeek: applyRemoteSeek,
-  })
 
   // Throttled seek broadcast for drag scrub
   const broadcastSeekThrottled = useCallback(

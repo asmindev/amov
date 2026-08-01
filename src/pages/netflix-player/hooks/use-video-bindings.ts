@@ -12,21 +12,29 @@ interface UseVideoBindingsOpts {
   videoRef: RefObject<HTMLVideoElement | null>
   actions: Pick<PlaybackActions, "dispatch" | "showUI">
   openMenuRef: RefObject<"settings" | "provider" | "episodes" | null>
+  onPlay?: () => void
+  onPause?: () => void
 }
 
 export function useVideoBindings({
   videoRef,
   actions,
   openMenuRef,
+  onPlay,
+  onPause,
 }: UseVideoBindingsOpts) {
   const dispatchRef = useRef(actions.dispatch)
   const showUIRef = useRef(actions.showUI)
   const openMenuRefInner = useRef(openMenuRef)
+  const onPlayRef = useRef(onPlay)
+  const onPauseRef = useRef(onPause)
 
   useEffect(() => {
     dispatchRef.current = actions.dispatch
     showUIRef.current = actions.showUI
     openMenuRefInner.current = openMenuRef
+    onPlayRef.current = onPlay
+    onPauseRef.current = onPause
   })
 
   useEffect(() => {
@@ -37,12 +45,16 @@ export function useVideoBindings({
     let pauseDebounce: ReturnType<typeof setTimeout> | null = null
     let bufferingDebounce: ReturnType<typeof setTimeout> | null = null
 
-    const handlePlay = () => dispatchRef.current({ type: "PLAY" })
+    const handlePlay = () => {
+      dispatchRef.current({ type: "PLAY" })
+      onPlayRef.current?.()
+    }
     const handlePause = () => {
       if (pauseDebounce) clearTimeout(pauseDebounce)
       pauseDebounce = setTimeout(() => {
         if (v && v.paused && !v.seeking) {
           dispatchRef.current({ type: "PAUSE" })
+          onPauseRef.current?.()
         }
       }, 150)
     }
