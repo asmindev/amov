@@ -133,12 +133,18 @@ export function PlayerShell({
   const { applyRemotePlay, applyRemotePause, applyRemoteSeek, remoteAppliedRef } =
     useRemoteVideo({ videoRef })
 
+  const getSnapshotRef = useRef<() => { currentTime: number; playing: boolean }>(() => ({
+    currentTime: 0,
+    playing: false,
+  }))
+  getSnapshotRef.current = () => ({
+    currentTime: videoRef.current?.currentTime ?? state.currentTime,
+    playing: state.playing,
+  })
+
   const handleGetPlaybackSnapshot = useCallback(
-    () => ({
-      currentTime: videoRef.current?.currentTime ?? state.currentTime,
-      playing: state.playing,
-    }),
-    [state.currentTime, state.playing]
+    () => getSnapshotRef.current(),
+    []
   )
 
   const handleApplySyncState = useCallback(
