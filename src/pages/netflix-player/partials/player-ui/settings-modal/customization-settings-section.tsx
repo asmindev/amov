@@ -5,7 +5,7 @@ import {
   SUBTITLE_LINE_HEIGHT_OPTIONS,
 } from "./constants"
 import type { CustomizationSettingsSectionProps } from "./types"
-import { selectedButtonClass, subtitleOffsetLabel } from "./utils"
+import { selectedButtonClass } from "./utils"
 
 function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
@@ -86,36 +86,55 @@ export function CustomizationSettingsSection({
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <span className="text-sm text-muted-foreground">Latency</span>
-                <span className="tabular-nums text-sm font-medium text-foreground">
-                  {subtitleOffsetLabel(subOffset ?? 0)}
-                </span>
+                <div className="flex items-center gap-1">
+                  <input
+                    type="number"
+                    step="0.1"
+                    value={Number((subOffset ?? 0).toFixed(1))}
+                    onChange={(e) => {
+                      const val = parseFloat(e.target.value)
+                      if (!isNaN(val)) setSubOffset(val)
+                    }}
+                    className="h-7 w-16 rounded border border-white/20 bg-white/5 px-1.5 text-right font-mono text-xs font-medium text-foreground outline-none focus:border-primary focus:ring-1 focus:ring-primary/50"
+                  />
+                  <span className="text-xs text-muted-foreground">s</span>
+                </div>
               </div>
               <div className="flex items-center gap-3">
                 <Button
                   variant="outline"
                   size="icon"
                   className="h-7 w-7 shrink-0 rounded-full text-xs"
-                  onClick={() => setSubOffset((prev) => prev - 0.5)}
+                  onClick={() =>
+                    setSubOffset((prev) =>
+                      parseFloat((prev - 0.5).toFixed(1))
+                    )
+                  }
                 >
                   -
                 </Button>
                 <Slider
-                  min={-5}
-                  max={5}
+                  min={-10}
+                  max={10}
                   step={0.1}
                   value={[subOffset ?? 0]}
-                  onValueChange={(vals) =>
-                    setSubOffset(
-                      Array.isArray(vals) ? (vals[0] ?? 0) : (vals ?? 0)
-                    )
-                  }
+                  onValueChange={(vals) => {
+                    const v = Array.isArray(vals)
+                      ? (vals[0] ?? 0)
+                      : (vals ?? 0)
+                    setSubOffset(parseFloat(v.toFixed(1)))
+                  }}
                   className="flex-1"
                 />
                 <Button
                   variant="outline"
                   size="icon"
                   className="h-7 w-7 shrink-0 rounded-full text-xs"
-                  onClick={() => setSubOffset((prev) => prev + 0.5)}
+                  onClick={() =>
+                    setSubOffset((prev) =>
+                      parseFloat((prev + 0.5).toFixed(1))
+                    )
+                  }
                 >
                   +
                 </Button>
