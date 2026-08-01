@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react"
+import { useEffect, useState } from "react"
 import { useParams, useSearch, Link } from "@tanstack/react-router"
 import { useMediaDetail } from "@/pages/movie-detail/hooks/use-movie-detail"
 import { useSources } from "./hooks/use-sources"
@@ -32,10 +32,7 @@ export default function NetflixPlayerPage() {
   const { user } = useAuthStore()
 
   // Generate an ephemeral guest ID if user is not signed in
-  const guestId = useMemo(
-    () => "guest-" + Math.random().toString(36).slice(2, 9),
-    []
-  )
+  const [guestId] = useState(() => "guest-" + Math.random().toString(36).slice(2, 9))
 
   const {
     data: movie,
