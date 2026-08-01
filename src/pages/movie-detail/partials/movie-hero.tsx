@@ -43,26 +43,13 @@ interface MovieHeroProps {
     imdbId: string | null
     mediaType?: "movie" | "tv"
   }
-  trailer?: {
-    key: string
-  }
-  showVideo: boolean
-  muted: boolean
-  toggleMute: () => void
   savedProgress: {
     timestamp: number
     duration: number
   } | null
-  setShowVideo: (show: boolean) => void
 }
 
-export function MovieHero({
-  movie,
-  showVideo,
-  muted,
-  toggleMute,
-  savedProgress,
-}: MovieHeroProps) {
+export function MovieHero({ movie, savedProgress }: MovieHeroProps) {
   const mediaType = movie.mediaType || "movie"
   const inList = useInWatchlist(mediaType, movie.id)
   const toggle = useWatchlistStore((s) => s.toggle)
@@ -106,18 +93,6 @@ export function MovieHero({
       transition={{ duration: 0.7, ease: "easeOut" }}
       className="relative mx-auto w-full max-w-[1400px] px-6 pt-[62vh] pb-8 md:px-16 md:pt-[35vh]"
     >
-      {showVideo && (
-        <button
-          onClick={toggleMute}
-          className="absolute right-6 bottom-8 z-50 rounded-full border border-white/10 bg-black/20 p-3 text-white backdrop-blur-md transition-all hover:scale-105 hover:bg-white/20 md:right-16 md:bottom-8"
-        >
-          {muted ? (
-            <span className="material-symbols-outlined !text-[20px] ">volume_off</span>
-          ) : (
-            <span className="material-symbols-outlined !text-[20px] ">volume_up</span>
-          )}
-        </button>
-      )}
       {movie.logoPath ? (
         <img
           src={getImageUrl(movie.logoPath, "w500")}
@@ -221,30 +196,6 @@ export function MovieHero({
           <p className="w-full text-xs text-red-400">{roomError}</p>
         )}
 
-{/*
-        <Link
-          to="/$type/$id"
-          params={{ type: mediaType, id: movie.id.toString() }}
-          search={{ play: true }}
-          className="flex items-center gap-1.5 rounded-none bg-white/15 px-5 py-3 text-sm font-bold text-white backdrop-blur-md transition-all hover:scale-105 hover:bg-white/25 active:scale-95 md:gap-2 md:px-8 md:py-3.5 md:text-base"
-        >
-          <span className="material-symbols-outlined !text-[20px] md:!text-[24px]">
-            live_tv
-          </span>
-          Embed Player
-        </Link> */}
-
-        {/* {trailer && !showVideo && (
-          <button
-            onClick={() => setShowVideo(true)}
-            className="flex items-center gap-2 rounded-none bg-white/15 px-8 py-3.5 text-base font-bold text-white backdrop-blur-md transition-all hover:scale-105 hover:bg-white/25 active:scale-95"
-          >
-            <span className="material-symbols-outlined !text-[24px]">
-              movie
-            </span>
-            Trailer
-          </button>
-        )} */}
         {/* button watchlist */}
         <Button
           type="button"

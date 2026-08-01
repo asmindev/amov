@@ -1,18 +1,11 @@
-import { useParams, useSearch } from "@tanstack/react-router"
-import { useState, useEffect, useRef, useCallback } from "react"
-import {
-  useMediaDetail,
-  useSimilarMedia,
-  useMediaVideos,
-} from "./hooks/use-movie-detail"
-import { HOVER_VIDEO_DELAY } from "@/lib/config"
+import { useParams } from "@tanstack/react-router"
+import { useMediaDetail, useSimilarMedia } from "./hooks/use-movie-detail"
 import { Skeleton } from "@/components/ui/skeleton"
 import { getWatchProgress } from "@/hooks/use-watch-progress"
 import { usePageMeta } from "@/hooks/use-page-meta"
 import { getImageUrl } from "@/helpers/image-url"
 
 // Import modular partial components
-import { MoviePlayer } from "./partials/movie-player"
 import { MovieBillboard } from "./partials/movie-billboard"
 import { MovieHero } from "./partials/movie-hero"
 import { DetailsSection } from "./partials/details-section"
@@ -25,16 +18,8 @@ export default function MovieDetailPage() {
   const mediaType: "movie" | "tv" = params.type === "tv" ? "tv" : "movie"
   const id = params.id || ""
 
-  const search = useSearch({ strict: false }) as {
-    play?: boolean
-    season?: number
-    episode?: number
-  }
-  const play = search.play
-
   const { data: movie, isPending, isError } = useMediaDetail(mediaType, id)
   const { data: similar } = useSimilarMedia(mediaType, id)
-  const { data: videos } = useMediaVideos(mediaType, id)
 
   usePageMeta({
     title: movie?.title || "Loading...",
@@ -45,50 +30,6 @@ export default function MovieDetailPage() {
         ? getImageUrl(movie.posterPath, "w500")
         : undefined,
   })
-
-  const [showVideo, setShowVideo] = useState(false)
-  const [muted, setMuted] = useState(true)
-  const iframeRef = useRef<HTMLIFrameElement>(null)
-
-  const trailer = videos?.results.find(
-    (v) => v.site === "YouTube" && v.type === "Trailer"
-  )
-
-  const postCommand = useCallback((func: string, args = "") => {
-    iframeRef.current?.contentWindow?.postMessage(
-      JSON.stringify({ event: "command", func, args }),
-      "*"
-    )
-  }, [])
-
-  const toggleMute = useCallback(() => {
-    if (muted) {
-      postCommand("unMute")
-      postCommand("setVolume", "100")
-    } else {
-      postCommand("mute")
-    }
-    setMuted((prev) => !prev)
-  }, [muted, postCommand])
-
-  // Auto-play trailer after delay
-  useEffect(() => {
-    if (!trailer) return
-    const timer = setTimeout(() => setShowVideo(true), HOVER_VIDEO_DELAY * 2)
-    return () => clearTimeout(timer)
-  }, [trailer])
-
-  useEffect(() => {
-    if (showVideo) {
-      postCommand("playVideo")
-      if (!muted) {
-        postCommand("unMute")
-        postCommand("setVolume", "100")
-      }
-    } else {
-      postCommand("pauseVideo")
-    }
-  }, [showVideo, muted, postCommand])
 
   if (isPending) {
     return (
@@ -114,40 +55,15 @@ export default function MovieDetailPage() {
   const cast = movie.cast?.slice(0, 18) ?? []
   const savedProgress = getWatchProgress(mediaType, movie.id)
 
-  if (play) {
-    return (
-      <MoviePlayer
-        movieId={movie.id}
-        movieTitle={movie.title}
-        mediaType={mediaType}
-        season={search.season}
-        episode={search.episode}
-      />
-    )
-  }
-
   return (
     <div className="relative min-h-svh overflow-hidden bg-background selection:bg-primary selection:text-primary-foreground">
       {/* Background Media (Image / Video) */}
-      <MovieBillboard
-        movie={movie}
-        trailer={trailer}
-        showVideo={showVideo}
-        iframeRef={iframeRef}
-      />
+      <MovieBillboard movie={movie} />
 
       {/* Foreground Content */}
       <div className="relative z-10 flex min-h-svh flex-col justify-end">
         {/* Hero Info */}
-        <MovieHero
-          movie={movie}
-          trailer={trailer}
-          showVideo={showVideo}
-          muted={muted}
-          toggleMute={toggleMute}
-          savedProgress={savedProgress}
-          setShowVideo={setShowVideo}
-        />
+        <MovieHero movie={movie} savedProgress={savedProgress} />
 
         {/* Content Details Below Fold */}
         <div className="w-full bg-linear-to-b from-transparent to-background pt-8 pb-32">
