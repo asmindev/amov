@@ -18,7 +18,6 @@ export interface WatchpartyPopoverProps {
   season?: number
   episode?: number
   onRequestSync?: () => void
-  isSynced?: boolean
 }
 
 function initials(name: string, email?: string): string {
@@ -45,7 +44,6 @@ export function WatchpartyPopover({
   season,
   episode,
   onRequestSync,
-  isSynced = true,
 }: WatchpartyPopoverProps) {
   const [copied, setCopied] = useState(false)
   const [syncingFeedback, setSyncingFeedback] = useState(false)
@@ -69,39 +67,31 @@ export function WatchpartyPopover({
   }
 
   const connected = status === "subscribed"
-  const fullySynced = connected && isSynced
 
   return (
     <Popover>
       <PopoverTrigger render={<span />}>
         <Button
           variant="ghost"
-          size="sm"
-          className={`group/btn relative flex h-8 items-center gap-1.5 rounded-full px-2.5 text-[11px] font-black uppercase tracking-wider transition-all active:scale-95 ${
-            fullySynced
-              ? "bg-red-600/90 text-white shadow-lg shadow-red-600/20 hover:bg-red-500"
-              : "bg-white/10 text-gray-400 hover:bg-white/20 hover:text-white"
-          }`}
+          size="icon"
+          className="group/btn relative flex max-md:h-10 max-md:w-10 h-12 w-12 scale-95 flex-col items-center justify-center rounded-full text-primary transition-colors hover:bg-white/10 hover:text-white active:scale-90"
           onClick={(e) => e.stopPropagation()}
         >
-          <span className="relative flex h-2 w-2">
-            {fullySynced && (
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-white opacity-75" />
-            )}
-            <span
-              className={`relative inline-flex h-2 w-2 rounded-full ${
-                fullySynced ? "bg-white" : "bg-gray-400"
-              }`}
-            />
+          <span className="material-symbols-outlined text-2xl md:text-3xl!">
+            groups
           </span>
-          <span>{syncingFeedback ? "Syncing…" : "LIVE"}</span>
+          {connected && peers.length > 0 && (
+            <span className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[9px] font-extrabold text-white shadow-sm">
+              {peers.length + 1}
+            </span>
+          )}
         </Button>
       </PopoverTrigger>
 
       <PopoverContent
         align="end"
-        side="top"
-        sideOffset={12}
+        side="bottom"
+        sideOffset={8}
         className="z-50 w-64 rounded-xl border border-white/15 bg-black/85 p-3 text-white shadow-2xl backdrop-blur-xl"
         onClick={(e) => e.stopPropagation()}
       >
@@ -125,8 +115,14 @@ export function WatchpartyPopover({
             }}
             className="flex items-center gap-1 rounded-md bg-white/10 px-2 py-0.5 text-[10px] font-semibold text-white/90 hover:bg-white/20"
           >
-            <span className="material-symbols-outlined !text-[12px]">refresh</span>
-            Sync
+            <span
+              className={`material-symbols-outlined !text-[12px] ${
+                syncingFeedback ? "animate-spin" : ""
+              }`}
+            >
+              refresh
+            </span>
+            {syncingFeedback ? "Syncing…" : "Sync"}
           </button>
         </div>
 

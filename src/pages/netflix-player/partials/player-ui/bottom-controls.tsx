@@ -1,9 +1,10 @@
-import type {
-  Dispatch,
-  SetStateAction,
-  ChangeEvent,
-  RefObject,
-  PointerEvent,
+import {
+  useState,
+  type Dispatch,
+  type SetStateAction,
+  type ChangeEvent,
+  type RefObject,
+  type PointerEvent,
 } from "react"
 import type { MouseEvent } from "react"
 import type { StreamSource } from "@/api/decryptor.api"
@@ -11,7 +12,6 @@ import { fmtTime } from "@/helpers/time"
 import { Button } from "@/components/ui/button"
 import { Slider } from "@/components/ui/slider"
 import { QualityPopover } from "./quality-popover"
-import { WatchpartyPopover } from "../../watchparty/room-overlay"
 import type { WatchpartyPopoverProps } from "../../watchparty/room-overlay"
 
 export interface BottomControlsProps {
@@ -79,6 +79,7 @@ export function BottomControls({
   setSelectedQuality,
   watchpartyProps,
 }: BottomControlsProps) {
+  const [syncingFeedback, setSyncingFeedback] = useState(false)
   return (
     <div
       className="pointer-events-auto fixed bottom-0 left-0 z-50 flex w-full flex-col gap-4 bg-linear-to-t from-black/90 via-black/60 to-transparent px-edge-margin-mobile pt-6 pb-4 backdrop-blur-md md:px-edge-margin-desktop"
@@ -299,7 +300,37 @@ export function BottomControls({
           </Button>
 
           {watchpartyProps && (
-            <WatchpartyPopover {...watchpartyProps} />
+            <Button
+              variant="ghost"
+              size="sm"
+              className={`group/btn relative flex h-8 items-center gap-1.5 rounded-full px-2.5 text-[11px] font-black uppercase tracking-wider transition-all active:scale-95 ${
+                watchpartyProps.status === "subscribed"
+                  ? "bg-red-600/90 text-white shadow-lg shadow-red-600/20 hover:bg-red-500"
+                  : "bg-white/10 text-gray-400 hover:bg-white/20 hover:text-white"
+              }`}
+              onClick={(e) => {
+                e.stopPropagation()
+                if (watchpartyProps.onRequestSync) {
+                  watchpartyProps.onRequestSync()
+                  setSyncingFeedback(true)
+                  setTimeout(() => setSyncingFeedback(false), 1500)
+                }
+              }}
+            >
+              <span className="relative flex h-2 w-2">
+                {watchpartyProps.status === "subscribed" && (
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-white opacity-75" />
+                )}
+                <span
+                  className={`relative inline-flex h-2 w-2 rounded-full ${
+                    watchpartyProps.status === "subscribed"
+                      ? "bg-white"
+                      : "bg-gray-400"
+                  }`}
+                />
+              </span>
+              <span>{syncingFeedback ? "Syncing…" : "LIVE"}</span>
+            </Button>
           )}
 
           <Button

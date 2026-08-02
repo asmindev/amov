@@ -16,6 +16,9 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip"
 
+import { WatchpartyPopover } from "../../watchparty/room-overlay"
+import type { WatchpartyPopoverProps } from "../../watchparty/room-overlay"
+
 export interface TopAppBarProps {
   mediaType: "movie" | "tv"
   movieId: number
@@ -30,6 +33,7 @@ export interface TopAppBarProps {
   >
   onStartWatchparty?: () => void
   isWatchpartyActive?: boolean
+  watchpartyProps?: WatchpartyPopoverProps | null
 }
 
 export const TopAppBar = memo(function TopAppBar({
@@ -44,6 +48,7 @@ export const TopAppBar = memo(function TopAppBar({
   setOpenMenu,
   onStartWatchparty,
   isWatchpartyActive,
+  watchpartyProps,
 }: TopAppBarProps) {
   return (
     <div className="pointer-events-none fixed top-0 z-40 flex w-full items-center justify-between bg-linear-to-b from-black/80 to-transparent px-edge-margin-mobile py-4 md:px-edge-margin-desktop">
@@ -130,7 +135,9 @@ export const TopAppBar = memo(function TopAppBar({
   </TooltipProvider>
         </div>
 
-        {!isWatchpartyActive && onStartWatchparty && (
+        {isWatchpartyActive && watchpartyProps ? (
+          <WatchpartyPopover {...watchpartyProps} />
+        ) : onStartWatchparty ? (
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger render={<span />}>
@@ -151,7 +158,7 @@ export const TopAppBar = memo(function TopAppBar({
               <TooltipContent>Start Watchparty</TooltipContent>
             </Tooltip>
           </TooltipProvider>
-        )}
+        ) : null}
       </div>
     </div>
   )

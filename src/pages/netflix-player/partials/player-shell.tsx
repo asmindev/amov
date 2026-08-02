@@ -176,7 +176,6 @@ export function PlayerShell({
     sendPause: broadcastPause,
     sendSeek: broadcastSeek,
     requestSync,
-    isSynced,
   } = useWatchpartyRealtime({
     roomId: watchparty?.roomId ?? null,
     userId: watchparty?.userId ?? null,
@@ -616,6 +615,20 @@ export function PlayerShell({
           setOpenMenu={handleSetOpenMenu}
           onStartWatchparty={handleStartWatchparty}
           isWatchpartyActive={watchpartyEnabled}
+          watchpartyProps={
+            watchpartyEnabled && watchparty
+              ? {
+                  peers,
+                  status: watchpartyStatus,
+                  roomSlug: watchparty.roomSlug,
+                  mediaType,
+                  movieId,
+                  season,
+                  episode,
+                  onRequestSync: requestSync,
+                }
+              : null
+          }
         />
 
         {/* ── Mobile Vertical Skip Buttons ── */}
@@ -746,7 +759,6 @@ export function PlayerShell({
                   season,
                   episode,
                   onRequestSync: requestSync,
-                  isSynced,
                 }
               : null
           }
