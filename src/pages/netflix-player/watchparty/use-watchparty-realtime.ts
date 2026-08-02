@@ -26,6 +26,8 @@ interface UseWatchpartyRealtimeReturn {
   sendPause: () => void
   sendSeek: (t: number) => void
   requestSync: () => void
+  isSynced: boolean
+  maxPeerTime: number | null
 }
 
 export function useWatchpartyRealtime({
@@ -41,6 +43,7 @@ export function useWatchpartyRealtime({
 }: UseWatchpartyRealtimeOpts): UseWatchpartyRealtimeReturn {
   const [status, setStatus] = useState<WatchpartyStatus>("idle")
   const [peers, setPeers] = useState<WatchpartyMember[]>([])
+  const [maxPeerTime, setMaxPeerTime] = useState<number | null>(null)
   const peersRef = useRef<WatchpartyMember[]>([])
   const myJoinedAtRef = useRef<number>(0)
   const channelRef = useRef<RealtimeChannel | null>(null)
@@ -80,6 +83,12 @@ export function useWatchpartyRealtime({
       const p = payload.payload
       console.log("[Watchparty Realtime] Received broadcast event:", payload.event, p)
       if (!p || p.senderId === userId) return
+
+      if (typeof p.currentTime === "number") {
+        const peerTime = p.currentTime
+        setMaxPeerTime((prev) => (prev === null ? peerTime : Math.max(prev, peerTime)))
+      }
+
       switch (payload.event) {
         case "play":
           onPlayRef.current()
@@ -91,6 +100,9 @@ export function useWatchpartyRealtime({
           if (typeof p.currentTime === "number") {
             onSeekRef.current(p.currentTime)
           }
+          break
+        case "heartbeat":
+          // Periodic heartbeat updates peer timestamp
           break
         case "request_sync":
           // Only the oldest peer in the room responds to request_sync
@@ -136,6 +148,7 @@ export function useWatchpartyRealtime({
     channel.on("broadcast", { event: "play" }, handleBroadcast)
     channel.on("broadcast", { event: "pause" }, handleBroadcast)
     channel.on("broadcast", { event: "seek" }, handleBroadcast)
+    channel.on("broadcast", { event: "heartbeat" }, handleBroadcast)
     channel.on("broadcast", { event: "request_sync" }, handleBroadcast)
     channel.on("broadcast", { event: "sync_state" }, handleBroadcast)
 
@@ -214,10 +227,31 @@ export function useWatchpartyRealtime({
 
     channel.subscribe((subStatus) => handleSubscribe(subStatus))
 
+    // Periodic heartbeat broadcast to update current playback timestamp across peers
+    const heartbeatTimer = setInterval(() => {
+      if (disposed || !channelRef.current || !getPlaybackSnapshotRef.current) return
+      const snap = getPlaybackSnapshotRef.current()
+      if (snap.playing && snap.currentTime > 0) {
+        void channelRef.current
+          .send({
+            type: "broadcast",
+            event: "heartbeat",
+            payload: {
+              senderId: userId,
+              t: Date.now(),
+              currentTime: snap.currentTime,
+              playing: true,
+            },
+          })
+          .catch(() => {})
+      }
+    }, 4000)
+
     return () => {
       disposed = true
       if (retryTimer) clearTimeout(retryTimer)
       if (requestSyncTimer) clearTimeout(requestSyncTimer)
+      clearInterval(heartbeatTimer)
       setPeers([])
       setStatus("idle")
       if (supabase) {
@@ -279,6 +313,12 @@ export function useWatchpartyRealtime({
       .catch(() => {})
   }, [userId])
 
+  const isSynced = useMemo(() => {
+    if (peers.length === 0 || maxPeerTime === null || !getPlaybackSnapshot) return true
+    const snap = getPlaybackSnapshot()
+    return Math.abs(snap.currentTime - maxPeerTime) <= 2.5
+  }, [peers.length, maxPeerTime, getPlaybackSnapshot])
+
   return useMemo(
     () => ({
       peers,
@@ -287,7 +327,9 @@ export function useWatchpartyRealtime({
       sendPause,
       sendSeek,
       requestSync,
+      isSynced,
+      maxPeerTime,
     }),
-    [peers, status, sendPlay, sendPause, sendSeek, requestSync]
+    [peers, status, sendPlay, sendPause, sendSeek, requestSync, isSynced, maxPeerTime]
   )
 }

@@ -12,6 +12,7 @@ interface RoomOverlayProps {
   season?: number
   episode?: number
   onRequestSync?: () => void
+  isSynced?: boolean
 }
 
 function initials(name: string, email?: string): string {
@@ -38,6 +39,7 @@ export function RoomOverlay({
   season,
   episode,
   onRequestSync,
+  isSynced = true,
 }: RoomOverlayProps) {
   const [copied, setCopied] = useState(false)
   const [syncingFeedback, setSyncingFeedback] = useState(false)
@@ -61,6 +63,7 @@ export function RoomOverlay({
   }
 
   const connected = status === "subscribed"
+  const fullySynced = connected && isSynced
 
   return (
     <div className="pointer-events-auto fixed top-20 right-4 z-50 flex flex-col items-end gap-2 md:top-24 md:right-6">
@@ -75,20 +78,24 @@ export function RoomOverlay({
               setTimeout(() => setSyncingFeedback(false), 1500)
             }
           }}
-          title="Click to manually sync playback position with peers"
+          title={
+            fullySynced
+              ? "In Sync with room peers"
+              : "Desynced! Click to manually sync playback position with peers"
+          }
           className={`flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-black uppercase tracking-wider transition-all active:scale-95 ${
-            connected
+            fullySynced
               ? "bg-red-600/90 text-white shadow-lg shadow-red-600/20 hover:bg-red-500"
               : "bg-white/10 text-gray-400 hover:bg-white/20 hover:text-white"
           }`}
         >
           <span className="relative flex h-2 w-2">
-            {connected && (
+            {fullySynced && (
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-white opacity-75" />
             )}
             <span
               className={`relative inline-flex h-2 w-2 rounded-full ${
-                connected ? "bg-white" : "bg-gray-400"
+                fullySynced ? "bg-white" : "bg-gray-400"
               }`}
             />
           </span>

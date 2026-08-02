@@ -166,6 +166,7 @@ export function PlayerShell({
     sendPause: broadcastPause,
     sendSeek: broadcastSeek,
     requestSync,
+    isSynced,
   } = useWatchpartyRealtime({
     roomId: watchparty?.roomId ?? null,
     userId: watchparty?.userId ?? null,
@@ -738,6 +739,7 @@ export function PlayerShell({
           season={season}
           episode={episode}
           onRequestSync={requestSync}
+          isSynced={isSynced}
         />
       )}
     </div>
