@@ -22,20 +22,6 @@ export function useRemoteVideo({
 }) {
   const remoteAppliedRef = useRef(false)
 
-  const applyRemotePlay = useCallback(() => {
-    const v = videoRef.current
-    if (!v || !v.paused) return
-    remoteAppliedRef.current = true
-    void v.play().catch(() => {})
-  }, [videoRef])
-
-  const applyRemotePause = useCallback(() => {
-    const v = videoRef.current
-    if (!v || v.paused) return
-    remoteAppliedRef.current = true
-    v.pause()
-  }, [videoRef])
-
   const applyRemoteSeek = useCallback(
     (t: number) => {
       const v = videoRef.current
@@ -55,6 +41,36 @@ export function useRemoteVideo({
       }
     },
     [videoRef]
+  )
+
+  const applyRemotePlay = useCallback(
+    (t?: number) => {
+      const v = videoRef.current
+      if (!v) return
+      if (typeof t === "number" && isFinite(t) && Math.abs(v.currentTime - t) > 1.5) {
+        applyRemoteSeek(t)
+      }
+      if (v.paused) {
+        remoteAppliedRef.current = true
+        void v.play().catch(() => {})
+      }
+    },
+    [videoRef, applyRemoteSeek]
+  )
+
+  const applyRemotePause = useCallback(
+    (t?: number) => {
+      const v = videoRef.current
+      if (!v) return
+      if (typeof t === "number" && isFinite(t) && Math.abs(v.currentTime - t) > 1.5) {
+        applyRemoteSeek(t)
+      }
+      if (!v.paused) {
+        remoteAppliedRef.current = true
+        v.pause()
+      }
+    },
+    [videoRef, applyRemoteSeek]
   )
 
   return { applyRemotePlay, applyRemotePause, applyRemoteSeek, remoteAppliedRef }

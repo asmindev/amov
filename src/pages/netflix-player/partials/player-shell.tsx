@@ -197,14 +197,14 @@ export function PlayerShell({
       if (remoteAppliedRef.current) {
         remoteAppliedRef.current = false
       } else if (watchpartyEnabled) {
-        broadcastPlay()
+        broadcastPlay(videoRef.current?.currentTime)
       }
     },
     onPause: () => {
       if (remoteAppliedRef.current) {
         remoteAppliedRef.current = false
       } else if (watchpartyEnabled) {
-        broadcastPause()
+        broadcastPause(videoRef.current?.currentTime)
       }
     },
   })

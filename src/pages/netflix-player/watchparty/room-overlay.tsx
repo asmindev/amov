@@ -70,12 +70,11 @@ export function WatchpartyPopover({
 
   return (
     <Popover>
-      <PopoverTrigger render={<span />}>
+      <PopoverTrigger>
         <Button
           variant="ghost"
           size="icon"
           className="group/btn relative flex max-md:h-10 max-md:w-10 h-12 w-12 scale-95 flex-col items-center justify-center rounded-full text-primary transition-colors hover:bg-white/10 hover:text-white active:scale-90"
-          onClick={(e) => e.stopPropagation()}
         >
           <span className="material-symbols-outlined text-2xl md:text-3xl!">
             groups

@@ -12,8 +12,8 @@ interface UseWatchpartyRealtimeOpts {
   userId: string | null
   displayName?: string
   enabled: boolean
-  onPlay: () => void
-  onPause: () => void
+  onPlay: (currentTime?: number) => void
+  onPause: (currentTime?: number) => void
   onSeek: (t: number) => void
   getPlaybackSnapshot?: () => { currentTime: number; playing: boolean }
   onSyncState?: (currentTime: number, playing: boolean) => void
@@ -22,8 +22,8 @@ interface UseWatchpartyRealtimeOpts {
 interface UseWatchpartyRealtimeReturn {
   peers: WatchpartyMember[]
   status: WatchpartyStatus
-  sendPlay: () => void
-  sendPause: () => void
+  sendPlay: (currentTime?: number) => void
+  sendPause: (currentTime?: number) => void
   sendSeek: (t: number) => void
   requestSync: () => void
   isSynced: boolean
@@ -91,10 +91,10 @@ export function useWatchpartyRealtime({
 
       switch (payload.event) {
         case "play":
-          onPlayRef.current()
+          onPlayRef.current(p.currentTime)
           break
         case "pause":
-          onPauseRef.current()
+          onPauseRef.current(p.currentTime)
           break
         case "seek":
           if (typeof p.currentTime === "number") {
@@ -105,19 +105,18 @@ export function useWatchpartyRealtime({
           // Periodic heartbeat updates peer timestamp
           break
         case "request_sync":
-          // Only the oldest peer in the room responds to request_sync
-          // to prevent newly joined peers (at 0:00) from overwriting established playback state.
           if (getPlaybackSnapshotRef.current) {
+            const snap = getPlaybackSnapshotRef.current()
             const currentPeers = peersRef.current
             const myJoinedAt = myJoinedAtRef.current
             const isOldestPeer = currentPeers.every(
               (peer) => peer.joinedAt >= myJoinedAt
             )
 
-            if (isOldestPeer) {
-              const snap = getPlaybackSnapshotRef.current()
+            // Respond if we are the oldest peer OR if we are currently playing / established
+            if (isOldestPeer || snap.currentTime > 5) {
               console.log(
-                "[Watchparty Realtime] Responding as oldest peer to request_sync with state:",
+                "[Watchparty Realtime] Responding to request_sync with state:",
                 snap
               )
               void channel
@@ -262,29 +261,35 @@ export function useWatchpartyRealtime({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [roomId, userId, enabled])
 
-  const sendPlay = useCallback(() => {
-    if (!channelRef.current || !userId) return
-    console.log("[Watchparty Realtime] Sending broadcast: PLAY", { userId })
-    void channelRef.current
-      .send({
-        type: "broadcast",
-        event: "play",
-        payload: { senderId: userId, t: Date.now() },
-      })
-      .catch((err) => console.error("[Watchparty Realtime] Error sending PLAY:", err))
-  }, [userId])
+  const sendPlay = useCallback(
+    (currentTime?: number) => {
+      if (!channelRef.current || !userId) return
+      console.log("[Watchparty Realtime] Sending broadcast: PLAY", { userId, currentTime })
+      void channelRef.current
+        .send({
+          type: "broadcast",
+          event: "play",
+          payload: { senderId: userId, t: Date.now(), currentTime },
+        })
+        .catch((err) => console.error("[Watchparty Realtime] Error sending PLAY:", err))
+    },
+    [userId]
+  )
 
-  const sendPause = useCallback(() => {
-    if (!channelRef.current || !userId) return
-    console.log("[Watchparty Realtime] Sending broadcast: PAUSE", { userId })
-    void channelRef.current
-      .send({
-        type: "broadcast",
-        event: "pause",
-        payload: { senderId: userId, t: Date.now() },
-      })
-      .catch((err) => console.error("[Watchparty Realtime] Error sending PAUSE:", err))
-  }, [userId])
+  const sendPause = useCallback(
+    (currentTime?: number) => {
+      if (!channelRef.current || !userId) return
+      console.log("[Watchparty Realtime] Sending broadcast: PAUSE", { userId, currentTime })
+      void channelRef.current
+        .send({
+          type: "broadcast",
+          event: "pause",
+          payload: { senderId: userId, t: Date.now(), currentTime },
+        })
+        .catch((err) => console.error("[Watchparty Realtime] Error sending PAUSE:", err))
+    },
+    [userId]
+  )
 
   const sendSeek = useCallback(
     (currentTime: number) => {
