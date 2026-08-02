@@ -162,6 +162,7 @@ export const MovieDetailSchema = TmdbMovieDetailSchema.transform((m) => {
       : "en"
   const logo =
     logos.find((l) => l.iso_639_1 === lang) ??
+    logos.find((l) => l.iso_639_1 === "id") ??
     logos.find((l) => l.iso_639_1 === "en") ??
     logos.find((l) => l.iso_639_1 === null) ??
     logos[0]

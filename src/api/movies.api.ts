@@ -52,7 +52,7 @@ export async function getMediaDetail(type: "movie" | "tv", id: string) {
 
   const res = await apiClient.get<unknown>(endpoint, {
     append_to_response: "images,credits,external_ids",
-    include_image_language: `${lang},en,null`,
+    include_image_language: `${lang},id,en,null`,
   })
   const parsed = MovieDetailSchema.parse(res)
   return { ...parsed, mediaType: type }
