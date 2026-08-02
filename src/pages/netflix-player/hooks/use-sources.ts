@@ -10,6 +10,7 @@ interface UseSourcesParams {
   tmdbId: string
   title: string
   originalTitle?: string
+  englishTitle?: string
   year: string
   mediaType: "movie" | "tv"
   imdbId?: string
@@ -40,6 +41,7 @@ export function useSources(params: UseSourcesParams): UseSourcesReturn {
     params.imdbId,
     params.season,
     params.episode,
+    params.englishTitle,
   ]
 
   const query = useQuery({

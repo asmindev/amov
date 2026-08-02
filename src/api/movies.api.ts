@@ -58,6 +58,33 @@ export async function getMediaDetail(type: "movie" | "tv", id: string) {
   return { ...parsed, mediaType: type }
 }
 
+/**
+ * Fetch the English title of a movie/TV show by querying TMDB with
+ * `language=en-US`. Used by the Moviebox provider for title matching
+ * (original vs English). Falls back to the localized title on failure.
+ */
+export async function getEnglishTitle(
+  type: "movie" | "tv",
+  id: string
+): Promise<string> {
+  const endpoint =
+    type === "tv" ? endpoints.tv.detail(id) : endpoints.movies.detail(id)
+  try {
+    const res = await apiClient.get<unknown>(endpoint, {
+      language: "en-US",
+    })
+    const raw = res as {
+      title?: string
+      name?: string
+      original_title?: string
+      original_name?: string
+    }
+    return raw.title || raw.name || raw.original_title || raw.original_name || ""
+  } catch {
+    return ""
+  }
+}
+
 export async function getMovieById(id: string) {
   return getMediaDetail("movie", id)
 }

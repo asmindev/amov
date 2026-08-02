@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react"
 import { useParams, useSearch, Link } from "@tanstack/react-router"
-import { useMediaDetail } from "@/pages/movie-detail/hooks/use-movie-detail"
+import {
+  useEnglishTitle,
+  useMediaDetail,
+} from "@/pages/movie-detail/hooks/use-movie-detail"
 import { useSources } from "./hooks/use-sources"
 import { PlayerShell } from "./partials/player-shell"
 import { MoviePendingSkeleton, SourceLoadingOverlay } from "./partials/loading-animations"
@@ -40,6 +43,8 @@ export default function NetflixPlayerPage() {
     isError: movieError,
   } = useMediaDetail(mediaType, id)
 
+  const { data: englishTitle } = useEnglishTitle(mediaType, id)
+
   const {
     data: sources,
     isPending: sourcesPending,
@@ -56,6 +61,7 @@ export default function NetflixPlayerPage() {
           tmdbId: String(movie.id),
           title: movie.title,
           originalTitle: movie.originalTitle || movie.title,
+          englishTitle: englishTitle || undefined,
           year: safeYear(movie.releaseDate),
           mediaType,
           imdbId: movie.imdbId ?? undefined,

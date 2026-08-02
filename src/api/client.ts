@@ -21,17 +21,21 @@ class ApiClient {
     const cleanPath = path.startsWith("/") ? path.slice(1) : path
     const url = new URL(cleanPath, base)
 
+    // If the caller passes an explicit `language` param, respect it (used to
+    // fetch the English title via language=en-US). Otherwise use the app locale.
     if (params) {
       Object.entries(params).forEach(([key, value]) => {
         url.searchParams.set(key, value)
       })
     }
 
-    const lang =
-      typeof window !== "undefined"
-        ? localStorage.getItem("app-language") || "en-US"
-        : "en-US"
-    url.searchParams.set("language", lang)
+    if (!url.searchParams.has("language")) {
+      const lang =
+        typeof window !== "undefined"
+          ? localStorage.getItem("app-language") || "en-US"
+          : "en-US"
+      url.searchParams.set("language", lang)
+    }
 
     return url.toString()
   }

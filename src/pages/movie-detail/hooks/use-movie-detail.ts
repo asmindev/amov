@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query"
 import {
+  getEnglishTitle,
   getMediaDetail,
   getSimilarMedia,
   getMediaVideos,
@@ -12,6 +13,16 @@ export function useMediaDetail(type: "movie" | "tv", id: string) {
     queryKey: queryKeys.media.detail(type, id),
     queryFn: () => getMediaDetail(type, id),
     enabled: !!id && !!type,
+  })
+}
+
+/** Fetch the English title (language=en-US) for Moviebox title matching. */
+export function useEnglishTitle(type: "movie" | "tv", id: string) {
+  return useQuery({
+    queryKey: [...queryKeys.media.all, type, "english-title", id] as const,
+    queryFn: () => getEnglishTitle(type, id),
+    enabled: !!id && !!type,
+    staleTime: 60 * 60 * 1000, // English title rarely changes; cache for an hour
   })
 }
 

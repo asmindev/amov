@@ -23,6 +23,9 @@ export interface UnifiedMediaMeta {
   imdbId?: string | null
   year?: string | null
   cover?: string | null
+  requestedTitle?: string | null
+  titleMatched?: boolean | null
+  yearMismatch?: boolean | null
 }
 
 export interface UnifiedEpisodeInfo {
@@ -49,6 +52,7 @@ export interface FetchSourcesParams {
   tmdbId: string
   title: string
   originalTitle?: string
+  englishTitle?: string
   year: string
   mediaType: "movie" | "tv"
   provider: string
@@ -70,6 +74,7 @@ export async function fetchDecryptedSources(
         imdbId: params.imdbId,
         originalTitle: params.originalTitle || params.title,
         mediaType: params.mediaType,
+        ...(params.englishTitle ? { englishTitle: params.englishTitle } : {}),
         ...(params.year ? { year: params.year } : {}),
         ...(params.season !== undefined
           ? { seasonId: String(params.season) }
@@ -87,7 +92,22 @@ export async function fetchDecryptedSources(
       }
     }
 
-    // Fallback: search Moviebox catalog by title if imdbId is missing or yielded no sources
+    // A title/year mismatch is the backend *intentionally* returning no sources
+    // because the resolved subject is not the film the client asked for. Never
+    // fall back to a fuzzy search in that case — the film simply isn't available
+    // under the requested title/year, and searching would stream a wrong film.
+    const titleMismatch = mbJson?.meta?.titleMatched === false
+    const yearMismatch = mbJson?.meta?.yearMismatch === true
+    if (titleMismatch || yearMismatch) {
+      const reason = titleMismatch ? "different title" : "different year"
+      throw new Error(
+        `Moviebox: resolved to a ${reason} — "${params.originalTitle || params.title}" (${params.year}) may not be available on Moviebox`
+      )
+    }
+
+    // Fallback: search Moviebox catalog by title if imdbId is missing or the
+    // (matching) film has no streams. The fallback query still passes the
+    // original/english titles and year so the backend match gate stays on.
     if (!mbJson || !mbJson.sources || mbJson.sources.length === 0) {
       const searchTitle = (params.originalTitle || params.title).trim()
       if (!searchTitle) {
@@ -128,6 +148,13 @@ export async function fetchDecryptedSources(
 
       const mbQs = new URLSearchParams({
         subjectId: candidate.subjectId,
+        // Keep the backend match gate active: pass the titles + year so a
+        // wrong film is still caught even on the search fallback path.
+        ...(params.originalTitle
+          ? { originalTitle: params.originalTitle }
+          : {}),
+        ...(params.englishTitle ? { englishTitle: params.englishTitle } : {}),
+        ...(params.year ? { year: params.year } : {}),
         ...(params.season !== undefined
           ? { seasonId: String(params.season) }
           : {}),
@@ -146,6 +173,18 @@ export async function fetchDecryptedSources(
         throw new Error(body.detail ?? `Moviebox HTTP ${mbRes.status}`)
       }
       mbJson = (await mbRes.json()) as UnifiedMediaResponse
+
+      // The search fallback still runs the backend match gate (titles + year
+      // are passed above). If it still returns a mismatch, the film really is
+      // not available under the requested title/year — surface that.
+      if (
+        mbJson?.meta?.titleMatched === false ||
+        mbJson?.meta?.yearMismatch === true
+      ) {
+        throw new Error(
+          `Moviebox: resolved to a different film — "${params.originalTitle || params.title}" (${params.year}) may not be available on Moviebox`
+        )
+      }
     }
 
     return {
