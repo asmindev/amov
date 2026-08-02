@@ -149,14 +149,25 @@ export function PlayerShell({
 
   const handleApplySyncState = useCallback(
     (t: number, remotePlaying: boolean) => {
-      actions.seek(t)
-      if (remotePlaying && videoRef.current?.paused) {
-        void videoRef.current.play().catch(() => {})
-      } else if (!remotePlaying && videoRef.current && !videoRef.current.paused) {
-        videoRef.current.pause()
+      applyRemoteSeek(t)
+      const v = videoRef.current
+      if (remotePlaying) {
+        if (v && v.readyState >= 2) {
+          void v.play().catch(() => {})
+        } else if (v) {
+          v.addEventListener(
+            "canplay",
+            () => {
+              void v.play().catch(() => {})
+            },
+            { once: true }
+          )
+        }
+      } else if (!remotePlaying && v && !v.paused) {
+        v.pause()
       }
     },
-    [actions]
+    [applyRemoteSeek]
   )
 
   const {

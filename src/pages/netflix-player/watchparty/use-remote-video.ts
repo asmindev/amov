@@ -40,7 +40,19 @@ export function useRemoteVideo({
     (t: number) => {
       const v = videoRef.current
       if (!v || !isFinite(t)) return
-      v.currentTime = t
+      if (v.readyState >= 1) {
+        v.currentTime = t
+      } else {
+        // Video metadata not loaded yet (e.g. newly mounting player);
+        // defer the seek until loadedmetadata fires.
+        v.addEventListener(
+          "loadedmetadata",
+          () => {
+            v.currentTime = t
+          },
+          { once: true }
+        )
+      }
     },
     [videoRef]
   )
