@@ -11,6 +11,8 @@ import { fmtTime } from "@/helpers/time"
 import { Button } from "@/components/ui/button"
 import { Slider } from "@/components/ui/slider"
 import { QualityPopover } from "./quality-popover"
+import { WatchpartyPopover } from "../../watchparty/room-overlay"
+import type { WatchpartyPopoverProps } from "../../watchparty/room-overlay"
 
 export interface BottomControlsProps {
   progressBarRef: RefObject<HTMLDivElement | null>
@@ -43,6 +45,7 @@ export interface BottomControlsProps {
   sources: StreamSource[]
   selectedQuality: number
   setSelectedQuality: (q: number) => void
+  watchpartyProps?: WatchpartyPopoverProps | null
 }
 
 export function BottomControls({
@@ -74,6 +77,7 @@ export function BottomControls({
   sources,
   selectedQuality,
   setSelectedQuality,
+  watchpartyProps,
 }: BottomControlsProps) {
   return (
     <div
@@ -293,6 +297,10 @@ export function BottomControls({
               <span className="absolute -bottom-2 h-1 w-1 rounded-full bg-primary-container"></span>
             )}
           </Button>
+
+          {watchpartyProps && (
+            <WatchpartyPopover {...watchpartyProps} />
+          )}
 
           <Button
             variant="ghost"

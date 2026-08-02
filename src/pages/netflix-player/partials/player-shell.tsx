@@ -28,7 +28,6 @@ import { useFullscreen } from "../hooks/use-fullscreen"
 import { useKeyboardControls } from "../hooks/use-keyboard-controls"
 import { useWatchpartyRealtime } from "../watchparty/use-watchparty-realtime"
 import { useRemoteVideo } from "../watchparty/use-remote-video"
-import { RoomOverlay } from "../watchparty/room-overlay"
 import { ProviderConnectingOverlay, BufferingPulse } from "./loading-animations"
 import { SubtitleOverlay } from "./player-ui/subtitle-overlay"
 import { PausedOverlay } from "./player-ui/paused-overlay"
@@ -736,23 +735,23 @@ export function PlayerShell({
           sources={sources}
           selectedQuality={state.selectedQuality}
           setSelectedQuality={actions.setQuality}
+          watchpartyProps={
+            watchpartyEnabled && watchparty
+              ? {
+                  peers,
+                  status: watchpartyStatus,
+                  roomSlug: watchparty.roomSlug,
+                  mediaType,
+                  movieId,
+                  season,
+                  episode,
+                  onRequestSync: requestSync,
+                  isSynced,
+                }
+              : null
+          }
         />
       </div>
-
-      {/* ── Watchparty Overlay ── */}
-      {watchpartyEnabled && watchparty && (
-        <RoomOverlay
-          peers={peers}
-          status={watchpartyStatus}
-          roomSlug={watchparty.roomSlug}
-          mediaType={mediaType}
-          movieId={movieId}
-          season={season}
-          episode={episode}
-          onRequestSync={requestSync}
-          isSynced={isSynced}
-        />
-      )}
     </div>
   )
 }
