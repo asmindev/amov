@@ -165,6 +165,7 @@ export function PlayerShell({
     sendPlay: broadcastPlay,
     sendPause: broadcastPause,
     sendSeek: broadcastSeek,
+    requestSync,
   } = useWatchpartyRealtime({
     roomId: watchparty?.roomId ?? null,
     userId: watchparty?.userId ?? null,
@@ -736,6 +737,7 @@ export function PlayerShell({
           movieId={movieId}
           season={season}
           episode={episode}
+          onRequestSync={requestSync}
         />
       )}
     </div>
