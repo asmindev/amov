@@ -95,6 +95,7 @@ export interface PlayerShellProps {
   subtitles: StreamSubtitle[]
   movieId: number
   movieTitle: string
+  originalTitle?: string
   movieYear: string
   poster?: string
   provider: DecryptorProvider

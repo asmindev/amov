@@ -11,6 +11,7 @@ export interface ContinueWatchingItem {
   timestamp: number
   duration: number
   title: string
+  originalTitle?: string
   posterPath: string | null
   backdropPath: string | null
   season?: number

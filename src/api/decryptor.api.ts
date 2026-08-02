@@ -48,6 +48,7 @@ export interface DecryptorResult {
 export interface FetchSourcesParams {
   tmdbId: string
   title: string
+  originalTitle?: string
   year: string
   mediaType: "movie" | "tv"
   provider: string
@@ -67,7 +68,7 @@ export async function fetchDecryptedSources(
     if (params.imdbId && params.imdbId.startsWith("tt")) {
       const mbQs = new URLSearchParams({
         imdbId: params.imdbId,
-        originalTitle: params.title,
+        originalTitle: params.originalTitle || params.title,
         mediaType: params.mediaType,
         ...(params.year ? { year: params.year } : {}),
         ...(params.season !== undefined
@@ -88,14 +89,15 @@ export async function fetchDecryptedSources(
 
     // Fallback: search Moviebox catalog by title if imdbId is missing or yielded no sources
     if (!mbJson || !mbJson.sources || mbJson.sources.length === 0) {
-      if (!params.title || !params.title.trim()) {
+      const searchTitle = (params.originalTitle || params.title).trim()
+      if (!searchTitle) {
         throw new Error("Moviebox: no IMDB ID and no title to search")
       }
       const searchRes = await fetch(
-        `${DECRYPTOR_URL}/moviebox/search?q=${encodeURIComponent(params.title.trim())}`
+        `${DECRYPTOR_URL}/moviebox/search?q=${encodeURIComponent(searchTitle)}`
       )
       if (!searchRes.ok) {
-        throw new Error(`Moviebox search failed for "${params.title}"`)
+        throw new Error(`Moviebox search failed for "${searchTitle}"`)
       }
       const searchJson = (await searchRes.json()) as {
         results?: Array<{

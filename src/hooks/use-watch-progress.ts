@@ -7,6 +7,7 @@ export interface WatchProgress {
   timestamp: number // seconds
   duration: number // seconds
   title?: string
+  originalTitle?: string
   posterPath?: string | null
   backdropPath?: string | null
   season?: number

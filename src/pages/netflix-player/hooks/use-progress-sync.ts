@@ -18,6 +18,8 @@ interface UseProgressSyncOpts {
   store: PlaybackStore
   /** Seconds between persistence writes (default 5) */
   intervalSeconds?: number
+  title?: string
+  originalTitle?: string
 }
 
 function loadAll(): Record<string, WatchProgress> {
@@ -52,6 +54,8 @@ export function useProgressSync({
   movieId,
   store,
   intervalSeconds = 5,
+  title,
+  originalTitle,
 }: UseProgressSyncOpts) {
   // Subscribe to the two primitives the effect depends on (primitive
   // snapshots keep Object.is comparison working — a fresh object per
@@ -82,6 +86,8 @@ export function useProgressSync({
           progress: (ts / duration) * 100,
           timestamp: ts,
           duration,
+          title,
+          originalTitle,
           updatedAt: Date.now(),
         }
         saveAll(all)
@@ -108,6 +114,8 @@ export function useProgressSync({
         progress: duration ? (ts / duration) * 100 : 0,
         timestamp: ts,
         duration,
+        title,
+        originalTitle,
         updatedAt: Date.now(),
       }
       saveAll(all)

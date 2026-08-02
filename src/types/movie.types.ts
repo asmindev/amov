@@ -5,6 +5,8 @@ const TmdbMovieSchema = z.object({
   id: z.number(),
   title: z.string().optional(),
   name: z.string().optional(),
+  original_title: z.string().optional(),
+  original_name: z.string().optional(),
   overview: z.string().optional().default(""),
   poster_path: z.string().nullable().optional(),
   backdrop_path: z.string().nullable().optional(),
@@ -22,6 +24,7 @@ const TmdbMovieSchema = z.object({
 export const MovieSchema = TmdbMovieSchema.transform((m) => ({
   id: m.id,
   title: m.title || m.name || "",
+  originalTitle: m.original_title || m.original_name || m.title || m.name || "",
   overview: m.overview,
   posterPath: m.poster_path ?? null,
   backdropPath: m.backdrop_path ?? null,
@@ -185,6 +188,7 @@ export const MovieDetailSchema = TmdbMovieDetailSchema.transform((m) => {
   return {
     id: m.id,
     title: m.title || m.name || "",
+    originalTitle: m.original_title || m.original_name || m.title || m.name || "",
     overview: m.overview,
     posterPath: m.poster_path ?? null,
     backdropPath,

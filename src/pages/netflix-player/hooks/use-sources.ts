@@ -9,6 +9,7 @@ import { queryKeys } from "@/lib/query-keys"
 interface UseSourcesParams {
   tmdbId: string
   title: string
+  originalTitle?: string
   year: string
   mediaType: "movie" | "tv"
   imdbId?: string

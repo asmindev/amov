@@ -21,6 +21,7 @@ export function ContinueWatchingSection() {
   const movies: Movie[] = data.map((entry) => ({
     id: Number(entry.id),
     title: entry.title,
+    originalTitle: entry.originalTitle || entry.title,
     posterPath: entry.posterPath,
     backdropPath: entry.backdropPath,
     overview: "",

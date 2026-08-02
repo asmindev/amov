@@ -55,6 +55,7 @@ export default function NetflixPlayerPage() {
       ? {
           tmdbId: String(movie.id),
           title: movie.title,
+          originalTitle: movie.originalTitle || movie.title,
           year: safeYear(movie.releaseDate),
           mediaType,
           imdbId: movie.imdbId ?? undefined,
@@ -144,6 +145,7 @@ export default function NetflixPlayerPage() {
           subtitles={sources.subtitles}
           movieId={movie.id}
           movieTitle={movie.title}
+          originalTitle={movie.originalTitle || movie.title}
           movieYear={safeYear(movie.releaseDate)}
           poster={posterUrl}
           provider={provider}

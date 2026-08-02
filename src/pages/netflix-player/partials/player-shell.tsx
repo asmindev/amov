@@ -52,6 +52,7 @@ export function PlayerShell({
   subtitles,
   movieId,
   movieTitle,
+  originalTitle: propsOriginalTitle,
   movieYear,
   poster,
   provider,
@@ -231,7 +232,14 @@ export function PlayerShell({
     actions,
   })
 
-  useProgressSync({ videoRef, mediaType, movieId, store })
+  useProgressSync({
+    videoRef,
+    mediaType,
+    movieId,
+    store,
+    title: movieTitle,
+    originalTitle: propsOriginalTitle,
+  })
 
   const { fullscreen, iosNativeFullscreen, toggleFullscreen } = useFullscreen(
     containerRef,
