@@ -196,7 +196,30 @@ export async function fetchDecryptedSources(
     }
   }
 
-  // ── 2. Handle Videasy / Wingsdatabase Providers (Yoru, Neon, Cypher, Breach) ──
+  // ── 2. Handle LK21 Provider ──
+  if (params.provider.toLowerCase() === "lk21") {
+    const qs = new URLSearchParams({
+      title: params.originalTitle || params.title,
+      ...(params.year ? { year: params.year } : {}),
+    })
+
+    const res = await fetch(`${DECRYPTOR_URL}/lk21/sources?${qs.toString()}`)
+    if (!res.ok) {
+      const body = (await res.json().catch(() => ({}))) as { detail?: string }
+      throw new Error(body.detail ?? `LK21 HTTP ${res.status}`)
+    }
+    const json = (await res.json()) as UnifiedMediaResponse
+
+    return {
+      provider: "LK21",
+      meta: json.meta,
+      episode: json.episode,
+      sources: json.sources ?? [],
+      subtitles: json.subtitles ?? [],
+    }
+  }
+
+  // ── 3. Handle Videasy / Wingsdatabase Providers (Yoru, Neon, Cypher, Breach) ──
   const qs = new URLSearchParams({
     tmdbId: params.tmdbId,
     mediaType: params.mediaType,

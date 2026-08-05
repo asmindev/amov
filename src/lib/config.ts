@@ -14,6 +14,7 @@ export const DECRYPTOR_URL = env.VITE_DECRYPTOR_URL
 export const DECRYPTOR_PROVIDERS = [
   "Yoru",
   "Moviebox",
+  "LK21",
   "Neon",
   "Cypher",
   "Breach",
