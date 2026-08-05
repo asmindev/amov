@@ -77,6 +77,8 @@ export function SettingsModal(props: SettingsModalProps) {
             providerSubtitles={props.providerSubtitles}
             isFetchingWyzie={props.isFetchingWyzie}
             onFetchWyzie={props.onFetchWyzie}
+            isFetchingSubsource={props.isFetchingSubsource}
+            onFetchSubsource={props.onFetchSubsource}
             selectedSub={props.selectedSub}
             setSelectedSub={props.setSelectedSub}
             wyzieGroups={props.wyzieGroups}

@@ -305,3 +305,29 @@ export async function fetchWyzieSubtitles(
   const data = (await res.json()) as WyzieSubtitleGroup[]
   return data
 }
+
+// ── SubSource Subtitles ──────────────────────────────────────────────────────
+
+export interface FetchSubsourceParams {
+  title: string
+  year?: string
+  mediaType?: "movie" | "tv"
+  season?: number
+}
+
+export async function fetchSubsourceSubtitles(
+  params: FetchSubsourceParams
+): Promise<WyzieSubtitleGroup[]> {
+  const qs = new URLSearchParams()
+  qs.set("title", params.title)
+  if (params.year) qs.set("year", params.year)
+  if (params.season !== undefined) qs.set("season", String(params.season))
+
+  const res = await fetch(`${DECRYPTOR_URL}/subsource?${qs.toString()}`)
+  if (!res.ok) {
+    const body = (await res.json().catch(() => ({}))) as { detail?: string }
+    throw new Error(body.detail ?? `SubSource HTTP ${res.status}`)
+  }
+
+  return (await res.json()) as WyzieSubtitleGroup[]
+}

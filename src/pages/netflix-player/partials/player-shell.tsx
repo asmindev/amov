@@ -3,6 +3,7 @@ import {
   useEffect,
   useRef,
   useCallback,
+  useMemo,
   lazy,
   Suspense,
   type SetStateAction,
@@ -10,7 +11,10 @@ import {
 import { AnimatePresence } from "motion/react"
 import { useNavigate } from "@tanstack/react-router"
 import type { WyzieSubtitleGroup } from "@/api/decryptor.api"
-import { fetchWyzieSubtitles } from "@/api/decryptor.api"
+import {
+  fetchWyzieSubtitles,
+  fetchSubsourceSubtitles,
+} from "@/api/decryptor.api"
 import { TopAppBar } from "./player-ui/top-app-bar"
 import { BottomControls } from "./player-ui/bottom-controls"
 import { usePlayerController } from "../controller/use-player-controller"
@@ -103,7 +107,9 @@ export function PlayerShell({
 
   // ── Wyzie Subtitles ─────────────────────────────────────────────────────────
   const [wyzieGroups, setWyzieGroups] = useState<WyzieSubtitleGroup[]>([])
+  const [subsourceGroups, setSubsourceGroups] = useState<WyzieSubtitleGroup[]>([])
   const [isFetchingWyzie, setIsFetchingWyzie] = useState(false)
+  const [isFetchingSubsource, setIsFetchingSubsource] = useState(false)
 
   const handleFetchWyzie = useCallback(async () => {
     if (isFetchingWyzie) return
@@ -123,6 +129,36 @@ export function PlayerShell({
       setIsFetchingWyzie(false)
     }
   }, [movieId, imdbId, mediaType, season, episode, isFetchingWyzie])
+
+  const handleFetchSubsource = useCallback(async () => {
+    if (!movieTitle || isFetchingSubsource) return
+    setIsFetchingSubsource(true)
+    try {
+      const groups = await fetchSubsourceSubtitles({
+        title: movieTitle,
+        year: movieYear || undefined,
+        mediaType,
+        season: mediaType === "tv" ? season : undefined,
+      })
+      setSubsourceGroups(groups)
+    } catch (err) {
+      console.error("Failed to fetch Subsource subtitles:", err)
+    } finally {
+      setIsFetchingSubsource(false)
+    }
+  }, [movieTitle, movieYear, mediaType, season, isFetchingSubsource])
+
+  const mergedSubtitleGroups = useMemo(() => {
+    const map = new Map<string, WyzieSubtitleGroup>()
+    for (const group of [...wyzieGroups, ...subsourceGroups]) {
+      if (map.has(group.language)) {
+        map.get(group.language)!.subtitles.push(...group.subtitles)
+      } else {
+        map.set(group.language, { ...group, subtitles: [...group.subtitles] })
+      }
+    }
+    return Array.from(map.values())
+  }, [wyzieGroups, subsourceGroups])
 
   // ── Customization Settings ──────────────────────────────────────────────────
   const playerSettings = usePlayerSettings()
@@ -681,9 +717,11 @@ export function PlayerShell({
               selectedSub={state.selectedSub}
               setSelectedSub={actions.setSub}
               providerSubtitles={subtitles}
-              wyzieGroups={wyzieGroups}
+              wyzieGroups={mergedSubtitleGroups}
               isFetchingWyzie={isFetchingWyzie}
               onFetchWyzie={handleFetchWyzie}
+              isFetchingSubsource={isFetchingSubsource}
+              onFetchSubsource={handleFetchSubsource}
               subError={state.subError}
               subOffset={playerSettings.subOffset}
               setSubOffset={playerSettings.setSubOffset}

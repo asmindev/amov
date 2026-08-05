@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react"
 import type { StreamSubtitle } from "@/api/decryptor.api"
 import type { PlaybackActions } from "../controller/use-player-controller"
+import { DECRYPTOR_URL } from "@/lib/config"
 
 export interface ParsedCue {
   start: number
@@ -210,7 +211,23 @@ export function useSubtitleEngine({
       }
       dispatchRef.current({ type: "SET_SUB_ERROR", error: false })
       try {
-        const res = await fetch(selectedSub)
+        let fetchUrl = selectedSub
+        const needsProxy = [
+          "ironwallnet.net",
+          "hakunaymatata.com",
+          "aoneroom.com",
+          "themoviebox.xyz",
+        ].some((domain) => fetchUrl.includes(domain))
+
+        if (fetchUrl.startsWith("/")) {
+          fetchUrl = `${DECRYPTOR_URL}${fetchUrl}`
+        }
+
+        if (needsProxy && !fetchUrl.includes(DECRYPTOR_URL)) {
+          fetchUrl = `${DECRYPTOR_URL}/proxy?url=${encodeURIComponent(fetchUrl)}`
+        }
+
+        const res = await fetch(fetchUrl)
         if (!res.ok) throw new Error("fetch sub error")
         let text = await res.text()
 

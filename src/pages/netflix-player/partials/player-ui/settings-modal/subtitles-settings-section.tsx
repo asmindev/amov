@@ -7,6 +7,8 @@ export function SubtitlesSettingsSection({
   providerSubtitles,
   isFetchingWyzie,
   onFetchWyzie,
+  isFetchingSubsource,
+  onFetchSubsource,
   selectedSub,
   setSelectedSub,
   wyzieGroups,
@@ -53,25 +55,6 @@ export function SubtitlesSettingsSection({
         </h3>
       )}
 
-      {/* Fetch button for Wyzie */}
-      <div className="mb-3 flex gap-2">
-        <Button
-          variant="outline"
-          size="sm"
-          className="h-8 flex-1 border-primary text-xs text-primary hover:bg-primary/20"
-          onClick={onFetchWyzie}
-          disabled={isFetchingWyzie}
-        >
-          {isFetchingWyzie ? (
-            <div className="mr-1.5 h-3 w-3 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-          ) : (
-            <span className="material-symbols-outlined mr-1.5 text-[14px]">
-              download
-            </span>
-          )}
-          {totalWyzieSubtitles > 0 ? "Refresh External" : "Fetch External"}
-        </Button>
-      </div>
 
       {/* Search */}
       <div className="relative mb-2">
@@ -190,6 +173,42 @@ export function SubtitlesSettingsSection({
                 : "No subtitles available. Click Fetch External to load."}
             </div>
           )}
+      </div>
+
+      {/* Fetch Buttons */}
+      <div className="mt-3 flex gap-2">
+        <Button
+          variant="outline"
+          size="sm"
+          className="h-8 flex-1 border-primary text-xs text-primary hover:bg-primary/20"
+          onClick={onFetchWyzie}
+          disabled={isFetchingWyzie}
+        >
+          {isFetchingWyzie ? (
+            <div className="mr-1.5 h-3 w-3 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+          ) : (
+            <span className="material-symbols-outlined mr-1.5 text-[14px]">
+              download
+            </span>
+          )}
+          Wyzie
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          className="h-8 flex-1 border-primary text-xs text-primary hover:bg-primary/20"
+          onClick={onFetchSubsource}
+          disabled={isFetchingSubsource}
+        >
+          {isFetchingSubsource ? (
+            <div className="mr-1.5 h-3 w-3 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+          ) : (
+            <span className="material-symbols-outlined mr-1.5 text-[14px]">
+              download
+            </span>
+          )}
+          SubSource
+        </Button>
       </div>
     </div>
   )

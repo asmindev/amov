@@ -37,6 +37,7 @@ export async function getNetflixMovies() {
     with_watch_providers: NETFLIX_PROVIDER_ID,
     watch_region: WATCH_REGION,
     sort_by: DEFAULT_SORT_BY,
+    without_keywords: "155477,256466",
   })
   return MovieListSchema.parse(res)
 }
@@ -175,6 +176,7 @@ export async function getDiscoverMovies(page = 1, filters?: DiscoverFilters) {
   const params: Record<string, string> = {
     sort_by: filters?.sortBy || DEFAULT_SORT_BY,
     include_adult: "false",
+    without_keywords: "155477,256466",
     page: String(page),
   }
 

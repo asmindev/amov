@@ -11,6 +11,8 @@ export interface SettingsModalProps {
   wyzieGroups: WyzieSubtitleGroup[]
   isFetchingWyzie: boolean
   onFetchWyzie: () => void
+  isFetchingSubsource: boolean
+  onFetchSubsource: () => void
   subError: boolean
   subOffset: number
   setSubOffset: Dispatch<SetStateAction<number>>
@@ -37,6 +39,8 @@ export interface SubtitlesSettingsSectionProps {
   providerSubtitles: StreamSubtitle[]
   isFetchingWyzie: boolean
   onFetchWyzie: () => void
+  isFetchingSubsource: boolean
+  onFetchSubsource: () => void
   selectedSub: string | null
   setSelectedSub: (val: string | null) => void
   wyzieGroups: WyzieSubtitleGroup[]
