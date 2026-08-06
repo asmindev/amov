@@ -139,31 +139,12 @@ export function ProviderConnectingOverlay({
 
 export function BufferingPulse() {
   return (
-    <div className="pointer-events-none absolute inset-0 z-10 flex flex-col items-center justify-center gap-8">
-      {/* Simple pulsing dot with one expanding ring */}
-      <div className="relative flex h-16 w-16 items-center justify-center">
-        <motion.div
-          className="absolute h-full w-full rounded-full border border-white/30"
-          initial={false}
-          animate={{ scale: [1, 1.6, 1], opacity: [0.5, 0, 0.5] }}
-          transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
-        />
-        <motion.div
-          className="h-4 w-4 rounded-full bg-primary"
-          initial={false}
-          animate={{ scale: [1, 1.2, 1] }}
-          transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
-        />
-      </div>
-
-      <motion.p
-        className="text-xs font-medium tracking-widest text-white/40 uppercase"
-        initial={{ opacity: 0.4 }}
-        animate={{ opacity: [0.4, 1, 0.4] }}
-        transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
-      >
-        Loading
-      </motion.p>
+    <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center">
+      <motion.div
+        className="h-14 w-14 rounded-full border-[3px] border-white/10 border-t-primary shadow-[0_0_15px] shadow-primary/40"
+        animate={{ rotate: 360 }}
+        transition={{ repeat: Infinity, duration: 0.8, ease: "linear" }}
+      />
     </div>
   )
 }
