@@ -139,12 +139,64 @@ export function ProviderConnectingOverlay({
 
 export function BufferingPulse() {
   return (
-    <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center">
-      <motion.div
-        className="h-14 w-14 rounded-full border-[3px] border-white/10 border-t-primary shadow-[0_0_15px] shadow-primary/40"
-        animate={{ rotate: 360 }}
-        transition={{ repeat: Infinity, duration: 0.8, ease: "linear" }}
-      />
+    <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center bg-black/10 transition-all duration-500">
+      <div className="relative flex h-28 w-28 items-center justify-center">
+        
+        {/* Outer glowing dust/nebula */}
+        <motion.div
+          className="absolute inset-0 rounded-full bg-primary/20 blur-[20px]"
+          animate={{ scale: [1, 1.3, 1], opacity: [0.5, 0.8, 0.5] }}
+          transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }}
+        />
+
+        {/* Counter-rotating accretion disk */}
+        <motion.div
+          className="absolute inset-1 rounded-full border-[1.5px] border-dashed border-primary/30"
+          animate={{ rotate: -360, scale: [1, 1.05, 1] }}
+          transition={{ 
+            rotate: { repeat: Infinity, duration: 12, ease: "linear" }, 
+            scale: { repeat: Infinity, duration: 4, ease: "easeInOut" } 
+          }}
+        />
+
+        {/* Main sweeping energy ring */}
+        <motion.div
+          className="absolute inset-3 rounded-full"
+          style={{
+            background: "conic-gradient(from 0deg, transparent 40%, var(--primary) 100%)",
+            maskImage: "radial-gradient(transparent 60%, black 61%)",
+            WebkitMaskImage: "radial-gradient(transparent 60%, black 61%)",
+          }}
+          animate={{ rotate: 360 }}
+          transition={{ repeat: Infinity, duration: 1.2, ease: "linear" }}
+        />
+
+        {/* Secondary sweeping energy ring (faster, offset, white-hot) */}
+        <motion.div
+          className="absolute inset-4 rounded-full"
+          style={{
+            background: "conic-gradient(from 180deg, transparent 60%, #ffffff 100%)",
+            maskImage: "radial-gradient(transparent 62%, black 63%)",
+            WebkitMaskImage: "radial-gradient(transparent 62%, black 63%)",
+          }}
+          animate={{ rotate: 360 }}
+          transition={{ repeat: Infinity, duration: 0.7, ease: "linear" }}
+        />
+
+        {/* Inner black hole core */}
+        <div 
+          className="absolute inset-5 rounded-full bg-black z-10" 
+          style={{ boxShadow: "inset 0 0 20px #000, 0 0 20px var(--primary)" }}
+        />
+        
+        {/* Event Horizon edge pulsing */}
+        <motion.div
+          className="absolute inset-5 rounded-full border border-primary z-20"
+          animate={{ scale: [1, 1.05, 1], opacity: [0.3, 1, 0.3] }}
+          transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
+        />
+        
+      </div>
     </div>
   )
 }
