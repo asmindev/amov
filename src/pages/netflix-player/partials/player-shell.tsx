@@ -682,36 +682,36 @@ export function PlayerShell({
           }
         />
 
-        {/* ── Skip Buttons (Desktop & Mobile) ── */}
+        {/* ── Mobile Vertical Skip Buttons ── */}
         <div
-          className={`pointer-events-none fixed inset-0 z-40 transition-opacity duration-300 ${
-            uiVisible ? "opacity-100" : "opacity-0"
+          className={`pointer-events-auto transition-opacity duration-300 md:hidden ${
+            state.mobileSkipVisible
+              ? "opacity-100"
+              : "pointer-events-none opacity-0"
           }`}
         >
-          <div className="absolute top-1/2 left-1/2 flex w-max -translate-x-1/2 -translate-y-1/2 items-center justify-center gap-16 md:w-[92%] md:justify-between md:gap-0 lg:w-[95%]">
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation()
-                seek(-10)
-              }}
-              className="pointer-events-auto flex p-3 items-center justify-center rounded-full bg-black/40 border border-white/10 text-white backdrop-blur-md transition-all hover:bg-white/10 hover:scale-110 active:scale-90 md:p-4"
-              aria-label="Skip backward 10 seconds"
-            >
-              <span className="material-symbols-outlined text-[36px] md:text-[48px] font-light">replay_10</span>
-            </button>
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation()
-                seek(10)
-              }}
-              className="pointer-events-auto flex p-3 items-center justify-center rounded-full bg-black/40 border border-white/10 text-white backdrop-blur-md transition-all hover:bg-white/10 hover:scale-110 active:scale-90 md:p-4"
-              aria-label="Skip forward 10 seconds"
-            >
-              <span className="material-symbols-outlined text-[36px] md:text-[48px] font-light">forward_10</span>
-            </button>
-          </div>
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation()
+              seek(-10)
+            }}
+            className="fixed top-1/2 left-4 z-40 flex p-2 -translate-y-1/2 items-center justify-center rounded-full border border-white/20 text-white backdrop-blur-sm transition-all active:scale-90"
+            aria-label="Skip backward 10 seconds"
+          >
+            <span className="material-symbols-outlined text-[36px]">replay_10</span>
+          </button>
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation()
+              seek(10)
+            }}
+            className="fixed top-1/2 right-4 z-40 flex p-2 -translate-y-1/2 items-center justify-center rounded-full border border-white/20 text-white backdrop-blur-sm transition-all active:scale-90"
+            aria-label="Skip forward 10 seconds"
+          >
+            <span className="material-symbols-outlined text-[36px]">forward_10</span>
+          </button>
         </div>
 
         {/* ── Lazy Settings Modal ── */}
