@@ -398,7 +398,8 @@ export function PlayerShell({
     }
   }, [state.openMenu, showUI, actions])
 
-  // ── Seek Handlers ──────────────────────────────────────────────────────────
+  const skipIndicatorTimerRef = useRef<NodeJS.Timeout | null>(null)
+  
   const seek = useCallback(
     (delta: number) => {
       actions.seekDelta(delta)
@@ -406,6 +407,12 @@ export function PlayerShell({
         type: "SKIP_INDICATOR",
         indicator: { type: delta > 0 ? "forward" : "backward", id: Date.now() },
       })
+      
+      if (skipIndicatorTimerRef.current) clearTimeout(skipIndicatorTimerRef.current)
+      skipIndicatorTimerRef.current = setTimeout(() => {
+        actions.dispatch({ type: "SKIP_INDICATOR", indicator: null })
+      }, 800)
+
       if (watchpartyEnabled && videoRef.current) {
         broadcastSeek(videoRef.current.currentTime)
       }
