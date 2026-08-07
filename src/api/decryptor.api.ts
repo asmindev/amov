@@ -333,9 +333,11 @@ export async function fetchWyzieSubtitles(
 
 export interface FetchSubsourceParams {
   title: string
-  year?: string
-  mediaType?: "movie" | "tv"
+  year: string
+  tmdbId: string
+  imdbId: string
   season?: number
+  episode?: number
 }
 
 export async function fetchSubsourceSubtitles(
@@ -343,8 +345,11 @@ export async function fetchSubsourceSubtitles(
 ): Promise<WyzieSubtitleGroup[]> {
   const qs = new URLSearchParams()
   qs.set("title", params.title)
-  if (params.year) qs.set("year", params.year)
+  qs.set("year", params.year)
+  qs.set("tmdbId", params.tmdbId)
+  qs.set("imdbId", params.imdbId)
   if (params.season !== undefined) qs.set("season", String(params.season))
+  if (params.episode !== undefined) qs.set("episode", String(params.episode))
 
   const res = await fetch(`${DECRYPTOR_URL}/subsource?${qs.toString()}`)
   if (!res.ok) {

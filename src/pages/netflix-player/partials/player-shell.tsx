@@ -136,9 +136,11 @@ export function PlayerShell({
     try {
       const groups = await fetchSubsourceSubtitles({
         title: movieTitle,
-        year: movieYear || undefined,
-        mediaType,
+        year: movieYear,
+        tmdbId: String(movieId),
+        imdbId: imdbId ?? "",
         season: mediaType === "tv" ? season : undefined,
+        episode: mediaType === "tv" ? episode : undefined,
       })
       setSubsourceGroups(groups)
     } catch (err) {
@@ -146,7 +148,7 @@ export function PlayerShell({
     } finally {
       setIsFetchingSubsource(false)
     }
-  }, [movieTitle, movieYear, mediaType, season, isFetchingSubsource])
+  }, [movieTitle, movieYear, movieId, imdbId, mediaType, season, episode, isFetchingSubsource])
 
   const mergedSubtitleGroups = useMemo(() => {
     const map = new Map<string, WyzieSubtitleGroup>()
