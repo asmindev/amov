@@ -104,6 +104,7 @@ export default function NetflixPlayerPage() {
         <Link
           to="/$type/$id"
           params={{ type: mediaType, id }}
+          replace
           className="text-sm text-white/50 underline transition-colors hover:text-white"
         >
           Back to details
@@ -133,6 +134,7 @@ export default function NetflixPlayerPage() {
           <Link
             to="/$type/$id"
             params={{ type: mediaType, id }}
+            replace
             className="rounded-lg bg-red-600 px-5 py-2 text-sm font-semibold text-white transition-colors hover:bg-red-500"
           >
             Back to detail

@@ -53,6 +53,7 @@ export const TopAppBar = memo(function TopAppBar({
         <Link
           to="/$type/$id"
           params={{ type: mediaType, id: movieId.toString() }}
+          replace
           className="pointer-events-auto flex max-md:h-10 max-md:w-10 h-12 w-12 items-center justify-center text-white/80 transition-all hover:scale-110 hover:text-white"
           onClick={(e) => e.stopPropagation()}
         >

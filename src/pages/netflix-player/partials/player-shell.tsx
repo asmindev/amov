@@ -400,7 +400,7 @@ export function PlayerShell({
     }
   }, [state.openMenu, showUI, actions])
 
-  const skipIndicatorTimerRef = useRef<NodeJS.Timeout | null>(null)
+  const skipIndicatorTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   
   const seek = useCallback(
     (delta: number) => {
